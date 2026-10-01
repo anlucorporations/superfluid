@@ -1,0 +1,15 @@
+# RT-08: build remoto de la imagen del dashboard Superfluid (sin docker local).
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/mcc-ecommerce/superfluid/dashboard:${BUILD_ID}', './web',
+           '--build-arg', 'NEXT_PUBLIC_EUR_ADDRESS=${_EUR_ADDR}',
+           '--build-arg', 'NEXT_PUBLIC_EURX_ADDRESS=${_EURX_ADDR}',
+           '--build-arg', 'NEXT_PUBLIC_FACTORY_ADDRESS=${_FAC_ADDR}']
+images: ['europe-west1-docker.pkg.dev/mcc-ecommerce/superfluid/dashboard:${BUILD_ID}']
+options:
+  machineType: E2_HIGHCPU_8
+timeout: 1200s
+substitutions:
+  _EUR_ADDR: "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570"
+  _EURX_ADDR: "0x7046717d32AfcA450DC5D6e75724D4282DFAd16E"
+  _FAC_ADDR: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D"

@@ -1,93 +1,138 @@
-# superfluid
+# Superfluid EUR Streaming — v1 beta (CodeCrypto Academy)
 
+Aplicación educativa de **money streaming** con el protocolo Superfluid adaptado: un token ERC20
+de prueba `EUR` se envuelve como Super Token propio `EURx` y permite enviar flujos continuos de
+**2000 EUR/mes** a múltiples destinatarios sobre la red privada **Hyperledger Besu Codecrypto**
+(chainId 81234), gestionada con **Foundry global** del servidor.
 
+> ⚠️ **Limitaciones y aviso legal**: EUR/EURx son tokens de prueba **sin respaldo, valor ni
+> conversión posible** a moneda real. Operan solo en la red QBFT educativa. Está prohibido usar
+> este sistema para pagos reales (nóminas, alquileres, etc.). Ver [LICENSE.md](LICENSE.md).
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Estructura
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/anlucorporations/superfluid.git
-git branch -M main
-git push -uf origin main
+sc/            Smart contracts (Solidity 0.8.28, Foundry, OpenZeppelin 5.1.0)
+  src/Euro.sol           ERC20 hard-cap 10M
+  src/EuroX.sol          Super Token con CFA simplificado (flows, settle pull)
+  src/EuroxFactory.sol   Registro de pares underlying→superToken
+  script/DeployAll.s.sol Despliegue completo con preflight + registro JSON
+web/           Dashboard Next.js 15 + React 19 + ethers 5.7.2 + Tailwind
+tools/         scripts CI: constants-check, coverage-check, rpc-latency, sync-abi…
+RepoTecnico/   Documentación completa (brief, requerimientos, casos de uso, auditorías…)
 ```
 
-## Integrate with your tools
+## Requisitos previos
 
-* [Set up project integrations](https://gitlab.com/anlucorporations/superfluid/-/settings/integrations)
+- Foundry global: `export PATH="$HOME/.foundry/bin:$PATH"` (forge/cast 1.8.3 verificados).
+- Node ≥ 22.
+- Cuenta con fondos CC: solicita en https://faucet.codecrypto.academy/ (máx 100 CC/solicitud).
+  Para desarrollo educativo puede usarse la cuenta #0 pública del curso (`0xf39F…2266`).
 
-## Collaborate with your team
+## 1 · Contratos: compilar, testear, desplegar
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```bash
+export PATH="$HOME/.foundry/bin:$PATH"
+cd sc
+forge install foundry-rs/forge-std OpenZeppelin/openzeppelin-contracts@v5.1.0 --no-git
+cp .env.example .env        # NO versionar; ajusta DEPLOYER_PRIVATE_KEY si usas otra cuenta
+forge build
+forge test                  # suite unitaria (Euro + EuroX)
+forge test --match-contract EuroXInvariants   # fuzz de invariantes RNF-08 (~1-2 min)
 
-## Test and Deploy
+# Preflight automático: chainId 81234 y saldo CC ≥ 5
+source .env
+forge script script/DeployAll.s.sol:DeployAllScript \
+  --rpc-url "$RPC_URL" --private-key "$DEPLOYER_PRIVATE_KEY" --broadcast
+```
 
-Use the built-in continuous integration in GitLab.
+El script escribe el registro canónico versionado en `sc/deployments/codecrypto.json`
+(networkId + timestamp; re-ejecuciones generan registros nuevos sin corromper — RNF-07).
+Verifica en vivo:
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+```bash
+cast call <EURx> "totalSupplyX()(uint256)" --rpc-url $RPC_URL
+cd .. && node tools/check-deployments.mjs   # anclado a la raíz del repo
+```
 
-***
+### Direcciones activas (red Codecrypto, corridas verificadas)
 
-# Editing this README
+| Contrato | Dirección |
+|---|---|
+| EUR | `0x36C02dA8a0983159322a80FFE9F24b1acfF8B570` |
+| EuroxFactory | `0x809d550fca64d94Bd9F66E60752A544199cfAC3D` |
+| EURx | `0x7046717d32AfcA450DC5D6e75724D4282DFAd16E` |
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+**Modelo contable V3 (reserva):** el devengo es pasivo dentro del saldo del emisor;
+`claimSettled` transfiere saldo real (sin acuñación) y `settle()` reparte proporcionalmente
+si hay insolvencia. Limitación aceptada en beta: entre mutaciones, el primer reclamo puede
+adelantarse (el mecanismo equitativo es `settle`). Ver `RepoTecnico/casos_uso.md` §0.
 
-## Suggestions for a good README
+Smoke V3 verificado on-chain: wrap → createFlow → pause → resume → close → claimSettled con conservación exacta de `totalSupplyX`.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## 2 · Frontend
 
-## Name
-Choose a self-explaining name for your project.
+```bash
+cd web
+npm install --legacy-peer-deps
+node ../tools/sync-abi.mjs      # regenera src/abi/*.json tras cambios en sc/
+npm run dev                     # http://localhost:3000
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Conecta MetaMask a la red Codecrypto (el botón ofrece switch/add automático):
+Chain ID 81234 · RPC `https://besu.alumnos.codecrypto.academy` · nativa CC.
+Sin wallet la app funciona en modo solo lectura (nunca hay claves privadas en el bundle).
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Uso: envolver EUR→EURx → crear stream (modal de irrevocabilidad antes de firmar) →
+ver balances live (polling 5 s con backoff) → pausar/reanudar/cerrar → pestaña Recibidos
+para reclamar devengos. Si tu saldo virtual se agota, cualquier cuenta puede llamar `settle()`.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## 3 · Pruebas E2E
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```bash
+cd web && npx playwright test          # 8 tests en 4 specs: wallet (incl. guard de red negativa), dashboard live-balance, recibidos, axe WCAG
+node tools/rpc-latency.mjs 200         # presupuesto RNF-04 (percentiles RPC)
+node tools/coverage-check.mjs          # meta-test RNF-03 (RF-MUST ↔ tests existentes)
+node tools/constants-check.mjs         # constantes §0 sincronizadas con los docs
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## 4 · Preview GCP (Cloud Run)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```bash
+# build remoto (no requiere docker local)
+tar -czf /tmp/cb-src.tgz web cloudbuild-superfluid.yaml
+gcloud builds submit /tmp/cb-src --project=mcc-ecommerce --config=cloudbuild-superfluid.yaml
+gcloud run deploy superfluid-dashboard --region=europe-west1 --platform=managed \
+  --image=europe-west1-docker.pkg.dev/mcc-ecommerce/superfluid/dashboard:<BUILD_ID> \
+  --allow-unauthenticated
+bash tools/preview-policy-check.sh     # gate RNF-13
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+URL actual: https://superfluid-dashboard-1095249147821.europe-west1.run.app
+(acceso abierto = riesgo aceptado documentado; allow-list de IPs del curso pendiente de lista del operador).
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## 5 · Custodia de claves (checklist RNF-11)
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+- [ ] `.env`, keystore y `*.local.json` están cubiertos por `.gitignore` (verificar antes de cada `/push`).
+- [ ] La pk usada es SOLO la pública del curso (válida únicamente en la red educativa).
+- [ ] Cualquier pk propia nueva: generar fuera del repo, financiar vía faucet, guardar copia cifrada
+      del mnemonic en bóveda del titular, y probar restauración importándola en una wallet limpia.
+- [ ] Al cierre de beta: considerar `renounceOwnership()` del token EUR (opcional, decisión del owner).
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Limitaciones conocidas de la beta
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- Preview abierta (sin allow-list de IPs aún: riesgo aceptado; el RPC académico puede degradar bajo concurrencia — el polling hace backoff automático).
+- **El `eth_estimateGas` de la red QBFT académica es intermitente** (relojes de validadores desincronizados inflan el devengo simulado en la estimación). La app lo evita firmando con `gasLimit` explícito por operación (`web/src/lib/superfluid.ts`, objeto `GAS`).
+- `deleteFlow(receiver)`: el alias histórico con argumento de receptor quedó como `closeFlow/deleteFlow`; la documentación original del brief usaba deleteFlow como pausa — resuelto a favor de "cerrar" (decisión D10).
+- Los créditos pendientes entre mutaciones siguen la regla first-mover descrita arriba.
+- Tras cerrar un flujo, la deuda viva del receptor no se ofrece en la UI del emisor (se reclama por la pestaña Recibidos o vía `settle`).
 
-## License
-For open source projects, say how it is licensed.
+## Documentación técnica
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Todo el proceso (brief, requerimientos RF/RNF/RT, decisiones D1–D16, casos de uso Gherkin/EARS,
+diagramas Mermaid, documento técnico con nota comparativa CFA real vs envoltorio propio, e
+informes de auditoría V1/V2) vive en [`RepoTecnico/`](RepoTecnico/).
+
+## Licencia
+
+MIT © CodeCrypto Academy / anlucorporations — ver [LICENSE.md](LICENSE.md).

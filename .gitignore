@@ -1,0 +1,39 @@
+# .gitignore — Superfluid EUR Streaming (v1)
+# Claves y artefactos: NUNCA versionar (RNF-02)
+
+## Secretos / cuentas
+.env
+.env.*
+!.env.example
+*.local.json
+.deployer_wallet*
+RepoTecnico/.deployer_wallet.local.json
+keystore/
+*.pem
+mnemonic*
+
+## Foundry
+# deps foundry: forjá install (forge-std, OZ v5.1.0) — ver README §1
+sc/lib/
+sc/out/
+sc/cache/
+sc/broadcast/
+!sc/broadcast/.gitkeep
+
+## Node / Next.js
+node_modules/
+web/.next/
+web/out/
+web/next-env.d.ts
+*.tsbuildinfo
+
+## Build / misc
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+
+## GCP (credenciales si se añaden localmente)
+*.credentials.json
+service-account*.json
