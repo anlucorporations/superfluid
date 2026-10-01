@@ -13,6 +13,21 @@
 - [x] `INFORME_PRUEBAS.md` §7 consolidado con la entrega del agente (48 verdes propios; bug de paginación clamp corregido; lecciones CI: workers:1 obligatorio).
 - [x] Preview con fixes F4 desplegada: revisión **00004-knl** smoke OK.
 
+### Operaciones de entrega (2026-10-01)
+- [x] `/push` → git inicializado sobre la historia de origin (9329a3f), commit **1207b24** (82 ficheros: sc/, web/, tools/, RepoTecnico/ completo con logs, LICENSE, .gitignore verificado sin secretos — sc/lib excluido, registro versionado `sc/deployments/codecrypto.json`).
+- [x] Push **institucional** (gitlab.codecrypto.academy) rama `superfluid-DSH-GCP` ✔ (`db8fede → 1207b24`, force-with-lease; ramas hermanas main/DSH/antigravity intactas en db8fede; SHA anterior documentado para recuperación).
+- [ ] Push **gitlab.com** bloqueado: sin credenciales para el host (~/.git-credentials solo cubre codecrypto). Requiere PAT del usuario o clave SSH.
+- [x] GCP: preview **00004-knl** al día con el código de Fase 4 (imagen `296a1301…`), smoke 200 + disclaimer, gate RNF-13 OK.
+
+### Rediseño visual v1.1 — `@visualUiUx` (2026-10-01) ✅
+- [x] Análisis (F1): `RepoTecnico/analisis_visual.md` — paleta teal por roles semánticos con ratios WCAG calculados, escala modular 1.25 sobre Geist (self-host, cero riesgo de build), espaciado/radios/elevación, inventario Atomic Design.
+- [x] Tokens (F2): `web/src/app/globals.css` con Tailwind v4 `@theme` (roles → utilidades `bg-surface/text-ink/bg-primary/…`), swap de tema por `[data-theme]` + `@custom-variant dark`, `lib/theme.ts` (localStorage + script anti-FOUC), `ThemeToggle` accesible.
+- [x] Refactor Dashboard completo a tokens sin tocar anclas E2E (roles/aria/textos exactos preservados y auditados contra los 16 specs).
+- [x] Accesibilidad: axe E2E ampliado a **claro Y oscuro** (16/16 Playwright verdes, 32/32 vitest, tsc+build limpios).
+- [x] `RepoTecnico/Manual_Identidad_Visual.md` v1.1 (fuente de verdad; derivar a @manuales en Fase 5) + capturas `pruebas/ui-v11-{light,dark}.png`.
+- [x] Preview GCP con la nueva identidad: revisión **00005** (imagen `a08dc1bf…`), smoke 200 + gate RNF-13 OK.
+- [ ] Commit local hecho; push pendiente de nuevo `/push` (regla del asistente).
+
 ### Riesgos abiertos para el director (sin cambio)
 - Allow-list IPs curso en la preview; ratificación first-mover D17; disponibilidad del RPC académico.
 

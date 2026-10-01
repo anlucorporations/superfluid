@@ -1,6 +1,8 @@
 'use client';
-// Dashboard principal — CU-01..CU-09, CU-12, CU-13. WCAG AA básico (RNF-09):
-// roles/aria-labels en cifras económicas, contraste AA, foco visible, estados de error D7.
+// Dashboard principal — CU-01..CU-09, CU-12, CU-13 · Design System v1.1 (@visualUiUx).
+// Todos los colores/tamaños salen de tokens (--sf-* → utilidades Tailwind v4).
+// ⚠️ Anclas de E2E (roles, aria-labels, textos exactos): NO renombrar sin actualizar specs.
+// WCAG: todos los pares verificados con axe (claro Y oscuro).
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CHAIN, CONTRACTS, RATE_WEI_PER_SEC, formatEur } from '@/config/web3';
@@ -12,8 +14,67 @@ import {
 import { usePolledData } from '@/lib/polling';
 // Fase 4 (pruebas): lógica pura extraída a ui-logic.ts (misma semántica, testeable sin React).
 import { PAGE_SIZE, parseEur, paginate, validateReceiver as validateReceiverPure } from '@/lib/ui-logic';
+import ThemeToggle from '@/components/ThemeToggle';
 
 type Toast = { kind: 'ok' | 'error' | 'warn'; msg: string };
+
+/* ----------------------------- átomos de UI ------------------------------ */
+
+function BtnPrimary({ children, className = '', ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...rest}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 font-medium text-on-brand shadow-card transition-colors duration-150 hover:bg-primary-hover active:bg-brand-active disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function BtnSecondary({ children, className = '', ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...rest}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-line-strong bg-raised px-4 font-medium text-ink transition-colors duration-150 hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function BtnDanger({ children, className = '', ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...rest}
+      className={`inline-flex min-h-9 items-center justify-center rounded-md bg-err px-3 text-sm font-medium text-on-err transition-colors duration-150 hover:brightness-90 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Card({ id, title, children, action }: { id?: string; title: React.ReactNode; children: React.ReactNode; action?: React.ReactNode }) {
+  return (
+    <section aria-labelledby={id} className="mb-6 rounded-card border border-line bg-surface p-6 shadow-card">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h2 id={id} className="text-h3 text-ink">{title}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      className={`min-h-11 w-full rounded-md border border-line-strong bg-raised px-3 py-2 text-ink placeholder:text-ink-disabled transition-colors duration-150 focus:border-brand ${props.className ?? ''}`}
+    />
+  );
+}
+
+/* ------------------------------ organismo ------------------------------ */
 
 export default function Dashboard() {
   const [account, setAccount] = useState<string | null>(null);
@@ -206,168 +267,248 @@ export default function Dashboard() {
   const freeEurx = info ? (() => { const locked = info.depositTotal + owedBal; return realBal > locked ? realBal - locked : 0n; })() : realBal;
   const flows = useMemo(() => data?.flows ?? [], [data]);
   const ageSec = poll.lastUpdated ? Math.round((Date.now() - poll.lastUpdated) / 1000) : null;
+  const flowing = !!info && info.netFlowRate !== 0n;
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8" aria-busy={!!busy}>
-      {/* RNF-12: disclaimer visible sin scroll */}
-      <header className="mb-6 rounded-lg border-2 border-amber-500 bg-amber-50 p-3 text-sm text-amber-900" role="note">
-        <strong>Tokens de prueba sin valor ni respaldo.</strong> Red educativa privada CodeCrypto
-        (chainId {CHAIN.chainId}). Prohibido su uso para pagos reales. Proyecto en <em>beta</em>.
-      </header>
-
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Superfluid EUR Streaming <span className="text-base font-normal text-gray-600">(token de prueba)</span></h1>
-        {account ? (
-          <span className="rounded bg-gray-800 px-3 py-1 text-sm text-white font-mono" aria-label="cuenta conectada">{account.slice(0, 10)}…{account.slice(-6)}</span>
-        ) : (
-          <button onClick={onConnect} className="rounded bg-blue-700 px-4 py-2 text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400">
-            Conectar MetaMask ({CHAIN.name})
-          </button>
-        )}
+    <div className="min-h-dvh">
+      {/* barra superior fija con marca (glass) */}
+      <div className="sticky top-0 z-40 border-b border-divider bg-[var(--sf-glass)] backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+          <div className="flex items-center gap-3">
+            {/* logo: tres gotas de flujo, decorativo */}
+            <span aria-hidden="true" className="grid h-9 w-9 place-items-center rounded-pill bg-gradient-to-br from-[var(--sf-brand)] to-[#0d9488] text-on-brand">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M4 8c4-3 6 3 10 0M4 14c4-3 6 3 10 0M4 20c4-3 6 3 10 0" transform="translate(3 -6)" />
+              </svg>
+            </span>
+            <p className="text-body-lg font-semibold tracking-tight">Superfluid <span className="text-brand">EUR</span>
+              <span className="ml-2 rounded-pill bg-brand-subtle px-2 py-0.5 text-caption font-medium text-brand-subtle-ink">BETA educativa</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            {account ? (
+              <span className="rounded-pill border border-line bg-sunken px-3 py-1.5 text-body-sm font-medium text-ink-2 tnum" aria-label="cuenta conectada">
+                {account.slice(0, 10)}…{account.slice(-6)}
+              </span>
+            ) : (
+              <BtnPrimary onClick={onConnect}>Conectar MetaMask ({CHAIN.name})</BtnPrimary>
+            )}
+          </div>
+        </div>
       </div>
 
-      {wrongNet && (
-        <p className="mb-4 rounded bg-red-100 p-2 text-red-800" role="alert">
-          Estás en otra red. Cambia a Codecrypto (chainId {CHAIN.chainId}) en MetaMask para operar. Las acciones están bloqueadas.
-        </p>
-      )}
+      <main aria-busy={!!busy} className="mx-auto max-w-5xl px-4 pb-16 pt-6">
+        {/* RNF-12: disclaimer visible sin scroll */}
+        <header role="note" className="mb-6 flex items-start gap-3 rounded-card border border-info/40 bg-info-bg p-4 text-body-sm text-info">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0">
+            <circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v4h1" strokeLinecap="round" />
+          </svg>
+          <p>
+            <strong>Tokens de prueba sin valor ni respaldo.</strong> Red educativa privada CodeCrypto
+            (chainId {CHAIN.chainId}). Prohibido su uso para pagos reales. Proyecto en <em>beta</em>.
+          </p>
+        </header>
 
-      {!account && (
-        <p className="mb-4 text-gray-700" role="status">Modo solo lectura: conecta una wallet para envolver, crear o gestionar flujos.</p>
-      )}
+        <h1 className="sr-only">Superfluid EUR Streaming (token de prueba)</h1>
 
-      {poll.error && !toast && (
-        <div role="alert" className="mb-4 flex items-center justify-between rounded bg-red-100 p-3 text-red-900">
-          <span>Problema de conexión con la red RPC (último sondeo falló).</span>
-          <button onClick={poll.refreshNow} className="rounded border border-red-700 px-2 py-0.5 text-xs">Reintentar ahora</button>
-        </div>
-      )}
+        {wrongNet && (
+          <p role="alert" className="mb-4 rounded-card border border-err/40 bg-err-bg p-4 text-body-sm text-err-ink">
+            Estás en otra red. Cambia a Codecrypto (chainId {CHAIN.chainId}) en MetaMask para operar. Las acciones están bloqueadas.
+          </p>
+        )}
 
-      {toast && (
-        <div role="alert" aria-live="assertive" className={`mb-4 rounded p-3 ${toast.kind === 'ok' ? 'bg-green-100 text-green-900' : toast.kind === 'warn' ? 'bg-yellow-100 text-yellow-900' : 'bg-red-100 text-red-900'}`}>
-          {toast.msg}
-        </div>
-      )}
+        {!account && (
+          <p role="status" className="mb-4 rounded-card bg-sunken p-3 text-body-sm text-ink-2">
+            Modo solo lectura: conecta una wallet para envolver, crear o gestionar flujos.
+          </p>
+        )}
 
-      {/* Balances en tiempo real (CU-04) */}
-      <section aria-labelledby="balances" className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <h2 id="balances" className="sr-only">Balances en tiempo real</h2>
-        <Stat label="EUR (ERC20)" value={formatEur(eurBal)} />
-        <Stat label="EURx custodiado" value={formatEur(realBal)} />
-        <Stat label="EURx desenvolvible" value={formatEur(freeEurx)} hint="saldo libre tras depósitos" />
-        <Stat label="Net rate" value={info ? `${info.netFlowRate > 0n ? '+' : ''}${formatEur(info.netFlowRate)}/s` : '—'} hint={poll.degraded ? `conexión degradada · reintento ${Math.round(poll.intervalMs / 1000)} s${ageSec !== null ? ` · datos de hace ${ageSec}s` : ''}` : `refresco ${Math.round(poll.intervalMs / 1000)} s${ageSec !== null ? ` · hace ${ageSec}s` : ''}`} />
-      </section>
-
-      {info && (info.pendingDeficit > 0n || info.netOutflowGarantizado < 0n) && (
-        <div role="status" className="mb-4 rounded bg-purple-50 p-3 text-sm text-purple-900">
-          Cuentas con déficit impago de {formatEur(info.pendingDeficit)} EURx por liquidaciones previas
-          (settled {new Date(Number(info.settledUpTo) * 1000).toLocaleString()}). Tus receptores pueden reclamar hasta cubrirlo; considera envolver más EUR o cerrar flujos.
-        </div>
-      )}
-
-      {/* Wrap / unwrap (CU-01/02) */}
-      {account && (
-        <section aria-labelledby="wrap-h" className="mb-8 rounded-lg border p-4">
-          <h2 id="wrap-h" className="mb-3 font-semibold">Envolver / Desenvolver (1:1)</h2>
-          <div className="flex flex-wrap gap-3 items-end">
-            <Field id="wrap-amt" label="EUR a envolver">
-              <input id="wrap-amt" inputMode="decimal" value={wrapInput} onChange={(e) => setWrapInput(e.target.value)} className="w-36 rounded border px-2 py-1" aria-label="cantidad EUR a envolver" />
-            </Field>
-            <button disabled={!!busy} onClick={doWrap} className="rounded bg-blue-700 px-3 py-1.5 text-white disabled:opacity-50">{busy === 'wrap' ? '…' : 'Upgrade → EURx'}</button>
-            <Field id="unwrap-amt" label="EURx a desenvolver">
-              <input id="unwrap-amt" inputMode="decimal" value={unwrapInput} onChange={(e) => setUnwrapInput(e.target.value)} className="w-36 rounded border px-2 py-1" aria-label="cantidad EURx a desenvolver" />
-            </Field>
-            <button disabled={!!busy} onClick={doUnwrap} className="rounded bg-slate-700 px-3 py-1.5 text-white disabled:opacity-50">{busy === 'unwrap' ? '…' : 'Downgrade → EUR'}</button>
+        {poll.error && !toast && (
+          <div role="alert" className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-card border border-err/40 bg-err-bg p-4 text-body-sm text-err-ink">
+            <span>Problema de conexión con la red RPC (último sondeo falló).</span>
+            <BtnSecondary onClick={poll.refreshNow} className="min-h-9 border-err/50 px-3 text-sm text-err-ink">Reintentar ahora</BtnSecondary>
           </div>
-        </section>
-      )}
+        )}
 
-      {/* Crear flujo (CU-03) */}
-      {account && !wrongNet && (
-        <section aria-labelledby="new-flow-h" className="mb-8 rounded-lg border p-4">
-          <h2 id="new-flow-h" className="mb-3 font-semibold">Nuevo stream · 2000 EUR/mes (rate fijo v1)</h2>
-          <div className="flex flex-wrap gap-3 items-end">
-            <Field id="receiver" label="Dirección destinataria">
-              <input id="receiver" value={receiverInput} onChange={(e) => setReceiverInput(e.target.value)} placeholder="0x…" className="w-96 rounded border px-2 py-1 font-mono text-sm" aria-label="dirección Ethereum del destinatario" />
-            </Field>
-            <button disabled={!!busy} onClick={doCreateFlow} className="rounded bg-green-700 px-3 py-1.5 text-white disabled:opacity-50">Crear flujo</button>
+        {toast && (
+          <div
+            role="alert"
+            aria-live="assertive"
+            className={`fixed bottom-5 left-1/2 z-50 w-[min(92vw,32rem)] -translate-x-1/2 rounded-card border p-4 text-body-sm shadow-toast ${
+              toast.kind === 'ok' ? 'border-ok/40 bg-ok-bg text-ok' : toast.kind === 'warn' ? 'border-warn/40 bg-warn-bg text-warn' : 'border-err/40 bg-err-bg text-err-ink'
+            }`}
+          >
+            {toast.msg}
           </div>
-        </section>
-      )}
+        )}
 
-      {/* Mis streams (CU-05/06) paginación 10/página (D13/RE-03b) */}
-      <FlowTable busy={busy} flows={flows} onAction={(op, r) => {
-        if (op === 'pause') doPause(r); else if (op === 'resume') doResume(r); else if (op === 'close') doClose(r);
-      }} />
-
-      {/* Recibidos (CU-08) */}
-      {account && (
-        <section aria-labelledby="recv-h" className="mb-8 rounded-lg border p-4">
-          <h2 id="recv-h" className="mb-2 font-semibold">Recibidos — flujos entrantes</h2>
-          {knownSenders.length === 0 ? (
-            <p className="text-sm text-gray-600" role="status">Sin emisores detectados en esta sesión (v1 usa eventos de la sesión; no hay índice inverso global).</p>
+        {/* Balances en tiempo real (CU-04) */}
+        <section aria-labelledby="balances" className="mb-8">
+          <h2 id="balances" className="mb-3 flex items-center gap-2 text-h2">
+            Balances
+            {flowing && <span aria-hidden="true" className="sf-flow-dot" />}
+            {flowing && <span className="text-caption font-medium text-ok">fluyendo</span>}
+          </h2>
+          {account && !data ? (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4" role="status" aria-label="Cargando balances">
+              {[0, 1, 2, 3].map((i) => <div key={i} className="sf-skeleton h-24" />)}
+            </div>
           ) : (
-            <ul className="space-y-1 text-sm">
-              {knownSenders.map((s, i) => (
-                <li key={s} className="flex justify-between rounded bg-gray-50 px-2 py-1">
-                  <span className="font-mono">{s.slice(0, 10)}…{s.slice(-6)}</span>
-                  <span>{formatEur(data?.perSender?.[i] ?? 0n)} EURx exigibles</span>
-                  <button disabled={!!busy || (data?.perSender?.[i] ?? 0n) === 0n} onClick={() => doClaim(s)} className="rounded bg-indigo-700 px-2 py-0.5 text-white disabled:opacity-50">Reclamar</button>
-                </li>
-              ))}
-            </ul>
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              <Stat label="EUR (ERC20)" value={formatEur(eurBal)} />
+              <Stat label="EURx custodiado" value={formatEur(realBal)} />
+              <Stat label="EURx desenvolvible" value={formatEur(freeEurx)} hint="saldo libre tras depósitos" />
+              <Stat
+                label="Net rate"
+                value={info ? `${info.netFlowRate > 0n ? '+' : ''}${formatEur(info.netFlowRate)}/s` : '—'}
+                tone={info ? (info.netFlowRate < 0n ? 'err' : info.netFlowRate > 0n ? 'ok' : 'neutral') : 'neutral'}
+                hint={poll.degraded
+                  ? `conexión degradada · reintento ${Math.round(poll.intervalMs / 1000)} s${ageSec !== null ? ` · datos de hace ${ageSec}s` : ''}`
+                  : `refresco ${Math.round(poll.intervalMs / 1000)} s${ageSec !== null ? ` · hace ${ageSec}s` : ''}`}
+              />
+            </div>
           )}
         </section>
-      )}
 
-      {/* Keeper: settle propio si insolvencia (CU-07) */}
-      {account && (
-        <details className="mb-8 rounded border p-3 text-sm">
-          <summary className="cursor-pointer font-medium">Avanzado · liquidación por insolvencia (pull)</summary>
-          <p className="my-2 text-gray-700">Si tu saldo virtual se agota, cualquier cuenta puede llamar <code>settle()</code>; tus receptores reclaman después. Puedes probarlo sobre tu propia cuenta:</p>
-          <button disabled={!!busy} onClick={doSettleFor} className="rounded bg-red-700 px-3 py-1 text-white disabled:opacity-50">settle(mí)</button>
-        </details>
-      )}
+        {info && (info.pendingDeficit > 0n || info.netOutflowGarantizado < 0n) && (
+          <div role="status" className="mb-6 rounded-card border border-warn/40 bg-warn-bg p-4 text-body-sm text-warn">
+            Cuentas con déficit impago de {formatEur(info.pendingDeficit)} EURx por liquidaciones previas
+            (settled {new Date(Number(info.settledUpTo) * 1000).toLocaleString()}). Tus receptores pueden reclamar hasta cubrirlo; considera envolver más EUR o cerrar flujos.
+          </div>
+        )}
 
-      {/* Modal irrevocabilidad (D15) */}
-      {showIrrevocableModal && (
-        <div role="dialog" aria-modal="true" aria-labelledby="irrev-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-w-md rounded-lg bg-white p-5">
-            <h3 id="irrev-title" className="mb-2 font-bold">Confirmación de destino irreversible</h3>
-            <p className="mb-4 text-sm">Vas a enviar <strong>tokens de prueba</strong> continuamente a <span className="font-mono break-all">{receiverInput}</span>. Si la dirección es incorrecta o corresponde a un contrato sin soporte, los EURx podrán quedar atrapados de forma irrecuperable en esta beta educativa.</p>
-            <div className="flex justify-end gap-2">
-              <button disabled={!!busy} onClick={() => setShowIrrevocableModal(false)} className="rounded border px-3 py-1.5 disabled:opacity-50">Cancelar</button>
-              <button disabled={!!busy} onClick={confirmCreateFlow} className="rounded bg-green-700 px-3 py-1.5 text-white disabled:opacity-50">Entendido, crear flujo</button>
+        {/* Envolver / desenvolver (CU-01/02) */}
+        {account && (
+          <Card id="wrap-h" title="Envolver / Desenvolver (1:1)">
+            <div className="flex flex-wrap items-end gap-3">
+              <Field id="wrap-amt" label="EUR a envolver">
+                <Input id="wrap-amt" inputMode="decimal" value={wrapInput} onChange={(e) => setWrapInput(e.target.value)} className="w-40" aria-label="cantidad EUR a envolver" />
+              </Field>
+              <BtnPrimary disabled={!!busy} onClick={doWrap}>{busy === 'wrap' ? '…' : 'Upgrade → EURx'}</BtnPrimary>
+              <Field id="unwrap-amt" label="EURx a desenvolver">
+                <Input id="unwrap-amt" inputMode="decimal" value={unwrapInput} onChange={(e) => setUnwrapInput(e.target.value)} className="w-40" aria-label="cantidad EURx a desenvolver" />
+              </Field>
+              <BtnSecondary disabled={!!busy || wrongNet} onClick={doUnwrap}>{busy === 'unwrap' ? '…' : 'Downgrade → EUR'}</BtnSecondary>
+            </div>
+          </Card>
+        )}
+
+        {/* Nuevo stream (CU-03) */}
+        {account && !wrongNet && (
+          <Card id="new-flow-h" title={<>Nuevo stream <span className="text-body-sm font-normal text-ink-2">· 2000 EUR/mes (rate fijo v1)</span></>}>
+            <div className="flex flex-wrap items-end gap-3">
+              <Field id="receiver" label="Dirección destinataria" className="grow">
+                <Input
+                  id="receiver" value={receiverInput} onChange={(e) => setReceiverInput(e.target.value)} placeholder="0x…"
+                  className="max-w-lg font-mono text-body-sm" aria-label="dirección Ethereum del destinatario"
+                />
+              </Field>
+              <BtnPrimary disabled={!!busy} onClick={doCreateFlow}>Crear flujo</BtnPrimary>
+            </div>
+          </Card>
+        )}
+
+        {/* Mis streams (CU-05/06) paginación 10/página (D13/RE-03b) */}
+        <FlowTable busy={busy} flows={flows} onAction={(op, r) => {
+          if (op === 'pause') doPause(r); else if (op === 'resume') doResume(r); else if (op === 'close') doClose(r);
+        }} />
+
+        {/* Recibidos (CU-08) */}
+        {account && (
+          <Card id="recv-h" title="Recibidos — flujos entrantes">
+            {knownSenders.length === 0 ? (
+              <EmptyState>
+                Sin emisores detectados en esta sesión (v1 usa eventos de la sesión; no hay índice inverso global).
+              </EmptyState>
+            ) : (
+              <ul className="space-y-2">
+                {knownSenders.map((s, i) => (
+                  <li key={s} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-sunken px-4 py-3 text-body-sm">
+                    <span className="font-mono text-ink-2">{s.slice(0, 10)}…{s.slice(-6)}</span>
+                    <span className="tnum text-ink">{formatEur(data?.perSender?.[i] ?? 0n)} EURx exigibles</span>
+                    <BtnSecondary disabled={!!busy || (data?.perSender?.[i] ?? 0n) === 0n} onClick={() => doClaim(s)} className="min-h-9 px-3 text-sm">
+                      Reclamar
+                    </BtnSecondary>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        )}
+
+        {/* Keeper: settle propio si insolvencia (CU-07) */}
+        {account && (
+          <details className="mb-6 rounded-card border border-line bg-surface p-4 text-body-sm">
+            <summary className="cursor-pointer select-none font-medium text-ink-2">Avanzado · liquidación por insolvencia (pull)</summary>
+            <p className="my-3 text-ink-2">
+              Si tu saldo virtual se agota, cualquier cuenta puede llamar <code className="rounded bg-sunken px-1.5 py-0.5 font-mono text-caption">settle()</code>;
+              tus receptores reclaman después. Puedes probarlo sobre tu propia cuenta:
+            </p>
+            <BtnDanger disabled={!!busy} onClick={doSettleFor}>settle(mí)</BtnDanger>
+          </details>
+        )}
+
+        {/* Modal irrevocabilidad (D15) */}
+        {showIrrevocableModal && (
+          <div role="dialog" aria-modal="true" aria-labelledby="irrev-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-card border border-line bg-surface p-6 shadow-pop">
+              <h3 id="irrev-title" className="mb-2 text-h3">Confirmación de destino irreversible</h3>
+              <p className="mb-5 text-body-sm text-ink-2">
+                Vas a enviar <strong className="text-ink">tokens de prueba</strong> continuamente a{' '}
+                <span className="break-all font-mono text-caption text-ink">{receiverInput}</span>. Si la dirección es
+                incorrecta o corresponde a un contrato sin soporte, los EURx podrán quedar atrapados de forma
+                irrecuperable en esta beta educativa.
+              </p>
+              <div className="flex justify-end gap-2">
+                <BtnSecondary disabled={!!busy} onClick={() => setShowIrrevocableModal(false)}>Cancelar</BtnSecondary>
+                <BtnPrimary disabled={!!busy} onClick={confirmCreateFlow}>Entendido, crear flujo</BtnPrimary>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <footer className="border-t pt-4 text-xs text-gray-600">
-        Red {CHAIN.name} · chainId {CHAIN.chainId} · EUR {CONTRACTS.EUR} · EURx {CONTRACTS.EURx} ·{' '}
-        <a href="https://faucet.codecrypto.academy/" className="underline">faucet CC</a> ·{' '}
-        <a href="https://gitlab.com/anlucorporations/superfluid" className="underline">código MIT</a>
-      </footer>
-    </main>
-  );
-}
-
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="rounded-lg border bg-white p-3 shadow-sm">
-      <p className="text-xs uppercase tracking-wide text-gray-600">{label}</p>
-      <p className="mt-1 text-xl font-semibold tabular-nums" aria-label={`${label}: ${value}`}>{value}</p>
-      {hint && <p className="mt-0.5 text-[11px] text-gray-500">{hint}</p>}
+        <footer className="border-t border-divider pt-5 text-caption text-ink-3">
+          Red {CHAIN.name} · chainId {CHAIN.chainId} · EUR <span className="font-mono">{CONTRACTS.EUR.slice(0, 10)}…{CONTRACTS.EUR.slice(-6)}</span> · EURx <span className="font-mono">{CONTRACTS.EURx.slice(0, 10)}…{CONTRACTS.EURx.slice(-6)}</span> ·{' '}
+          <a href="https://faucet.codecrypto.academy/" className="font-medium text-brand underline-offset-2 hover:underline">faucet CC</a>{' · '}
+          <a href="https://gitlab.com/anlucorporations/superfluid" className="font-medium text-brand underline-offset-2 hover:underline">código MIT</a>
+        </footer>
+      </main>
     </div>
   );
 }
 
-function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
+/* ------------------------------ moléculas ------------------------------ */
+
+function Stat({ label, value, hint, tone = 'neutral' }: { label: string; value: string; hint?: string; tone?: 'neutral' | 'ok' | 'err' }) {
   return (
-    <div>
-      <label htmlFor={id} className="mb-1 block text-xs font-medium text-gray-700">{label}</label>
+    <div className="rounded-card border border-line bg-raised p-4 shadow-card">
+      <p className="text-caption font-medium uppercase tracking-wide text-ink-3">{label}</p>
+      <p
+        className={`mt-1 text-body-lg font-semibold tnum ${tone === 'ok' ? 'text-ok' : tone === 'err' ? 'text-err' : 'text-ink'}`}
+        aria-label={`${label}: ${value}`}
+      >
+        {value}
+      </p>
+      {hint && <p className="mt-1 text-caption text-ink-3">{hint}</p>}
+    </div>
+  );
+}
+
+function Field({ id, label, children, className = '' }: { id: string; label: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={className}>
+      <label htmlFor={id} className="mb-1.5 block text-caption font-medium text-ink-2">{label}</label>
       {children}
     </div>
+  );
+}
+
+function EmptyState({ children }: { children: React.ReactNode }) {
+  return (
+    <p role="status" className="rounded-lg border border-dashed border-line-strong bg-sunken px-4 py-6 text-center text-body-sm text-ink-2">
+      {children}
+    </p>
   );
 }
 
@@ -383,51 +524,71 @@ function FlowTable({ busy, flows, onAction }: {
   const slice = pg.slice;
 
   return (
-    <section aria-labelledby="flows-h" className="mb-8">
-      <h2 id="flows-h" className="mb-2 font-semibold">Mis streams salientes ({flows.length})</h2>
+    <Card
+      id="flows-h"
+      title={`Mis streams salientes (${flows.length})`}
+    >
       {flows.length === 0 ? (
-        <p className="text-sm text-gray-600" role="status">Sin flujos activos.</p>
+        <EmptyState>
+          Sin flujos activos. Crea tu primer stream arriba: se enviarán 2000 EUR de prueba al mes, gota a gota.
+        </EmptyState>
       ) : (
         <>
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b bg-gray-50 text-left">
-                <th scope="col" className="p-2">Destino</th>
-                <th scope="col" className="p-2">Rate (EURx/s)</th>
-                <th scope="col" className="p-2">Estado</th>
-                <th scope="col" className="p-2">Acumulado</th>
-                <th scope="col" className="p-2">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {slice.map((f) => (
-                <tr key={f.receiver} className="border-b">
-                  <td className="p-2 font-mono">{f.receiver.slice(0, 10)}…{f.receiver.slice(-6)}</td>
-                  <td className="p-2 tabular-nums">{formatEur(f.flowRate)}</td>
-                  <td className="p-2">
-                    <span className={f.status === 1 ? 'text-green-800' : f.status === 2 ? 'text-yellow-800' : 'text-gray-700'}>
-                      {f.status === 1 ? 'Activo' : f.status === 2 ? 'Pausado (retiene depósito)' : 'Cerrado'}
-                    </span>
-                  </td>
-                  <td className="p-2 tabular-nums" aria-label={`devengo virtual ${formatEur(f.virtualDevengo)} EURx`}>{formatEur(f.virtualDevengo)}</td>
-                  <td className="space-x-1 p-2">
-                    {f.status === 1 && <button disabled={!!busy} onClick={() => onAction('pause', f.receiver)} className="rounded bg-amber-800 px-2 py-0.5 text-white disabled:opacity-50">Pausar</button>}
-                    {f.status === 2 && <button disabled={!!busy} onClick={() => onAction('resume', f.receiver)} className="rounded bg-green-700 px-2 py-0.5 text-white disabled:opacity-50">Reanudar</button>}
-                    {(f.status === 1 || f.status === 2) && <button disabled={!!busy} onClick={() => onAction('close', f.receiver)} className="rounded bg-red-700 px-2 py-0.5 text-white disabled:opacity-50">Cerrar</button>}
-                  </td>
+          <div className="overflow-x-auto rounded-lg border border-divider">
+            <table className="w-full border-collapse text-body-sm">
+              <thead>
+                <tr className="bg-sunken text-left">
+                  <th scope="col" className="p-3 font-medium text-ink-2">Destino</th>
+                  <th scope="col" className="p-3 font-medium text-ink-2">Rate (EURx/s)</th>
+                  <th scope="col" className="p-3 font-medium text-ink-2">Estado</th>
+                  <th scope="col" className="p-3 font-medium text-ink-2">Acumulado</th>
+                  <th scope="col" className="p-3 font-medium text-ink-2">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {slice.map((f) => (
+                  <tr key={f.receiver} className="border-t border-divider">
+                    <td className="p-3 font-mono text-ink">{f.receiver.slice(0, 10)}…{f.receiver.slice(-6)}</td>
+                    <td className="p-3 tnum text-ink-2">{formatEur(f.flowRate)}</td>
+                    <td className="p-3">
+                      <StatusPill status={f.status} />
+                    </td>
+                    <td className="p-3 tnum text-ink" aria-label={`devengo virtual ${formatEur(f.virtualDevengo)} EURx`}>{formatEur(f.virtualDevengo)}</td>
+                    <td className="space-x-1.5 p-3">
+                      {f.status === 1 && <BtnSecondary disabled={!!busy} onClick={() => onAction('pause', f.receiver)} className="min-h-9 px-3 text-sm">Pausar</BtnSecondary>}
+                      {f.status === 2 && <BtnPrimary disabled={!!busy} onClick={() => onAction('resume', f.receiver)} className="min-h-9 px-3 text-sm">Reanudar</BtnPrimary>}
+                      {(f.status === 1 || f.status === 2) && <BtnDanger disabled={!!busy} onClick={() => onAction('close', f.receiver)}>Cerrar</BtnDanger>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           {pages > 1 && (
-            <nav aria-label="paginación de streams" className="mt-2 flex items-center gap-2 text-sm">
-              <button disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="rounded border px-2 py-0.5 disabled:opacity-40">← Anterior</button>
-              <span>página {page + 1}/{pages}</span>
-              <button disabled={page >= pages - 1} onClick={() => setPage((p) => p + 1)} className="rounded border px-2 py-0.5 disabled:opacity-40">Siguiente →</button>
+            <nav aria-label="paginación de streams" className="mt-4 flex items-center gap-3 text-body-sm text-ink-2">
+              <BtnSecondary disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="min-h-9 px-3 text-sm">← Anterior</BtnSecondary>
+              <span className="tnum">página {pg.page + 1}/{pages}</span>
+              <span className="text-ink-3 tnum">· mostrando {pg.from}–{pg.to} de {flows.length}</span>
+              <BtnSecondary disabled={page >= pages - 1} onClick={() => setPage((p) => p + 1)} className="min-h-9 px-3 text-sm">Siguiente →</BtnSecondary>
             </nav>
           )}
         </>
       )}
-    </section>
+    </Card>
   );
+}
+
+/** Badge de estado del flujo (semántica inalterada: mismos textos para E2E). */
+function StatusPill({ status }: { status: number }) {
+  if (status === 1) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-pill bg-ok-bg px-2.5 py-1 text-caption font-medium text-ok">
+        <span aria-hidden="true" className="sf-flow-dot !h-2 !w-2" />Activo
+      </span>
+    );
+  }
+  if (status === 2) {
+    return <span className="inline-flex items-center gap-1.5 rounded-pill bg-warn-bg px-2.5 py-1 text-caption font-medium text-warn">Pausado (retiene depósito)</span>;
+  }
+  return <span className="inline-flex items-center gap-1.5 rounded-pill bg-sunken px-2.5 py-1 text-caption font-medium text-ink-3">Cerrado</span>;
 }
