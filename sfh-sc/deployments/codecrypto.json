@@ -1,0 +1,11 @@
+{
+  "network": "Codecrypto-Besu",
+  "networkId": 81234,
+  "chainId": 81234,
+  "timestamp": 1792248275,
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "BRLT": "0x99aA73dA6309b8eC484eF2C95e96C131C1BBF7a0",
+  "FACTORY": "0x98721EFD3D09A7Ae662C4D63156286DF673FC50B",
+  "BRLTx": "0x6540b8f49168c6896d85f05b5ca8AdAaaEB65be0",
+  "flowRateWeiPerSec": "500000000000000"
+}

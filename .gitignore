@@ -34,6 +34,12 @@ coverage/
 *.log
 .DS_Store
 
+## Python (sfh-chr y utilidades)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
 ## GCP (credenciales si se añaden localmente)
 *.credentials.json
 service-account*.json

@@ -1,0 +1,242 @@
+openapi: 3.0.3
+info:
+  title: SFhostpot Orchestrator API
+  version: 1.0.0
+  description: |
+    API v1 congelada al inicio de H2 (D48). Prefijo `/v1/...`.
+    - `POST /v1/internal/hotspot/bind`: canal autenticado NAS→API (HMAC, D45/V2-01).
+    - `POST /v1/portal/sessions`: alta de sesión de portal con `bind_token` y aviso aceptado (D52).
+    - `POST /v1/session/authorize`: responde **202** y encola validación durable en Cloud Tasks (D44).
+    - `/pause` y `/resume`: pausa revoca; reanudar reautoriza (D22/D48).
+servers:
+  - url: http://localhost:8080
+paths:
+  /healthz:
+    get:
+      summary: Liveness
+      responses:
+        '200': { description: OK }
+  /readyz:
+    get:
+      summary: Readiness (protegido por API key)
+      security: [{ ApiKeyAuth: [] }]
+      responses:
+        '200': { description: OK }
+        '503': { description: DB no disponible }
+  /v1/internal/hotspot/bind:
+    post:
+      summary: Alta de identidad de red firmada por el NAS
+      parameters:
+        - { name: X-Gateway-Id, in: header, required: true, schema: { type: string } }
+        - { name: X-Gateway-Signature, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mac, ip, ts, nonce]
+              properties:
+                mac: { type: string }
+                ip: { type: string }
+                ts: { type: integer }
+                nonce: { type: string }
+      responses:
+        '200':
+          description: bind_token emitido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bind_token: { type: string }
+                  expires_in: { type: integer }
+        '403': { description: Firma inválida, timestamp caducado o nonce reutilizado }
+  /v1/portal/sessions:
+    post:
+      summary: Crea la portal_session (requiere bind_token y aviso aceptado)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [notice_version, notice_accepted_at]
+              properties:
+                user_agent: { type: string }
+                notice_version: { type: string }
+                notice_accepted_at: { type: string, format: date-time }
+      responses:
+        '200': { description: Sesión creada }
+        '409': { description: privacy_notice_missing }
+  /v1/session/authorize:
+    post:
+      summary: Solicita acceso (202 + validación durable en Cloud Tasks)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [portal_session_id, device_binding_id, tx_hash, flow_rate_wei_s]
+              properties:
+                portal_session_id: { type: string, format: uuid }
+                device_binding_id: { type: string, format: uuid }
+                tx_hash: { type: string, pattern: '^0x[0-9a-fA-F]{64}$' }
+                flow_rate_wei_s: { type: string, pattern: '^[0-9]+$' }
+      responses:
+        '202':
+          description: Aceptada; el worker valida y autoriza
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id: { type: string }
+                  status: { type: string, enum: [pending] }
+                  oracle: { type: string, enum: [visible, receipt] }
+        '422': { description: rate_below_tariff }
+  /v1/session/{id}:
+    get:
+      summary: Estado de la sesión
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Sesión }
+        '404': { description: No encontrada }
+  /v1/session/pause:
+    post:
+      summary: Pausa = revoca la sesión y sus hijos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id]
+              properties:
+                session_id: { type: string, format: uuid }
+      responses:
+        '200': { description: revocada/degradada }
+  /v1/session/resume:
+    post:
+      summary: Reanudar = reautoriza (202)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id]
+              properties:
+                session_id: { type: string, format: uuid }
+      responses:
+        '202': { description: Reautorización encolada }
+  /v1/vouchers:
+    post:
+      summary: Genera un voucher hijo ligado a la sesión padre
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [parent_session_id]
+              properties:
+                parent_session_id: { type: string, format: uuid }
+                max_children: { type: integer, minimum: 1, maximum: 10, default: 2 }
+                bandwidth_percent: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      responses:
+        '201':
+          description: Código generado (se muestra una sola vez)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  voucher_id: { type: string }
+                  code: { type: string }
+                  valid_to: { type: string, format: date-time }
+  /v1/vouchers/redeem:
+    post:
+      summary: Canje atómico de voucher por un equipo hijo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, portal_session_id, device_binding_id, mac, ip]
+              properties:
+                code: { type: string }
+                portal_session_id: { type: string, format: uuid }
+                device_binding_id: { type: string, format: uuid }
+                mac: { type: string }
+                ip: { type: string }
+      responses:
+        '201': { description: Hijo creado }
+        '409': { description: Voucher no válido, sin cupo o padre no vivo }
+  /v1/admin/gateways:
+    post:
+      summary: Alta de gateway (API key + rol admin/operator)
+      security: [{ ApiKeyAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, vendor, super_token_address]
+              properties:
+                name: { type: string }
+                vendor: { type: string, enum: [mikrotik_rest, radius, mock, generic] }
+                chain_id: { type: integer, default: 81234 }
+                super_token_address: { type: string, pattern: '^0x[0-9a-fA-F]{40}$' }
+                mgmt_url: { type: string }
+                radius_nas_ip: { type: string }
+      responses:
+        '201': { description: gateway_id }
+  /v1/admin/tariffs:
+    post:
+      summary: Alta de tarifa/plan (payout único, bandwidth base, cupo por padre)
+      security: [{ ApiKeyAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [gateway_id, name, price_per_second_wei, token_address, payout_wallet]
+              properties:
+                gateway_id: { type: string, format: uuid }
+                name: { type: string }
+                price_per_second_wei: { type: string }
+                token_address: { type: string }
+                payout_wallet: { type: string }
+                bandwidth_down_bps: { type: integer }
+                bandwidth_up_bps: { type: integer }
+                max_children_per_parent: { type: integer }
+      responses:
+        '201': { description: tariff_id }
+  /v1/admin/operators:
+    post:
+      summary: Alta de operador + API key (5 roles)
+      security: [{ ApiKeyAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, role]
+              properties:
+                username: { type: string }
+                email: { type: string }
+                role: { type: string, enum: [admin, operator, readonly, auditor, dpo] }
+      responses:
+        '201': { description: operador creado; API key visible una sola vez }
+components:
+  securitySchemes:
+    BearerAuth: { type: http, scheme: bearer }
+    ApiKeyAuth: { type: apiKey, in: header, name: X-Api-Key }

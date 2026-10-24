@@ -1,0 +1,11 @@
+# Evita subir artefactos locales a Cloud Build (el build usa el Dockerfile)
+.git/
+node_modules/
+dist/
+coverage/
+test/
+pruebas/
+*.log
+.env
+.env.*
+.gcloudignore

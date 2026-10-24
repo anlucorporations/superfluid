@@ -1,0 +1,21 @@
+# Cloud Build — imagen de la demo scripted (Playwright + wallet real)
+# Uso:
+#   gcloud builds submit sfh-demo --project=truekeate-main \
+#     --config=sfh-demo/cloudbuild.yaml --substitutions=_TAG=<tag>
+substitutions:
+  _REGION: europe-west1
+  _REPO: sfhostpot
+  _TAG: latest
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/demo:${_TAG}
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/demo:${_TAG}
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/demo:${_TAG}

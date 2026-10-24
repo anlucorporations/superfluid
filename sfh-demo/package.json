@@ -1,0 +1,17 @@
+{
+  "name": "sfh-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo scripted CU-01 (portal + wallet real + gateway emulado) para SFhostpot",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node demo.mjs"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
+    "pg": "^8.13.1",
+    "playwright": "1.49.1",
+    "viem": "^2.21.45"
+  }
+}

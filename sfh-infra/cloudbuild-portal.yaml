@@ -1,0 +1,35 @@
+# Cloud Build — imagen del portal (Cloud Run)
+# Uso:
+#   gcloud builds submit sfh-portal --project=truekeate-main \
+#     --config=sfh-infra/cloudbuild-portal.yaml \
+#     --substitutions=_TAG=preview-YYYYMMDD,_API_URL=https://sfh-orchestrator-....run.app
+substitutions:
+  _REGION: europe-west1
+  _REPO: sfhostpot
+  _TAG: preview
+  _TAG: latest
+  _API_URL: http://localhost:8080
+  _RPC_URL: https://besu.alumnos.codecrypto.academy
+  _CHAIN_ID: "81234"
+  _BRLT_ADDRESS: "0x99aA73dA6309b8eC484eF2C95e96C131C1BBF7a0"
+  _BRLTX_ADDRESS: "0x6540b8f49168c6896d85f05b5ca8AdAaaEB65be0"
+  _PAYOUT_WALLET: ""
+  _PRICE_PER_SECOND_WEI: "500000000000000"
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/portal:${_TAG}
+      - --build-arg=NEXT_PUBLIC_API_URL=${_API_URL}
+      - --build-arg=NEXT_PUBLIC_RPC_URL=${_RPC_URL}
+      - --build-arg=NEXT_PUBLIC_CHAIN_ID=${_CHAIN_ID}
+      - --build-arg=NEXT_PUBLIC_BRLT_ADDRESS=${_BRLT_ADDRESS}
+      - --build-arg=NEXT_PUBLIC_BRLTX_ADDRESS=${_BRLTX_ADDRESS}
+      - --build-arg=NEXT_PUBLIC_PAYOUT_WALLET=${_PAYOUT_WALLET}
+      - --build-arg=NEXT_PUBLIC_PRICE_PER_SECOND_WEI=${_PRICE_PER_SECOND_WEI}
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/portal:${_TAG}']
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/portal:${_TAG}

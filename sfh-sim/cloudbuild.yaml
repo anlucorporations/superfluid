@@ -1,0 +1,22 @@
+# Cloud Build — imagen del entorno de pruebas MikroTik emulado (sfh-sim)
+# Uso:
+#   gcloud builds submit sfh-sim --project=truekeate-main \
+#     --config=sfh-sim/cloudbuild.yaml \
+#     --substitutions=_TAG=preview-YYYYMMDD
+substitutions:
+  _REGION: europe-west1
+  _REPO: sfhostpot
+  _TAG: latest
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/sim:${_TAG}
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/sim:${_TAG}
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/sim:${_TAG}

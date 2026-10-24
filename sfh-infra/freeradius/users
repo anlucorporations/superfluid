@@ -1,0 +1,5 @@
+# Autorización demo por MAC (MAB). En producción se genera desde el orquestador.
+02:00:00:00:00:01 Cleartext-Password := "02:00:00:00:00:01"
+    Session-Timeout = 3600,
+    WISPr-Bandwidth-Max-Down = 50000000,
+    WISPr-Bandwidth-Max-Up = 10000000

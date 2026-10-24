@@ -1,0 +1,66 @@
+# Overlay del entorno de pruebas MikroTik emulado (propuesta §5.2).
+#
+# Uso:
+#   docker compose -f sfh-infra/docker-compose.yml -f sfh-infra/docker-compose.sim.yml \
+#     --profile sim up -d --build
+#   docker compose -f sfh-infra/docker-compose.yml -f sfh-infra/docker-compose.sim.yml \
+#     --profile sim run --rm scenario-runner
+#
+# Gateway emulado con id fijo para que la config del orquestador y los escenarios coincidan.
+services:
+  routeros-sim:
+    build: ../sfh-sim
+    profiles: ['sim']
+    environment:
+      SFH_SIM_HOST: 0.0.0.0
+      SFH_SIM_PORT: '8728'
+      SFH_SIM_USER: sfh
+      SFH_SIM_PASSWORD: sfh-sim-password
+      SFH_SIM_ADMIN_TOKEN: sfh-sim-admin
+    ports: ['8728:8728']
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8728/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  nas-sim:
+    build: ../sfh-sim
+    profiles: ['sim']
+    command: ['node', 'nas-sim.mjs']
+    environment:
+      API_URL: http://orchestrator:8080
+      PORTAL_URL: http://localhost:3000
+      SFH_GATEWAY_ID: 11111111-1111-4111-8111-111111111111
+      SFH_GATEWAY_SECRET: sfh-sim-gw-secret
+      NAS_SIM_HOST: 0.0.0.0
+      NAS_SIM_PORT: '8081'
+    ports: ['8081:8081']
+    depends_on: [routeros-sim, orchestrator]
+
+  scenario-runner:
+    build: ../sfh-sim
+    profiles: ['sim']
+    command: ['node', 'scenario-runner/run.mjs']
+    environment:
+      API_URL: http://orchestrator:8080
+      PORTAL_URL: http://portal:3000
+      DATABASE_URL: postgresql://sfh:sfh_dev_password@postgres:5432/sfhostpot
+      SFH_SIM_URL: http://routeros-sim:8728
+      SFH_SIM_ADMIN_TOKEN: sfh-sim-admin
+      SFH_GATEWAY_ID: 11111111-1111-4111-8111-111111111111
+      SFH_GATEWAY_SECRET: sfh-sim-gw-secret
+    depends_on: [postgres, orchestrator, routeros-sim]
+
+  # El orquestador local apunta al emulador (no al mock).
+  orchestrator:
+    environment:
+      GATEWAY_RUNTIME_CONFIGS: >-
+        [{"id":"11111111-1111-4111-8111-111111111111","vendor":"mikrotik_rest",
+          "mikrotik":{"baseUrl":"http://routeros-sim:8728","username":"sfh",
+          "password":"sfh-sim-password","timeoutMs":2000,"addressList":"sfh-authorized"}}]
+      GATEWAY_HMAC_SECRETS: 11111111-1111-4111-8111-111111111111=sfh-sim-gw-secret
