@@ -1,0 +1,70 @@
+{
+  "snapshot": "20261024T0207Z",
+  "project": "truekeate-main",
+  "region": "southamerica-east1",
+  "git_commit": "69522615048e2fb18cfdb620a384875cc101c52b",
+  "services": {
+    "sfh-orchestrator": {
+      "url": "https://sfh-orchestrator-m33mjctj4a-rj.a.run.app",
+      "latest_ready_revision": "sfh-orchestrator-00010-ql2",
+      "image": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/orchestrator:preview-20261023-v6",
+      "image_digest_hint": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/orchestrator:preview-20261023-v6",
+      "traffic": [
+        {
+          "revision": "sfh-orchestrator-00010-ql2",
+          "percent": 100,
+          "latest": true
+        }
+      ],
+      "service_account": "sfh-orchestrator@truekeate-main.iam.gserviceaccount.com",
+      "cloudsql": null,
+      "image_digest": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/orchestrator@sha256:53ebd01526fc0809fca85375e7dfc6f321980d807c982dc49bab78d00a55056c"
+    },
+    "sfh-portal": {
+      "url": "https://sfh-portal-m33mjctj4a-rj.a.run.app",
+      "latest_ready_revision": "sfh-portal-00003-dcq",
+      "image": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/portal:preview-20261023-demo2",
+      "image_digest_hint": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/portal:preview-20261023-demo2",
+      "traffic": [
+        {
+          "revision": "sfh-portal-00003-dcq",
+          "percent": 100,
+          "latest": true
+        }
+      ],
+      "service_account": "593453426217-compute@developer.gserviceaccount.com",
+      "cloudsql": null,
+      "image_digest": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/portal@sha256:3ccb458ebab0a749c9bbbda3da9bdcdf949084e64d7e47ae1c165a5e5e82eab2"
+    },
+    "sfh-sim-routeros": {
+      "url": "https://sfh-sim-routeros-m33mjctj4a-rj.a.run.app",
+      "latest_ready_revision": "sfh-sim-routeros-00003-6dh",
+      "image": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/sim:preview-20261023-v3",
+      "image_digest_hint": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/sim:preview-20261023-v3",
+      "traffic": [
+        {
+          "revision": "sfh-sim-routeros-00003-6dh",
+          "percent": 100,
+          "latest": true
+        }
+      ],
+      "service_account": "593453426217-compute@developer.gserviceaccount.com",
+      "cloudsql": null,
+      "image_digest": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/sim@sha256:0c1f9a98f1714acf75b0fdf100d65507e9c6d9014b7d1e1ec25bfbbc7036e3cb"
+    }
+  },
+  "jobs": {
+    "sfh-demo": {
+      "image": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/demo:preview-20261023-v6"
+    },
+    "sfh-k6-load": {
+      "image": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/k6:preview-20261023-v5"
+    },
+    "sfh-sim-scenarios": {
+      "image": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/sim:preview-20261023-v3"
+    },
+    "sfh-smoke": {
+      "image": "europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/smoke:preview-20261019-v6"
+    }
+  }
+}

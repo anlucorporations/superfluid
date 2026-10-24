@@ -19,19 +19,27 @@ Pipeline: `sfh-infra/cloudbuild-orchestrator.yaml` y `sfh-infra/cloudbuild-porta
 `europe-west1-docker.pkg.dev/truekeate-main/sfhostpot/*`). Migraciones: `npm run migrate` como paso previo
 al deploy.
 
-### 1.1 Preview desplegado (2026-10-19)
+### 1.1 Preview desplegado (actualizado 2026-10-24)
 
 | Servicio | URL | Revisión | Acceso |
 |---|---|---|---|
-| API | `https://sfh-orchestrator-m33mjctj4a-rj.a.run.app` | `sfh-orchestrator-00004-vvn` | **Autenticado** (`roles/run.invoker`) |
-| Portal | `https://sfh-portal-m33mjctj4a-rj.a.run.app` | `sfh-portal-00001-dql` | **Autenticado** (`roles/run.invoker`) |
+| API | `https://sfh-orchestrator-m33mjctj4a-rj.a.run.app` | `sfh-orchestrator-00011-ktj` (imagen `orchestrator:preview-20261024-v1`) | **Autenticado** (`roles/run.invoker`) |
+| Portal | `https://sfh-portal-m33mjctj4a-rj.a.run.app` | `sfh-portal-00003-dcq` (imagen `portal:preview-20261023-demo2`) | **Autenticado** (`roles/run.invoker`) |
+| Emulador MikroTik | `https://sfh-sim-routeros-m33mjctj4a-rj.a.run.app` | `sfh-sim-routeros-00004-jps` (imagen `sim:preview-20261024-v1`) | **Autenticado** (`roles/run.invoker`) |
 
+- Despliegue 2026-10-24 (Fase D — adaptador CHR): nueva revisión del orquestador (address-list con
+  `PUT` y revocación completa) y del emulador (alineado con RouterOS real: `PUT` 201 / `POST` 400).
+  Antes del deploy se creó el **punto de rollback** `SFhostpot/rollback/20261024T0207Z`
+  (revisiones + digests pineados + backup on-demand de Cloud SQL) y el rollback se **probó**
+  moviendo tráfico a `sfh-orchestrator-00010-ql2` y volviendo. Ver [`rollback/README.md`](rollback/README.md).
 - Región `southamerica-east1`; Cloud SQL adjunto con `--add-cloudsql-instances`.
 - **El acceso público está bloqueado por la org policy `iam.allowedPolicyMemberDomains`**
   (`allUsers`/`allAuthenticatedUsers` no se pueden añadir). Para un preview público hace falta una
   excepción del operador de la organización (o IAP con load balancer).
 - Smoke E2E: `gcloud run jobs execute sfh-smoke --region=southamerica-east1 --wait`
-  (7/7 PASS; evidencia en [`pruebas/h6_preview_smoke.log`](pruebas/h6_preview_smoke.log)).
+  (**7/7 PASS** el 2026-10-24; la imagen se reconstruyó para corregir el parseo de
+  `sfhostpot-gateway-hmac`, que pasó a tener dos pares `gid=secret` y hacía que el bind firmara con
+  el gateway equivocado → 403). Evidencia: [`rollback/README.md`](rollback/README.md) §5.
 - **`/healthz` no es alcanzable desde fuera**: el frontend de Cloud Run (GFE) responde 404 para esa ruta
   en `*.run.app`. Usar el alias externo **`GET /health`** (el orquestador expone ambos).
 - Rate limit del preview: `RATE_LIMIT_MAX=1000`, `RATE_LIMIT_WINDOW_MS=60000` (el smoke hace varias

@@ -14,9 +14,29 @@ if (!API_URL || !PORTAL_URL || !API_KEY || !HMAC_RAW) {
   process.exit(2);
 }
 
-const eq = HMAC_RAW.indexOf('=');
-const gid = HMAC_RAW.slice(0, eq);
-const gatewaySecret = HMAC_RAW.slice(eq + 1);
+// El secreto `sfhostpot-gateway-hmac` contiene uno o varios pares
+// `gid=secret` separados por coma (uno por gateway configurado). El smoke debe
+// usar el gateway del preview (`GATEWAY_ID`, por defecto el de
+// `GATEWAY_RUNTIME_CONFIGS` del orquestador), no el primero de la lista: si se
+// añade otro gateway al secreto, un split ingenuo por el primer `=` firma con
+// un id/secret equivocados y el bind devuelve 403.
+const GW_ID = (process.env.GATEWAY_ID || '11111111-1111-4111-8111-111111111111').trim();
+const hmacPairs = new Map(
+  HMAC_RAW.split(',')
+    .map((pair) => pair.trim())
+    .filter(Boolean)
+    .map((pair) => {
+      const i = pair.indexOf('=');
+      return i === -1 ? null : [pair.slice(0, i).trim(), pair.slice(i + 1).trim()];
+    })
+    .filter(Boolean),
+);
+const gid = hmacPairs.has(GW_ID) ? GW_ID : [...hmacPairs.keys()][0];
+const gatewaySecret = hmacPairs.get(gid);
+if (!gid || !gatewaySecret) {
+  console.error('HMAC_RAW no contiene ningún par gid=secret');
+  process.exit(2);
+}
 
 async function idToken(audience) {
   const url =
