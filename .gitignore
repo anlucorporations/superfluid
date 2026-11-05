@@ -1,45 +1,37 @@
-# .gitignore — Superfluid EUR Streaming (v1)
-# Claves y artefactos: NUNCA versionar (RNF-02)
-
-## Secretos / cuentas
+# --- Secretos: nunca committeeables ---
 .env
 .env.*
-!.env.example
-*.local.json
-.deployer_wallet*
-RepoTecnico/.deployer_wallet.local.json
-keystore/
 *.pem
-mnemonic*
+**/.env
+**/.env.*
+!**/.env.example
 
-## Foundry
-# deps foundry: forjá install (forge-std, OZ v5.1.0) — ver README §1
-sc/lib/
-sc/out/
-sc/cache/
-sc/broadcast/
-!sc/broadcast/.gitkeep
-
-## Node / Next.js
+# --- Dependencias y artefactos ---
 node_modules/
-web/.next/
-web/out/
-web/next-env.d.ts
-*.tsbuildinfo
-
-## Build / misc
+.next/
+out/
 dist/
-build/
 coverage/
+
+# --- Foundry ---
+sc/lib/
+sc/cache/
+sc/out/
+sc/broadcast/
+
+# --- Registros/salidas ---
 *.log
+smoke.out
+smoke.err
+npm-debug.log*
+
+# --- Sistema ---
 .DS_Store
+Thumbs.db
 
-## Python (sfh-chr y utilidades)
-__pycache__/
-*.py[cod]
-.venv/
-venv/
+# --- Helpers de build incremental ---
+tsconfig.tsbuildinfo
+next-env.d.ts
 
-## GCP (credenciales si se añaden localmente)
-*.credentials.json
-service-account*.json
+# --- Mongo en memoria (descarga de binarios) ---
+.msb/

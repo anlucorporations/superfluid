@@ -1,7 +1,0 @@
-# Secretos y artefactos
-.env
-cache/
-broadcast/
-out/
-lib/
-# Registro de despliegues SÍ se versiona (deployments/)

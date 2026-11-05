@@ -1,5 +1,0 @@
-node_modules
-k6/sessions.json
-*.log
-.env
-.env.*

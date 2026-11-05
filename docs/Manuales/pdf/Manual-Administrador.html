@@ -1,0 +1,92 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Manual del Administrador — Superfluid Brlt v2</title><style>
+  @page { margin: 0 }
+  body{font-family:'Segoe UI',system-ui,Arial;color:#0f172a;margin:0}
+  header{background:#4f46e5;color:#fff;padding:48px 40px}
+  header h1{margin:0;font-size:28px}
+  header p{margin:6px 0 0;color:#e0e7ff;font-size:14px}
+  section.tema{padding:28px 40px;border-top:1px solid #e2e8f0;page-break-before:always}
+  .ruta{font-size:11px;color:#94a3b8;margin:0 0 12px}
+  h1,h2{color:#312e81}h3,h4{color:#1e293b}
+  img{max-width:100%;border:1px solid #e2e8f0;border-radius:8px}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
+  th{background:#f8fafc}
+  pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto;font-size:11px}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:4px;font-size:12px}
+  pre code{background:transparent;padding:0}
+  blockquote{border-left:4px solid #6366f1;margin:0;padding:4px 12px;color:#475569;background:#f8fafc}
+  footer{padding:16px 40px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0}
+</style></head><body>
+<header><h1>Manual del Administrador — Superfluid Brlt v2</h1><p>Nómina en streaming sobre Besu 81234 · generado 2026-11-04</p></header>
+<section class="tema"><p class="ruta">07-Manual-del-Admin\manual-admin.md</p>
+<p>﻿# Manual del Admin (guía operativa)</p>
+<h2>Empezar en 5 minutos</h2>
+<h3>Tu primer flujo</h3>
+<ol>
+<li>Entra con tu wallet admin en <strong>/login</strong>.</li>
+<li><strong>Sistema</strong> → guarda las direcciones de BRLT/BrltX y el bloque de despliegue.</li>
+<li><strong>Proyectos</strong> → crea un proyecto.</li>
+<li><strong>Empleados</strong> → «Nuevo empleado» (nombre + wallet + importe + periodo).</li>
+<li><strong>Flujos → Crear flujo</strong> → elige empleado, importe y periodo →
+<strong>«Aprobar y crear flujo»</strong> (MetaMask pedirá dos firmas: aprobar y crear).</li>
+</ol>
+<p><img src="../../imagenes/capturas/04-admin-resumen.png" alt="Panel admin">
+<em>(Vista general del panel: tarjetas de resumen y menú lateral con todas las secciones.)</em></p>
+<h2>Flujos día a día</h2>
+<h3>Operar un flujo</h3>
+<ul>
+<li><strong>Pausar</strong>: congela el devengo sin perder el tiempo pagado (el fin se aplaza).</li>
+<li><strong>Reanudar</strong>: reancla con la misma tasa; el empleado no pierde devengo.</li>
+<li><strong>Terminar</strong>: liquida lo devengado y devuelve el resto a tu wallet (dos firmas).</li>
+<li><strong>Liquidar</strong>: solo para flujos <strong>vencidos</strong> (acumulado al empleado, resto a ti).</li>
+</ul>
+<p><img src="../../imagenes/capturas/07-admin-flujos.png" alt="Flujos">
+<em>(Lista de flujos: depositado, tasa, fin estimado, pendiente y estado reconciliados
+con el contrato. Las acciones cambian según el estado.)</em></p>
+<h2>Programados y lotes</h2>
+<h3>Cuando hay mucho trabajo</h3>
+<ul>
+<li><strong>Programados</strong>: apunta una nómina futura (estado <code>próximo</code>); cuando llegue el día,
+pulsa <strong>«Ejecutar»</strong> y firma (o <strong>Cancelar</strong>).</li>
+<li><strong>Lote</strong>: hasta <strong>10 empleados</strong> con el mismo importe y periodo. Si se interrumpe la
+tanda, al reintentar se <strong>saltan los flujos ya creados</strong> (sin doble pago).</li>
+</ul>
+<p><img src="../../imagenes/capturas/05-admin-empleados.png" alt="Empleados">
+<em>(Gestión de plantilla: alta, edición, baja y cambio de wallet con doble firma.)</em></p>
+<h2>Tesorería</h2>
+<h3>Emitir y quemar</h3>
+<ul>
+<li>Pestaña <strong>Tesorería</strong>: el supply actual, el margen hasta el tope y los balances de
+tu wallet.</li>
+<li><strong>Emitir (mint)</strong>: hasta el tope de 50.000.000 BRLT.</li>
+<li><strong>Quemar (burn)</strong>: reduce el circulante de tu wallet; <strong>no toca</strong> los flujos activos.</li>
+</ul>
+<p><img src="../../imagenes/capturas/10-admin-sistema.png" alt="Sistema">
+<em>(Pantalla de configuración: RPC, contratos y parámetros validados contra la red.)</em></p>
+<h2>Mantenimiento y alertas</h2>
+<h3>Que nadie tenga que revisar a mano</h3>
+<ul>
+<li>Con <strong>Jobs</strong> puedes ejecutar a mano la reconciliación, el espejo de eventos y el
+chequeo de nóminas vencidas.</li>
+<li>Los avisos en pantalla señalan flujos <strong>vencidos sin liquidar</strong> y flujos que
+<strong>terminan en menos de 24 h</strong>.</li>
+<li>Empleados con varios flujos activos piden <strong>confirmación</strong> con el total agregado
+antes de añadir otro (sin sustituir pagos por accidente).</li>
+</ul>
+<p><img src="../../imagenes/capturas/08-admin-jobs.png" alt="Jobs">
+<em>(Panel de trabajos: estado de cada job, último resultado y botón «Ejecutar». )</em></p>
+<h2>Seguridad del admin</h2>
+<h3>Buenas prácticas</h3>
+<ul>
+<li>La wallet admin <strong>nunca</strong> se guarda en la web: solo firmas en tu navegador.</li>
+<li>Las sesiones duran <strong>2 horas</strong>; revisa <strong>Auditoría</strong> para ver quién hizo qué.</li>
+<li>Si cambias la wallet de un empleado, la app te lista sus flujos para
+<strong>migrarlos</strong> con el cambio de receptor en una sola transacción.</li>
+</ul>
+<p><img src="../../imagenes/capturas/09-admin-auditoria.png" alt="Auditoría">
+<em>(Historial de acciones: login, altas, cambios de wallet, operaciones de flujo y jobs.)</em></p>
+
+</section>
+<footer>Superfluid Brlt Streaming v2 · documentación v1 · 1 sección(es)</footer>
+</body></html>

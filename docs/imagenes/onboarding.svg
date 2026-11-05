@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="system-ui,Segoe UI,Arial" role="img" aria-label="Onboarding empleado y admin">
+  <defs>
+    <style>
+      .t{font-size:20px;font-weight:600;fill:#0f172a}
+      .s{font-size:13px;fill:#475569}
+      .lbl{font-size:14px;font-weight:600;fill:#1e293b}
+      .lbl2{font-size:12px;fill:#475569}
+      .col{fill:#fff;stroke:#e2e8f0;stroke-width:2}
+      .num{fill:#4f46e5;fill-opacity:.95}
+      .numlbl{fill:#fff;font-size:14px;font-weight:700}
+      .ok{fill:#ecfdf5;stroke:#10b981}
+      .arrow{stroke:#94a3b8;stroke-width:2;fill:none;marker-end:url(#ah3)}
+    </style>
+    <marker id="ah3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+  <text x="480" y="40" text-anchor="middle" class="t">Onboarding en 5 minutos</text>
+
+  <!-- Empleado -->
+  <rect x="60" y="80" width="380" height="330" rx="14" class="col"/>
+  <text x="250" y="112" text-anchor="middle" class="lbl">Empleado (Suite /suite/login)</text>
+
+  <circle cx="95" cy="150" r="14" class="num"/><text x="95" y="155" text-anchor="middle" class="numlbl">1</text>
+  <text x="118" y="148" class="lbl">Entra y conecta MetaMask</text>
+  <text x="118" y="166" class="lbl2">la Suite solo lee tu wallet</text>
+
+  <circle cx="95" cy="205" r="14" class="num"/><text x="95" y="210" text-anchor="middle" class="numlbl">2</text>
+  <text x="118" y="203" class="lbl">Mira «Cobrable ahora»</text>
+  <text x="118" y="221" class="lbl2">devengo incluido (getRealtimeBalance)</text>
+
+  <circle cx="95" cy="260" r="14" class="num"/><text x="95" y="265" text-anchor="middle" class="numlbl">3</text>
+  <text x="118" y="258" class="lbl">Pulsa «Cobrar» o «Todo»</text>
+  <text x="118" y="276" class="lbl2">downgrade: BrltX → BRLT a tu wallet</text>
+
+  <circle cx="95" cy="315" r="14" class="num"/><text x="95" y="320" text-anchor="middle" class="numlbl">4</text>
+  <text x="118" y="313" class="lbl">Configura tus datos</text>
+  <text x="118" y="331" class="lbl2">consentimiento y borrado (GDPR)</text>
+
+  <rect x="118" y="355" width="290" height="40" rx="10" class="ok"/>
+  <text x="263" y="380" text-anchor="middle" class="lbl2">ventana de retiro: 90 días tras la baja</text>
+
+  <!-- Admin -->
+  <rect x="520" y="80" width="380" height="330" rx="14" class="col"/>
+  <text x="710" y="112" text-anchor="middle" class="lbl">Admin (Panel /login)</text>
+
+  <circle cx="555" cy="150" r="14" class="num"/><text x="555" y="155" text-anchor="middle" class="numlbl">1</text>
+  <text x="578" y="148" class="lbl">Sistema: contratos y red</text>
+  <text x="578" y="166" class="lbl2">chainId 81234 · BRLT · BrltX</text>
+
+  <circle cx="555" cy="205" r="14" class="num"/><text x="555" y="210" text-anchor="middle" class="numlbl">2</text>
+  <text x="578" y="203" class="lbl">Proyecto + Empleado</text>
+  <text x="578" y="221" class="lbl2">importe por periodo (6/15/30/90 d)</text>
+
+  <circle cx="555" cy="260" r="14" class="num"/><text x="555" y="265" text-anchor="middle" class="numlbl">3</text>
+  <text x="578" y="258" class="lbl">Flujos → Crear flujo</text>
+  <text x="578" y="276" class="lbl2">approve + wrapAndCreateFlow</text>
+
+  <circle cx="555" cy="315" r="14" class="num"/><text x="555" y="320" text-anchor="middle" class="numlbl">4</text>
+  <text x="578" y="313" class="lbl">Opera: pausa / termina / liquidar</text>
+  <text x="578" y="331" class="lbl2">lotes de 10 · programados · jobs</text>
+
+  <rect x="578" y="355" width="290" height="40" rx="10" class="ok"/>
+  <text x="723" y="380" text-anchor="middle" class="lbl2">alertas: vencidos y fin &lt; 24 h</text>
+
+  <path class="arrow" d="M440,245 L520,245"/>
+
+  <text x="480" y="480" text-anchor="middle" class="s">docs/imagenes/onboarding.svg · Fase 5 · Superfluid Brlt Streaming v2</text>
+</svg>

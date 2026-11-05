@@ -1,0 +1,388 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Manual técnico — Superfluid Brlt v2</title><style>
+  @page { margin: 0 }
+  body{font-family:'Segoe UI',system-ui,Arial;color:#0f172a;margin:0}
+  header{background:#4f46e5;color:#fff;padding:48px 40px}
+  header h1{margin:0;font-size:28px}
+  header p{margin:6px 0 0;color:#e0e7ff;font-size:14px}
+  section.tema{padding:28px 40px;border-top:1px solid #e2e8f0;page-break-before:always}
+  .ruta{font-size:11px;color:#94a3b8;margin:0 0 12px}
+  h1,h2{color:#312e81}h3,h4{color:#1e293b}
+  img{max-width:100%;border:1px solid #e2e8f0;border-radius:8px}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
+  th{background:#f8fafc}
+  pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto;font-size:11px}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:4px;font-size:12px}
+  pre code{background:transparent;padding:0}
+  blockquote{border-left:4px solid #6366f1;margin:0;padding:4px 12px;color:#475569;background:#f8fafc}
+  footer{padding:16px 40px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0}
+</style></head><body>
+<header><h1>Manual técnico — Superfluid Brlt v2</h1><p>Nómina en streaming sobre Besu 81234 · generado 2026-11-04</p></header>
+<section class="tema"><p class="ruta">01-Tecnologia\01-plataforma.md</p>
+<h1>Tecnología (versión sencilla)</h1>
+<h2>¿Qué es la plataforma?</h2>
+<h3>En una frase</h3>
+<p><strong>Una nómina que corre sobre un contrato: el admin deposita el salario y este se
+transmite Como una gota a gota; tú cobras cuando quieres.</strong></p>
+<h3>Las piezas</h3>
+<ul>
+<li><strong>BRLT</strong>: el dinero (token) con 18 decimales.</li>
+<li><strong>BrltX</strong>: la “versión en streaming” del dinero.</li>
+<li><strong>La app web</strong> (<code>/admin</code> y <code>/suite</code>): las pantallas para administrador y empleado.</li>
+<li><strong>La red Besu</strong> (chainId 81234): donde viven los contratos.</li>
+</ul>
+<!-- GENERAR_IMAGEN: arquitectura.svg -->
+
+<pre><code class="language-mermaid">flowchart TB
+    subgraph Navegador
+        M[MetaMask firma todo]
+    end
+    subgraph AppWeb[&quot;App web (Cloud Run)&quot;]
+        P[&quot;Panel admin /admin&quot;]
+        S[&quot;Suite del Empleado /suite&quot;]
+    end
+    subgraph Cadena[&quot;Besu 81234&quot;]
+        BRLT[&quot;BRLT (token)&quot;]
+        BRLTX[&quot;BrltX (streaming)&quot;]
+    end
+    subgraph Datos[&quot;MongoDB&quot;]
+        D[Empleados · Flujos · Historial · Jobs]
+    end
+    M --&gt; P --&gt;|eth_call: lee estado| BRLTX
+    M --&gt; S --&gt;|downgrade: cobro| BRLTX
+    P --&gt; D
+    S --&gt; D
+</code></pre>
+<p>⚠ <em>(nota del manual: el bloque “BR LTX” se dibujó por el archivo; es “BrltX”).
+Corregido en el gráfico <code>arquitectura.svg</code> de <code>docs/imagenes/</code>.</em></p>
+<h2>¿Cómo sabe la app el estado real?</h2>
+<h3>La regla de oro</h3>
+<p><strong>El contrato manda.</strong> Cada vez que la app pinta una lista de flujos,
+vuelve a preguntarle al contrato por el número de flujo y actualiza su copia
+(MongoDB). Si alguien cambia algo a mano, la app se corrige La app se corrige sola en minutos.</p>
+<blockquote>
+<p>📷 <em>Captura: 04-admin-resumen.png — url: /admin — panel admin con tarjetas de resumen</em>  </p>
+</blockquote>
+<h2>¿Qué pasa cuando se pausa?</h2>
+<h3>Pausa y reanudación</h3>
+<ul>
+<li>Al pausar, el contrato <strong>guarda la tasa</strong> en un campo aparte.</li>
+<li>Al reanudar, el tiempo restante se <strong>prolonga</strong>: no pierdes devengo.</li>
+<li>Todo esto lo hace el servidor leyendo <code>getFlow</code> y <code>getPending</code>.</li>
+</ul>
+<!-- GENERAR_IMAGEN: flujo-nomina.svg -->
+
+<pre><code class="language-mermaid">sequenceDiagram
+    participant A as Admin (MetaMask)
+    participant X as BrltX
+    participant E as Empleado
+    A-&gt;&gt;X: wrapAndCreateFlow(10 BRLT, 6 días)
+    X--&gt;&gt;A: FlowCreated #N (tasa floor)
+    A-&gt;&gt;X: updateFlow(#N, 0) — pausa
+    X-&gt;&gt;E: liquida el tramo (minta BrltX)
+    A-&gt;&gt;X: updateFlow(#N, tasa) — reanudar
+    A-&gt;&gt;X: deleteFlow(#N) — terminar
+    X-&gt;&gt;E: paga lo devengado · remanente vuelve al admin
+</code></pre>
+<h2>Seguridad en palabras simples</h2>
+<h3>¿Quién puede hacer qué?</h3>
+<ul>
+<li>El admin necesita estar <strong>autorizado</strong> (allowlist) e iniciar sesión firmando un
+mensaje (SIWE).</li>
+<li>Cada empleado solo accede <strong>a su propia Suite</strong>: nadie puede pedir tus flujos.</li>
+<li>Cada acción peligrosa pide otro paso (CSRF + firma).</li>
+<li>El <strong>cobro lo firma tu wallet</strong>: la web solo dice que lo hiciste si el contrato
+lo confirma.</li>
+</ul>
+
+</section><section class="tema"><p class="ruta">02-Dependencias\02-dependencias.md</p>
+<h1>Dependencias (versión sencilla)</h1>
+<h2>¿Qué programa necesita mi ordenador?</h2>
+<h3>Para usar la plataforma (empleado o admin)</h3>
+<p>Solo un navegador (Chrome/Edge/Firefox) y <strong>MetaMask</strong> instalado en el navegador.</p>
+<h3>Para trabajar en el código</h3>
+<ul>
+<li><strong>Node.js 20+</strong> (probado con 24).</li>
+<li><strong>Foundry</strong> para los contratos (<code>forge</code>, <code>cast</code>).</li>
+<li>MongoDB <strong>no hace falta instalarla</strong>: el proyecto puede usar una “Mongo de bolsillo”
+que se borra al cerrar (útil en Windows).</li>
+</ul>
+<h2>Programas que usa el proyecto</h2>
+<h3>Del lado del servidor</h3>
+<table>
+<thead>
+<tr>
+<th>Programa</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Next.js 15</td>
+<td>El “motor” de la web.</td>
+</tr>
+<tr>
+<td>ethers 5</td>
+<td>El traductor con MetaMask y la red.</td>
+</tr>
+<tr>
+<td>MongoDB driver</td>
+<td>Guarda las fichas, flujos e historial.</td>
+</tr>
+<tr>
+<td>SIWE lib</td>
+<td>Comprueba el “iniciando sesión con la wallet” (firma).</td>
+</tr>
+<tr>
+<td>Zod</td>
+<td>Vigila que los datos que llegan tengan la forma correcta.</td>
+</tr>
+</tbody></table>
+<h3>Del lado del desarrollador</h3>
+<table>
+<thead>
+<tr>
+<th>Programa</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vitest</td>
+<td>Ejecuta las pruebas rápidas.</td>
+</tr>
+<tr>
+<td>Playwright</td>
+<td>Controla un Chrome “invisible” para pruebas y pantallazos.</td>
+</tr>
+<tr>
+<td>tsx</td>
+<td>Ejecuta los utilitarios sin compilar.</td>
+</tr>
+<tr>
+<td>TailwindCSS</td>
+<td>Los estilos visuales.</td>
+</tr>
+</tbody></table>
+<h2>Cómo revisar que todo está en orden</h2>
+<h3>Comandos de control</h3>
+<pre><code class="language-bash">cd web
+npm test               # pruebas rápidas (43)
+npm run smoke:h4       # prueba completa contra la red de práctica
+npm run e2e:ui         # prueba con el navegador automático
+</code></pre>
+<p>Si todos acaban con “<strong>TODO OK</strong>”, el sistema está sano.</p>
+
+</section><section class="tema"><p class="ruta">03-Implementacion\03-implementacion.md</p>
+<h1>Implementación (versión sencilla)</h1>
+<h2>El ciclo de vida de un salario</h2>
+<h3>De principio a fin</h3>
+<ol>
+<li><strong>El admin crea el flujo</strong>: aprueba BRLT, lo deposita en el contrato y se abre un
+“grifo” hacia tu wallet.</li>
+<li><strong>Cada segundo cuenta</strong>: el grifo reparte el importe entre los días del periodo
+(6, 15, 30 o 90 días).</li>
+<li><strong>Tú decides cuándo cobrar</strong>: pulsas «Cobrar» y tu wallet recibe BRLT real.</li>
+<li><strong>Si el flujo termina</strong> (vence o el admin lo cierra): lo ganado pasa a tu saldo y
+lo que aún no corresponde vuelve al admin. Nada se pierde.</li>
+</ol>
+<pre><code class="language-mermaid">timeline
+    title Nómina de 6 días (10 BRLT)
+    Día 0 : Flujo creado (depositado 10 BRLT)
+    Día 1 : ~1,67 BRLT devengado (acumulando)
+    Día 3 : Pausa → liquida lo devengado → tasas congeladas
+    Día 3 : Reanudar → el “fin del flujo” se aplaza
+    Día 6 : Flujo vencido → pendiente de liquidar
+    Día 6 : Liquidar (público) → acumulado → BrltX cobrable
+    Siempre : «Cobrar» → BRLT a tu wallet
+</code></pre>
+<h2>¿Y si cambio de wallet?</h2>
+<h3>Cambio de receptor seguro</h3>
+<ul>
+<li>Lo pides en el panel, firmas con la <strong>wallet nueva</strong> y el admin firma la
+confirmación.</li>
+<li>El contrato cierra el flujo viejo y abre uno <strong>nuevo</strong> hacia tu wallet nueva con
+el saldo restante. <strong>Sin pagar dos veces.</strong></li>
+</ul>
+<blockquote>
+<p>📷 <em>Captura: 06-admin-empleados.png — url: /admin/empleados — cambio de wallet con doble firma</em>  </p>
+</blockquote>
+<h2>¿Qué pasa si la web se apaga?</h2>
+<h3>Se acabó la sesión</h3>
+<ul>
+<li>Si la web cae, <strong>los flujos siguen en la cadena</strong> (no dependen de la web).</li>
+<li>Cuando la web vuelve, los “trabajos automáticos” (jobs) vuelven a leer la cadena
+y <strong>corrigen su copia</strong> en la base de datos.</li>
+</ul>
+<blockquote>
+<p>📷 <em>Captura: 08-admin-jobs.png — url: /admin/jobs — panel de jobs con estado y botón Ejecutar</em>  </p>
+</blockquote>
+<h2>La regla del cobro (lo importante)</h2>
+<h3>Protección del empleado</h3>
+<ul>
+<li>El saldo que ves como <strong>“Cobrable ahora”</strong> es dinero ya tuyo: lo puedes cobrar
+aunque el contrato esté en pausa de mantenimiento.</li>
+<li>La web <strong>registra tu cobro solo si la cadena lo confirma</strong>; un comprobante falso
+se rechaza (“tx_no_verificada”).</li>
+</ul>
+
+</section><section class="tema"><p class="ruta">04-Despliegue\04-despliegue.md</p>
+<h1>Despliegue (versión sencilla)</h1>
+<h2>¿Dónde vive la aplicación?</h2>
+<h3>Hoy (red de práctica)</h3>
+<ul>
+<li><strong>Contratos</strong>: desplegados en la red de práctica Besu (chainId 81234), bloque
+6.412.104. Nada que instalar: la app ya está conectada.</li>
+<li><strong>App</strong>: se puede correr en cualquier ordenador con Node 20+.</li>
+</ul>
+<h2>Cómo poner la aplicación en marcha</h2>
+<h3>Modo rápido (5 comandos)</h3>
+<pre><code class="language-bash">cd web
+npm install
+cp .env.example .env.local    # y rellena lo que pide
+npm run seed                  # prepara la base y tu wallet admin
+npm run dev                   # http://localhost:3000
+</code></pre>
+<h3>Modo container (para servidor)</h3>
+<pre><code class="language-bash">npm run build
+npm run verify:standalone     # prueba el “ejecutable” de producción
+gcp/deploy.sh                 # sube a Google Cloud Run (requiere acceso)
+</code></pre>
+<p><img src="../imagenes/capturas/04-admin-resumen.png" alt="Panel admin con tarjetas de resumen">
+<em>(El panel admin tal y como lo verá el administrador tras iniciar sesión.)</em></p>
+<h2>¿Qué pide la app para conectarse?</h2>
+<h3>Variables importantes (solo el administrador técnico)</h3>
+<ul>
+<li><code>MONGODB_URI</code> / <code>MONGODB_DB</code> — dónde vive la base de datos.</li>
+<li><code>SIWE_DOMAIN</code> — <strong>debe coincidir exactamente</strong> con la dirección web usada.</li>
+<li><code>NEXT_PUBLIC_BRLT_ADDRESS</code> / <code>NEXT_PUBLIC_BRLTX_ADDRESS</code> — las direcciones de los contratos.</li>
+<li><code>ADMIN_BOOTSTRAP_WALLET</code> — la wallet que puede entrar como admin.</li>
+</ul>
+<h2>Healthcheck</h2>
+<h3>¿Está vivo el sistema?</h3>
+<p>Una visita a <strong><code>/api/health</code></strong> responde:</p>
+<ul>
+<li><code>200 ok</code> — base de datos y red funcionando.</li>
+<li><code>503 degradado</code> — algo no responde (la app no está muerta solo degradada).</li>
+</ul>
+
+</section><section class="tema"><p class="ruta">05-Diccionario-de-Datos\05-diccionario.md</p>
+<h1>Diccionario de datos (versión sencilla)</h1>
+<h2>¿Dónde vive cada cosa?</h2>
+<h3>Dos manos que trabajan juntas</h3>
+<ol>
+<li><strong>La cadena (Besu)</strong> guarda lo que cuesta dinero: quién cobró, cuánto y cuándo.</li>
+<li><strong>La base MongoDB</strong> guarda papeleo: fichas, proyectos, permisos, historial y avisos.</li>
+<li>La app <strong>compara siempre</strong> las dos y se corrige si difieren.</li>
+</ol>
+<h2>Cosas que la base guarda</h2>
+<h3>Pequeño glosario</h3>
+<table>
+<thead>
+<tr>
+<th>Cosa</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Empleado</td>
+<td>Cada persona con su wallet.</td>
+</tr>
+<tr>
+<td>Proyecto</td>
+<td>La “familia” a la que pertenece un empleado (info).</td>
+</tr>
+<tr>
+<td>Flujo</td>
+<td>El “grifo” del salario con su número (#1, #2…).</td>
+</tr>
+<tr>
+<td>Programado</td>
+<td>Una nómina “apuntada” para lanzarse más adelante.</td>
+</tr>
+<tr>
+<td>Lote</td>
+<td>Hasta 10 flujos creados de golpe, con control anti-duplicados.</td>
+</tr>
+<tr>
+<td>Historial (<code>flows_history</code>)</td>
+<td>El diario de los eventos del contrato.</td>
+</tr>
+<tr>
+<td>Trabajo (<code>job_runs</code>)</td>
+<td>Las veces que la app se “auto-revisa”.</td>
+</tr>
+<tr>
+<td>Auditoría</td>
+<td>Quién hizo qué y cuándo (sin secretos ni datos íntimos).</td>
+</tr>
+</tbody></table>
+<h2>Datos personales (y tus derechos)</h2>
+<h3>Reglas del juego</h3>
+<ul>
+<li>Email y teléfono <strong>se borran al instante</strong> si lo pides («Borrar mis datos»).</li>
+<li>A los <strong>30 días</strong>, la app anonimiza el nombre automáticamente (ya no se sabe quién es).</li>
+<li>Tu <strong>wallet</strong> se aguanta hasta <strong>90 días</strong> después de la baja para que puedas
+retirar lo que te debían; después la compte queda sellada.</li>
+</ul>
+<!-- GENERAR_IMAGEN: glosario-visual.svg -->
+
+<pre><code class="language-mermaid">mindmap
+  root((Datos))
+    Cadena
+      Flujos y pagos
+      Eventos (historial)
+      Escrow y tasas
+    MongoDB
+      Empleados y proyectos
+      Sesiones y permisos
+      Auditoría y jobs
+    Derechos
+      Borrado inmediato
+      Anonimizado a 30 días
+      Retiro hasta 90 días
+</code></pre>
+<h2>Estados de un flujo</h2>
+<h3>Los cuatro estados</h3>
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; activo: se crea el flujo
+    activo --&gt; pausado: pausa del admin
+    pausado --&gt; activo: reanudación
+    activo --&gt; vencido: pasa su tiempo
+    vencido --&gt; terminado: liquidación (cualquiera)
+    activo --&gt; terminado: terminación del admin
+    terminado --&gt; [*]
+</code></pre>
+
+</section><section class="tema"><p class="ruta">06-Diagrama-Relacional\06-relacional.md</p>
+<h1>Diagrama relacional (versión sencilla)</h1>
+<h2>El mapa de la base de datos</h2>
+<h3>Relaciones que importan</h3>
+<ul>
+<li>Un <strong>Proyecto</strong> agrupa a varios <strong>Empleados</strong> (opcional).</li>
+<li>Cada <strong>Empleado</strong> puede tener varios <strong>Flujos</strong> (normalmente uno activo por periodo).</li>
+<li>Un <strong>Flujo</strong> puede venir de un <strong>Lote</strong> (por si se crearon varios a la vez).</li>
+<li>Cada <strong>Flujo</strong> deja rastro en el <strong>Historial</strong> al igual que su despedida.</li>
+<li>Los <strong>Trabajos (jobs)</strong> anotan las veces que la app se revisa a sí misma.</li>
+</ul>
+<pre><code class="language-mermaid">flowchart LR
+    PRO[Proyectos] --&gt;|agrupa| EMP[Empleados]
+    EMP --&gt;|tiene| FLO[Flujos]
+    EMP --&gt;|tendrá| SCH[Programados]
+    BAT[Lotes] --&gt;|crea| FLO
+    FLO --&gt;|deja rastro| HIS[Historial]
+    EMP --&gt; AUD[Auditoría]
+    JOBS[Trabajos] --- NOTA((auto-revisión))
+    style NOTA fill:#f1f5f9,stroke:#94a3b8
+</code></pre>
+<h2>La doble contabilidad</h2>
+<h3>Cadena + base (y nunca al revés)</h3>
+<ul>
+<li><strong>Cadena</strong> = dinero y verdad (no se puede borrar).</li>
+<li><strong>Base</strong> = conveniencia (se puede reconstruir).</li>
+<li>Si alguien borra algo de la base, la app lo re-lee del <strong>bloque inicial de
+despliegue</strong> y lo repara. Ese es el papel de los jobs del panel <code>/admin/jobs</code>.</li>
+</ul>
+
+</section>
+<footer>Superfluid Brlt Streaming v2 · documentación v1 · 6 sección(es)</footer>
+</body></html>

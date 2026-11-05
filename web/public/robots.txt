@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /login
+Allow: /suite/login
+Disallow: /admin/
+Disallow: /api/

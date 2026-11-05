@@ -1,36 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Superfluid EUR Streaming — BETA educativa",
-  description: "Money streaming con tokens de prueba EUR/EURx en la red CodeCrypto Besu (chainId 81234)",
+  title: "Superfluid Brlt Streaming v2",
+  description:
+    "Nómina en streaming con BRLT sobre Besu Codecrypto: panel de administración y Suite del Empleado.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript() }} />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-      </body>
+    <html lang="es">
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

@@ -1,0 +1,23 @@
+# Dependencias restaurables con `forge install` (no se versionan)
+lib/
+
+# Artefactos de Foundry
+out/
+cache/
+broadcast/
+coverage/
+lcov.info
+
+# Registros de despliegue locales (anvil)
+deployments/31337.json
+deployments/brlt-31337.json
+
+# Variables de entorno y claves
+.env
+.env.*
+!.env.example
+keystore/
+
+# Sistema
+.DS_Store
+Thumbs.db

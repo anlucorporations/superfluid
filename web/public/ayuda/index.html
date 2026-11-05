@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ayuda — Superfluid Brlt Streaming v2</title>
+<style>
+  :root{--brand:#4f46e5;--ink:#0f172a;--slate:#475569}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial;color:var(--ink);background:#f8fafc}
+  header{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:30px 26px}
+  header h1{margin:0;font-size:24px}
+  header p{margin:6px 0 0;color:#e0e7ff;font-size:14px}
+  main{display:grid;grid-template-columns:260px 1fr;gap:20px;max-width:1100px;margin:24px auto;padding:0 16px}
+  nav{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;height:fit-content;position:sticky;top:16px}
+  nav a{display:block;padding:6px 8px;color:var(--slate);text-decoration:none;border-radius:8px;font-size:14px}
+  nav a.seccion{font-weight:600;color:var(--brand)}
+  nav a:hover{background:#eef2ff;color:#3730a3}
+  section{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:22px;margin-bottom:18px;scroll-margin-top:16px}
+  h2{color:#312e81;margin:0 0 8px}
+  h3{margin:18px 0 6px;color:#1e293b;border-bottom:1px solid #f1f5f9;padding-bottom:4px}
+  p{color:#334155;font-size:14px;line-height:1.6}
+  img{width:100%;border:1px solid #e2e8f0;border-radius:10px;margin:10px 0}
+  figcaption{font-size:12px;color:#94a3b8;margin:-4px 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border:1px solid #e2e8f0;padding:6px 10px;text-align:left}
+  th{background:#f8fafc}
+  .pdf{display:inline-block;background:var(--brand);color:#fff;text-decoration:none;padding:8px 14px;border-radius:8px;font-size:13px;margin:4px 6px 0 0}
+  code{background:#f1f5f9;border-radius:4px;padding:1px 5px;font-size:13px}
+  @media(max-width:760px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Ayuda — Superfluid Brlt Streaming v2</h1>
+  <p>Su nómina transmitida segundo a segundo en BRLT · red de práctica Besu (chainId 81234)</p>
+</header>
+<main>
+  <nav>
+    <a class="seccion" href="#empezar">Empezar en 5 minutos</a>
+    <a href="#empleado">Empleado: cobrar</a>
+    <a href="#admin">Admin: crear flujos</a>
+    <a href="#estados">Estados de un flujo</a>
+    <a href="#pausa">Pausa / reanudación</a>
+    <a href="#cambios">Cambio de wallet</a>
+    <a href="#datos">Tus datos (GDPR)</a>
+    <a href="#jobs">Mantenimiento automático</a>
+    <a class="seccion" href="#pdf">Descargar PDF</a>
+  </nav>
+  <div>
+
+    <section id="empezar">
+      <h2>Empezar en 5 minutos</h2>
+      <p><b>Empleado:</b> entra en <code>/suite/login</code>, conecta MetaMask y verás tus saldos.
+         <b>Admin:</b> entra en <code>/login</code> con la wallet autorizada.</p>
+      <img src="01-portada-app.png" alt="Portada de la aplicación">
+      <figcaption>Portada pública de la aplicación.</figcaption>
+    </section>
+
+    <section id="empleado">
+      <h2>Empleado: cobriminatorio</h2>
+      <p>En tu Suite verás <b>Cobrable ahora</b> (devengo incluido) y <b>BRLT en cartera</b>.
+         Escribe el importe o pulsa <b>«Todo»</b> y después <b>«Cobrar»</b>: tu wallet
+         recibe BRLT en la misma transacción.</p>
+      <img src="03-login-suite.png" alt="Acceso de la Suite">
+      <figcaption>Acceso de la Suite del Empleado. La pantalla se refresca cada 5 segundos.</figcaption>
+      <table>
+        <tr><th>Estado del flujo</th><th>Qué significa</th><th>Tu acción</th></tr>
+        <tr><td>activo</td><td>el grifo corre</td><td>cobra cuando quieras</td></tr>
+        <tr><td>pausado</td><td>devengo congelado (el tiempo se aplaza)</td><td>espera</td></tr>
+        <tr><td>vencido</td><td>el plazo terminó</td><td>«Liquidar»</td></tr>
+        <tr><td>terminado</td><td>todo cerrado</td><td>cobra lo restante</td></tr>
+      </table>
+    </section>
+
+    <section id="admin">
+      <h2>Admin: crear flujos</h2>
+      <p>1) <b>Sistema</b> guarda RPC y contratos · 2) <b>Proyectos</b> y <b>Empleados</b> ·
+         3) <b>Flujos → Crear flujo</b> con dos firmas (aprobación y creación).</p>
+      <img src="04-admin-resumen.png" alt="Panel admin">
+      <figcaption>Panel admin: tarjetas de tesorería, aviso de flujos y menú lateral.</figcaption>
+      <img src="07-admin-flujos.png" alt="Sección de flujos">
+      <figcaption>Flujos reconciliados con el contrato, con acciones por estado y pestañas
+      (Crear, Programados, Lote, Tesorería).</figcaption>
+    </section>
+
+    <section id="estados">
+      <h2>Estados de un flujo</h2>
+      <p><b>activo → pausado → activo → vencido → terminado</b>. Al vencer, el flujo queda
+      pendiente de liquidación (puede liquidarlo cualquiera y el remanente vuelve al
+      admin — máx. 100 % del depositado va al empleado en su tramo devengado).</p>
+    </section>
+
+    <section id="pausa">
+      <h2>Pausa / reanudación</h2>
+      <p>Al pausar, el tramo devengado se liquida y el tiempo restante se aplaza:
+      <b>el empleado no pierde devengo</b>. Con la pausa activa, el cobro sigue
+      disponible (el contrato lo permite incluso pausado).</p>
+    </section>
+
+    <section id="cambios">
+      <h2>Cambio de wallet</h2>
+      <p>El empleado firma con la <b>wallet nueva</b> y el admin confirma. Los flujos
+      activos se <b>migran</b> con `changeReceiver`: el flujo viejo se cierra y se abre
+      uno nuevo con el saldo restante. Sin pagos duplicados.</p>
+      <img src="05-admin-empleados.png" alt="Sección de empleados">
+      <figcaption>Gestión de plantilla: alta, edición, baja y cambio de wallet con doble firma.</figcaption>
+    </section>
+
+    <section id="datos">
+      <h2>Tus datos (GDPR)</h2>
+      <p>En tu Suite: <b>perfil</b>, <b>consentimiento</b> (con fecha) y <b>borrar mis
+      datos</b> con efecto inmediato. A los 30 días se anonimiza el nombre; tu wallet
+      queda pseudonimizada hasta 90 días para el retiro.</p>
+    </section>
+
+    <section id="jobs">
+      <h2>Mantenimiento automático</h2>
+      <p>La app se autoreconcilia cada 5 min: corrige desajustes leyendo el contrato,
+      guarda el diario de eventos y avisa de nóminas vencidas. Puedes ejecutar
+      manualmente cualquiera desde <code>/admin/jobs</code>.</p>
+      <img src="08-admin-jobs.png" alt="Panel de jobs">
+      <figcaption>Panel de jobs internos con su último resultado y botón «Ejecutar».</figcaption>
+    </section>
+
+    <section id="pdf">
+      <h2>Descargar PDF</h2>
+      <p>Manuales imprimibles generados desde la documentación viva del proyecto:</p>
+      <a class="pdf" href="pdf/Manual-Administrador.pdf">Manual del Administrador (PDF)</a>
+      <a class="pdf" href="pdf/Manual-Empleado.pdf">Manual del Empleado (PDF)</a>
+      <a class="pdf" href="pdf/Manual-Tecnico.pdf">Manual Técnico (PDF)</a>
+      <img src="09-admin-auditoria.png" alt="Auditoría">
+      <figcaption>Historial de auditoría: quién hizo qué y cuándo (sin secretos ni PII).</figcaption>
+    </section>
+
+  </div>
+</main>
+<p style="text-align:center;color:#94a3b8;font-size:12px;padding:12px">
+  Generado por el equipo de manuales (Fase 5) · <a href="/">volver a la aplicación</a>
+</p>
+</body>
+</html>

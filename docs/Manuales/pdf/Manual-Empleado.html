@@ -1,0 +1,96 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Manual del Empleado — Suite del Empleado v2</title><style>
+  @page { margin: 0 }
+  body{font-family:'Segoe UI',system-ui,Arial;color:#0f172a;margin:0}
+  header{background:#4f46e5;color:#fff;padding:48px 40px}
+  header h1{margin:0;font-size:28px}
+  header p{margin:6px 0 0;color:#e0e7ff;font-size:14px}
+  section.tema{padding:28px 40px;border-top:1px solid #e2e8f0;page-break-before:always}
+  .ruta{font-size:11px;color:#94a3b8;margin:0 0 12px}
+  h1,h2{color:#312e81}h3,h4{color:#1e293b}
+  img{max-width:100%;border:1px solid #e2e8f0;border-radius:8px}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
+  th{background:#f8fafc}
+  pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto;font-size:11px}
+  code{background:#f1f5f9;padding:1px 4px;border-radius:4px;font-size:12px}
+  pre code{background:transparent;padding:0}
+  blockquote{border-left:4px solid #6366f1;margin:0;padding:4px 12px;color:#475569;background:#f8fafc}
+  footer{padding:16px 40px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0}
+</style></head><body>
+<header><h1>Manual del Empleado — Suite del Empleado v2</h1><p>Nómina en streaming sobre Besu 81234 · generado 2026-11-04</p></header>
+<section class="tema"><p class="ruta">07-Manual-del-Admin\manual-empleado.md</p>
+<p>﻿# Manual del Empleado (guía operativa)</p>
+<h2>Empezar en 5 minutos</h2>
+<h3>Mi nómina</h3>
+<ol>
+<li>Entra en la <strong>Suite</strong>: <code>/suite/login</code> y conecta MetaMask.</li>
+<li>Verás tres números: <strong>Cobrable ahora</strong>, <strong>BRLT en cartera</strong> y <strong>Salario por periodo</strong>.</li>
+<li>En <strong>Mis flujos</strong> verás el “grifo” activo, cuánto llevas acumulado y cuándo termina.</li>
+</ol>
+<p><img src="../../imagenes/capturas/03-login-suite.png" alt="Suite">
+<em>(Pantalla de acceso de la Suite del Empleado, sin registros de datos personales.)</em></p>
+<h2>Cobrar</h2>
+<h3>Cómo se cobra</h3>
+<ol>
+<li>Escribe el importe <strong>o</strong> pulsa «Todo (… BRLT)» si quieres el total.</li>
+<li>Pulsa <strong>«Cobrar»</strong>: MetaMask te pedirá una firma.</li>
+<li>En segundos tu wallet recibe <strong>BRLT real</strong>: verás «Cobrable» bajar lo mismo que
+sube «BRLT en cartera».</li>
+</ol>
+<blockquote>
+<p><strong>Bueno saber:</strong> puedes cobrar aunque el contrato esté “en pausa” y aunque tu ficha
+esté dada de baja (ventana de retiro de 90 días).</p>
+</blockquote>
+<h2>Mi flujo</h2>
+<h3>Estados y qué significan</h3>
+<table>
+<thead>
+<tr>
+<th>Estado</th>
+<th>Qué pasa</th>
+<th>Qué hago</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>activo</td>
+<td>El grifo corre</td>
+<td>nada, o cobrar cuando quieras</td>
+</tr>
+<tr>
+<td>pausado</td>
+<td>El devengo está congelado</td>
+<td>espera; el tiempo se aplaza</td>
+</tr>
+<tr>
+<td>vencido</td>
+<td>Terminó su plazo</td>
+<td>pulsa <strong>«Liquidar»</strong> (lo acumulado pasa a cobrable)</td>
+</tr>
+<tr>
+<td>terminado</td>
+<td>Todo liquidado</td>
+<td>puedes cobrar lo restante</td>
+</tr>
+</tbody></table>
+<h2>Mi perfil y mis datos</h2>
+<h3>Tú decides</h3>
+<ul>
+<li><strong>Guardar perfil</strong>: tu email/teléfono.</li>
+<li><strong>Dar/Retirar consentimiento</strong>: siempre visible con fecha.</li>
+<li><strong>Borrar mis datos</strong>: efecto <strong>inmediato</strong> (email/teléfono fuera); a los 30 días se
+anonimiza el nombre; tu wallet queda para retirar hasta 90 días tras la baja.</li>
+</ul>
+<h2>Preguntas frecuentes</h2>
+<h3>¿Y si no veo ningún flujo?</h3>
+<p>Aún no te crearon el “grifo”: pídeselo al administrador. Cuando lo haga, aparecerá
+aquí en el momento (la pantalla se refresca cada 5 segundos).</p>
+<h3>¿Y si la app está caída?</h3>
+<p>Los flujos viven en la cadena: tu BrltX y tus pagos <strong>no desaparecen</strong>. Cuando la
+app vuelva, todo se acumula como si nada.</p>
+<p><img src="../../imagenes/capturas/10-admin-sistema.png" alt="Sistema">
+<em>(Referencia del panel de configuración; los empleados no acceden a esta pantalla.)</em></p>
+
+</section>
+<footer>Superfluid Brlt Streaming v2 · documentación v1 · 1 sección(es)</footer>
+</body></html>

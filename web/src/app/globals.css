@@ -1,199 +1,20 @@
-@import "tailwindcss";
-
-/* El sistema de temas usa [data-theme] (toggle persistido), no prefers-color-scheme:
-   redefinimos la variante dark de Tailwind v4 para que todo `dark:` siga al atributo. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
-/* ============================================================================
-   Design tokens — Superfluid EUR Streaming · Sistema visual v1.1 (@visualUiUx)
-   Fuente de verdad: RepoTecnico/Manual_Identidad_Visual.md (+ analisis_visual.md)
-   Tailwind v4 (CSS-first): roles semánticos como custom properties con swap por
-   [data-theme]. Pares texto/fondo verificados WCAG AA/AAA (axe E2E obligatorio).
-   ============================================================================ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   color-scheme: light;
-
-  /* fondos */
-  --sf-bg: #f4faf8;
-  --sf-surface: #ffffff;
-  --sf-surface-raised: #ffffff;
-  --sf-surface-sunken: #eef6f3;
-
-  /* textos */
-  --sf-ink: #0f2f2a;           /* 14.4:1 sobre surface — AAA */
-  --sf-ink-secondary: #3e6b63; /* 6.0:1 — AA */
-  --sf-ink-muted: #4a6f68;     /* 5.6:1 — AA */
-  --sf-ink-disabled: #93b3ac;
-  --sf-ink-on-brand: #ffffff;
-
-  /* marca teal */
-  --sf-brand: #0f766e;
-  --sf-brand-hover: #115e59;
-  --sf-brand-active: #134e4a;
-  --sf-brand-subtle: #f0faf7;
-  --sf-brand-subtle-ink: #065f46; /* 7.2:1 sobre brand-subtle */
-  --sf-focus-ring: #0d9488;       /* 3.7:1 UI ≥3 */
-  --sf-primary: #0f766e;
-  --sf-primary-hover: #115e59;
-
-  /* líneas */
-  --sf-border: #c7ded7;
-  --sf-border-strong: #5e8f84;    /* inputs 3.7:1 UI ≥3 */
-  --sf-divider: #dfeee9;
-
-  /* estados (pareja texto+bg verificada) */
-  --sf-success: #15803d;  --sf-success-bg: #ecfdf3;
-  --sf-warning: #78350f;  --sf-warning-bg: #fef3c7;
-  --sf-error: #b42318;    --sf-error-bg: #fee2e2;  --sf-error-ink: #7f1d1d;
-  --sf-on-error: #ffffff; /* texto sobre botones de error (7.5:1 con #b42318) */
-  --sf-info: #075985;     --sf-info-bg: #e0f2fe;
-
-  /* elevación (sombras frías con tinte de marca) */
-  --sf-elev-1: 0 1px 2px rgb(15 47 42 / 0.06), 0 1px 3px rgb(15 47 42 / 0.08);
-  --sf-elev-2: 0 8px 24px -6px rgb(15 47 42 / 0.18);
-  --sf-elev-3: 0 12px 32px -8px rgb(15 47 42 / 0.28);
-
-  /* glass del header sticky */
-  --sf-glass: rgb(255 255 255 / 0.82);
 }
 
-[data-theme="dark"] {
-  color-scheme: dark;
-
-  --sf-bg: #0b1f1c;
-  --sf-surface: #0e2723;
-  --sf-surface-raised: #14332d;
-  --sf-surface-sunken: #091b18;
-
-  --sf-ink: #e9f5f1;           /* 14.1:1 — AAA */
-  --sf-ink-secondary: #a9c9c0; /* 8.9:1 — AAA */
-  --sf-ink-muted: #8fb3aa;
-  --sf-ink-disabled: #5c7f77;
-  --sf-ink-on-brand: #062a25;
-
-  --sf-brand: #5eead4;          /* enlace/acento sobre oscuro — 11.6 AAA */
-  --sf-brand-hover: #99f6e4;
-  --sf-brand-active: #ccfbf1;
-  --sf-brand-subtle: #103a2a;
-  --sf-brand-subtle-ink: #6ee7b7;
-  --sf-focus-ring: #2dd4bf;     /* 9.2 UI */
-  --sf-primary: #2dd4bf;        /* botón primario oscuro-ink — 8.3 AAA */
-  --sf-primary-hover: #5eead4;
-
-  --sf-border: #1f4c44;
-  --sf-border-strong: #46857a;  /* 4.0 UI */
-  --sf-divider: #173d37;
-
-  --sf-success: #6ee7b7;  --sf-success-bg: #103a2a;
-  --sf-warning: #fcd34d;  --sf-warning-bg: #3a2e12;
-  --sf-error: #fca5a5;    --sf-error-bg: #2b1414;   --sf-error-ink: #fca5a5;
-  --sf-on-error: #450a0a; /* texto sobre #fca5a5 (5.1:1 AA) */
-  --sf-info: #7dd3fc;     --sf-info-bg: #12303e;
-
-  --sf-elev-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.35);
-  --sf-elev-2: 0 8px 24px -6px rgb(0 0 0 / 0.55);
-  --sf-elev-3: 0 12px 32px -8px rgb(0 0 0 / 0.65);
-
-  --sf-glass: rgb(14 39 35 / 0.82);
-}
-
-/* ---- mapeo de roles a utilidades Tailwind v4 ---- */
-@theme inline {
-  --color-canvas: var(--sf-bg);
-  --color-surface: var(--sf-surface);
-  --color-raised: var(--sf-surface-raised);
-  --color-sunken: var(--sf-surface-sunken);
-
-  --color-ink: var(--sf-ink);
-  --color-ink-2: var(--sf-ink-secondary);
-  --color-ink-3: var(--sf-ink-muted);
-  --color-ink-disabled: var(--sf-ink-disabled);
-  --color-on-brand: var(--sf-ink-on-brand);
-
-  --color-brand: var(--sf-brand);
-  --color-brand-hover: var(--sf-brand-hover);
-  --color-brand-active: var(--sf-brand-active);
-  --color-brand-subtle: var(--sf-brand-subtle);
-  --color-brand-subtle-ink: var(--sf-brand-subtle-ink);
-  --color-primary: var(--sf-primary);
-  --color-primary-hover: var(--sf-primary-hover);
-  --color-ring: var(--sf-focus-ring);
-
-  --color-line: var(--sf-border);
-  --color-line-strong: var(--sf-border-strong);
-  --color-divider: var(--sf-divider);
-
-  --color-ok: var(--sf-success);         --color-ok-bg: var(--sf-success-bg);
-  --color-warn: var(--sf-warning);      --color-warn-bg: var(--sf-warning-bg);
-  --color-err: var(--sf-error);          --color-err-bg: var(--sf-error-bg);   --color-err-ink: var(--sf-error-ink);
-  --color-on-err: var(--sf-on-error);
-  --color-info: var(--sf-info);          --color-info-bg: var(--sf-info-bg);
-
-  --shadow-card: var(--sf-elev-1);
-  --shadow-pop: var(--sf-elev-2);
-  --shadow-toast: var(--sf-elev-3);
-
-  --radius-card: 0.875rem;
-  --radius-pill: 9999px;
-
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* escala tipográfica modular 1.25 (tercera mayor) */
-  --text-h1: 1.953rem;   --text-h1--line-height: 1.2;   --text-h1--font-weight: 700; --text-h1--letter-spacing: -0.015em;
-  --text-h2: 1.563rem;   --text-h2--line-height: 1.25;  --text-h2--font-weight: 600; --text-h2--letter-spacing: -0.01em;
-  --text-h3: 1.25rem;    --text-h3--line-height: 1.3;   --text-h3--font-weight: 600;
-  --text-body-lg: 1.125rem; --text-body-lg--line-height: 1.5;
-  --text-caption: 0.8125rem; --text-caption--line-height: 1.4;
-
-  /* animaciones de utilidad */
-  --animate-flow: sf-flow 1.8s ease-in-out infinite;
-}
-
-/* ---- base ---- */
+html,
 body {
-  background: var(--sf-bg);
-  color: var(--sf-ink);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-size: 1rem;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+  min-height: 100%;
 }
 
-:focus-visible {
-  outline: 2px solid var(--sf-focus-ring);
-  outline-offset: 2px;
-  border-radius: 0.25rem;
+body {
+  @apply bg-slate-50 text-ink-900;
 }
 
-.tnum { font-variant-numeric: tabular-nums; }
-
-@keyframes sf-flow {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(0.72); }
-}
-.sf-flow-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 9999px;
-  background: var(--sf-success);
-  animation: sf-flow 1.8s ease-in-out infinite;
-}
-
-@keyframes sf-shimmer {
-  0% { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-.sf-skeleton {
-  border-radius: var(--radius-card);
-  background: linear-gradient(90deg, var(--sf-surface-sunken) 25%, var(--sf-surface) 50%, var(--sf-surface-sunken) 75%);
-  background-size: 800px 100%;
-  animation: sf-shimmer 1.2s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sf-flow-dot, .sf-skeleton { animation: none; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; }
+::selection {
+  @apply bg-brand-200 text-ink-900;
 }

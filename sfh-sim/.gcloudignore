@@ -1,7 +1,0 @@
-node_modules/
-test/
-prototipo/
-*.log
-.env
-.env.*
-.gcloudignore

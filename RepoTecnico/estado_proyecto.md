@@ -1,157 +1,119 @@
-# Estado del Proyecto — Superfluid EUR Streaming
+# Estado del proyecto — Superfluid Brlt Streaming v2
 
-## Fase actual: **FASE 4 — Pruebas ✅ COMPLETADA** (pendiente `/siguiente_fase` → Fase 5 Manuales)
+> Memoria de trabajo. Última actualización: **Proyecto programado y documentado** — Fases 1..5 cerradas (2026-11-04). Único pendiente operacional: el despliegue real de H7 (credenciales GCP) y el push a repos (solo por orden del usuario).
 
-Última actualización: 2026-10-01
+## Fase actual
 
-### Hitos FASE 4 (agente de pruebas + orquestador)
-- [x] Forge 37/37 + invariantes fuzz 5 actores (runs=1000, 712 s) — logs en `pruebas/`.
-- [x] vitest 32/32 (ui-logic extraída sin cambio de comportamiento + máquina de backoff del poller con fake timers).
-- [x] E2E nuevos lifecycle (7 pasos UI reales on-chain) + pagination (siembra 12 flujos); suite completa **16/16 limpios en 2 corridas consecutivas**.
-- [x] Slither 0 High/Medium; integración live 5/5; cobertura 88.8 % líneas EuroX.
-- [x] Correcciones P4: D1 gasLimit explícito (estimateGas QBFT inestable — hallazgo real de infra), D2 parseEur estricto, D3 humanizeError strings, D5 waits por aria-label, siembra tolerante con pasadas. 2 issues documentados como decisión de producto (§5.3 informe).
-- [x] `INFORME_PRUEBAS.md` §7 consolidado con la entrega del agente (48 verdes propios; bug de paginación clamp corregido; lecciones CI: workers:1 obligatorio).
-- [x] Preview con fixes F4 desplegada: revisión **00004-knl** smoke OK.
+**FASE 5 — Manuales** ✅ Cerrada · **Proyecto listo para entrega** (falta el paso operacional de despliegue H7 y el `/push` si se ordena)
 
-### Operaciones de entrega (2026-10-01)
-- [x] `/push` → git inicializado sobre la historia de origin (9329a3f), commit **1207b24** (82 ficheros: sc/, web/, tools/, RepoTecnico/ completo con logs, LICENSE, .gitignore verificado sin secretos — sc/lib excluido, registro versionado `sc/deployments/codecrypto.json`).
-- [x] Push **institucional** (gitlab.codecrypto.academy) rama `superfluid-DSH-GCP` ✔ (`db8fede → 1207b24`, force-with-lease; ramas hermanas main/DSH/antigravity intactas en db8fede; SHA anterior documentado para recuperación).
-- [ ] Push **gitlab.com** bloqueado: sin credenciales para el host (~/.git-credentials solo cubre codecrypto). Requiere PAT del usuario o clave SSH.
-- [x] GCP: preview **00004-knl** al día con el código de Fase 4 (imagen `296a1301…`), smoke 200 + disclaimer, gate RNF-13 OK.
+## Progreso por fase
 
-### Rediseño visual v1.1 — `@visualUiUx` (2026-10-01) ✅
-- [x] Análisis (F1): `RepoTecnico/analisis_visual.md` — paleta teal por roles semánticos con ratios WCAG calculados, escala modular 1.25 sobre Geist (self-host, cero riesgo de build), espaciado/radios/elevación, inventario Atomic Design.
-- [x] Tokens (F2): `web/src/app/globals.css` con Tailwind v4 `@theme` (roles → utilidades `bg-surface/text-ink/bg-primary/…`), swap de tema por `[data-theme]` + `@custom-variant dark`, `lib/theme.ts` (localStorage + script anti-FOUC), `ThemeToggle` accesible.
-- [x] Refactor Dashboard completo a tokens sin tocar anclas E2E (roles/aria/textos exactos preservados y auditados contra los 16 specs).
-- [x] Accesibilidad: axe E2E ampliado a **claro Y oscuro** (16/16 Playwright verdes, 32/32 vitest, tsc+build limpios).
-- [x] `RepoTecnico/Manual_Identidad_Visual.md` v1.1 (fuente de verdad; derivar a @manuales en Fase 5) + capturas `pruebas/ui-v11-{light,dark}.png`.
-- [x] Preview GCP con la nueva identidad: revisión **00005** (imagen `a08dc1bf…`), smoke 200 + gate RNF-13 OK.
-- [ ] Commit local hecho; push pendiente de nuevo `/push` (regla del asistente).
+| Fase | Estado | Detalle |
+|------|--------|---------|
+| 1. Concepto | ✅ Cerrada | Brief analizado, 18 RF + 6 RNF + 8 RT, entrevista completa en 3 bloques, repos y GCP registrados. |
+| 2. Auditoría | ✅ Cerrada | `INFORME_OPTIMIZACION_V1.md` (37 H-*) y `INFORME_AUDITORIA_CASOS_USO_V1.md` (25 AC-*) resueltos en 3 bloques. `casos_uso.md`: CU-01..CU-16 con Gherkin/EARS, máquina de estados y matriz sin huérfanos. **Bloque 1**: AC-01 → CU-16/RF-21; AC-02 → `settleFlow` público; AC-06 → ownership atómico en deploy. **Bloque 2**: AC-05 → enum de programados + `flows_history`; AC-03 → `changeReceiver` + step-up + auditoría; AC-23 → flujos solapados con confirmación. **Bloque 3**: AC-07 → guardas/pausa/shortfall; AC-08 → sesiones y CSRF; AC-10 → GDPR determinista. **MEDIAS** documentadas en el doc técnico §12. Generados los gráficos Mermaid (`casos_uso/`) y auditado `documento_tecnico.md` (`INFORME_AUDITORIA_DOCUMENTO_TECNICO_V1.md`, veredicto apto con reservas menores). Pendiente menor: pasada ortotipográfica (AC-24). |
+| 3. Desarrollo | ✅ Cerrada | Plan vertical en `plan_desarrollo.md` (H1..H7). **H1 cerrado (2026-11-01)**: `sc/src/Brlt.sol` + `sc/src/BrltX.sol` con 44 tests verdes (10 + 33 + invariantes 128×64) y cobertura de líneas 100 % / 94,42 %. **H2 cerrado (2026-11-04)**: `Brlt` `0x750508AD02404a30dF030466FBb3a29D9EE0482F` y `BrltX` `0xCE5E017599073f60b3518Cf2f86fFdd49bc6e52F` desplegados en Besu 81234 (bloque 6412104), owner/minter en la wallet admin y supply de 10.000.000 BRLT; `CheckDeployment` y smoke real (crear/terminar flujo) OK. **H3 cerrado (2026-11-04)**: `web/` Next.js 15 + MongoDB con SIWE admin/empleado, sesiones opacas, CSRF, rate limit, CRUD de empleados/proyectos, cambio de wallet con doble firma EIP-712, allowlist, configuración validada y auditoría; 27 tests Vitest + smoke E2E verdes. **H4 cerrado (2026-11-04)**: ciclo de nómina completo (crear, pausar, reanudar, cambiar receptor, terminar, liquidar, programados, lotes de 10, mint/burn y tesorería) firmado con MetaMask y reconciliado con `eth_call`; 39 tests Vitest, build de 34 rutas y `npm run smoke:h4` real en Besu (flujos #3/#4, escrow 0). **H5 cerrado (2026-11-04)**: Suite del empleado con balances on-chain (`getRealtimeBalance`), cobro autónomo por `downgrade` verificado contra el recibo (`Downgraded`/`FlowSettled`, tx falsos → 422), liquidación de vencidos, perfil/consentimiento GDPR con borrado inmediato y ventana de retiro de 90 días tras la baja; 41 tests Vitest, build de 36 rutas y `npm run smoke:h5` real en Besu. **H6 cerrado (2026-11-04)**: jobs internos con cron de proceso (`reconcile_flows`, `flows_history`, `anonymize_pii`, `mark_scheduled_due`) y panel `/admin/jobs`; deriva provocada corregida en la Besu real, espejo de eventos idempotente (`flows_history` con clave `txHash-logIndex`), anonimización GDPR a 30 días y hardening de gas por la subestimación de `eth_estimateGas` en Besu; 43 tests Vitest, build de 38 rutas y `npm run smoke:h6` real. |
+| 4. Pruebas | ✅ Cerrada | `INFORME_PRUEBAS_F4.md` (2026-11-04): Forge 44/44 (Brlt 100 % líneas, BrltX 94,42 %), Vitest 43/43, E2E headless Chromium (13 pasos, 8 pantallazos en `pruebas/`), smokes H3..H6 reales en Besu 81234 y `verify:standalone`, todo verde. Analizado: hallazgo de gas en Besu (fix), reconciliación vs guardas, entorno Playwright. |
+| 5. Manuales | ✅ Cerrada | `INFORME_MANUALES_F5.md` (2026-11-04): técnicos en `RepoTecnico/Manuales/` (6 temas), literales en `docs/Manuales/` (8 archivos), 10 capturas reales Chromium, 4 SVG, 3 PDF y **Ayuda integrada** en `/ayuda/` con descargas. |
+| 5. Manuales | ⬜ Pendiente | |
 
-### Riesgos abiertos para el director (sin cambio)
-- Allow-list IPs curso en la preview; ratificación first-mover D17; disponibilidad del RPC académico.
+### Hitos de Fase 3
 
-### Contexto de origen
-- Repo GitLab `anlucorporations/superfluid`, rama `superfluid-DSH-GCP`.
-- Documento guía: `RepoTecnico/BRIEF_SUPERFLUID.md` (adaptado a Foundry global + red Besu Codecrypto).
-- Mandato del usuario: v1 **estrictamente lo pedido en el brief**, subsanando ambigüedades y
-  problemas de seguridad; objetivo = sistema estable con mínima superficie para **beta**.
+| Hito | Estado | Evidencia |
+|---|---|---|
+| H1 — Núcleo de contratos | ✅ Cerrado | `HITO_H1_NUCLEO_CONTRATOS.md` · `forge test` 44/44 verde |
+| H2 — Despliegue gobernado | ✅ Cerrado | `HITO_H2_DESPLIEGUE.md` · Besu 81234 bloque 6412104 · `CheckDeployment` + smoke real |
+| H3 — Identidad y datos | ✅ Cerrado | `HITO_H3_IDENTIDAD_DATOS.md` · 27 tests Vitest + smoke E2E (`npm run smoke`) |
+| H4 — Ciclo de nómina | ✅ Cerrado | `HITO_H4_CICLO_NOMINA.md` · 39 tests Vitest + build 34 rutas + `npm run smoke:h4` real en Besu 81234 |
+| H5 — Suite y cobro | ✅ Cerrado | `HITO_H5_SUITE_COBRO.md` · 41 tests Vitest + build 36 rutas + `npm run smoke:h5` real en Besu 81234 |
+| H6 — Operación y reconciliación | ✅ Cerrado | `HITO_H6_OPERACION.md` · 43 tests Vitest + build 38 rutas + `npm run smoke:h6` real (deriva corregida, cron verificado) |
+| H7 — Preview GCP y cutover | 🟡 Preparado | `HITO_H7_PREVIEW_GCP.md` · Dockerfile standalone verificado (`verify:standalone`) + runbook de cutover/rollback; deploy real pendiente de credenciales |
 
-### Hitos completados
-- [x] Verificación del entorno: Foundry global 1.8.3 (`~/.foundry/bin`), Node 22, Chromium headless.
-- [x] Verificación de la red Besu en vivo: chainId 81234, RPC activo, gasPrice 1 gwei, faucet disponible.
-- [x] Extracción de requerimientos → `requerimientos.md` (RF-01..14, RNF-01..13, RT-01..08,
-      decisiones D1..D16 que subsanan ambigüedades, alcance/exclusiones v1).
-- [x] Artefactos de datos sincronizados: `diccionario_datos.md`, `diagrama_er.md` (Mermaid ER del
-      modelo lógico on-chain), `base_datos.sql` (placeholder condicional — sin BD relacional en v1).
-- [x] `entornos_globales.md` con variables, comandos y referencias de secretos.
+## Resumen de la Fase 1 (2026-10-30)
 
-### Decisiones clave CONFIRMADAS (entrevistas Fase 1 + Bloques 1–7 auditoría, 2026-09-29/30)
-- **D1**: Opción B — Super Token propio `EuroX.sol` (CFA simplificado). BRIEF §8 enmendado in situ.
-- **D11**: deployer/owner = cuenta **#0 Anvil** `0xf39F…2266` (pk pública del curso), balance verificado 89 CC ✔.
-  Cuenta generada `0xFFf3…12b9` retirada y su archivo local eliminado (pk expuesta en chat).
-- **D9**: liquidación `settle()` permissionless on-chain. **D10**: depósito agregado por cuenta; pausa retiene, cerrar libera.
-- **D12**: EuroxFactory conservada MUST. **D13**: límite de flows solo UI. **D14**: vista receptor RF-12.
-- **D15**: aviso irrevocabilidad. **D16**: disclaimer + MIT + RGPD no-aplicable documentado.
-- **P3**: sin BD relacional · **P4**: remotos GitLab.com + gitlab.codecrypto.academy · **P5**: preview Cloud Run SÍ.
-- Polling 5 s + backoff (block time QBFT medido = 2 s; RNF-04 reformulado a percentiles).
+- Brief `BRIEF_SUPERFLUID.md` analizado íntegramente; requerimientos clasificados y trazados al brief.
+- Plataforma v1 en producción analizada (Cloud Run europe-west1, tokens EURBETA, faucet, refresco 5 s).
+- Entrevista en 3 bloques con estas decisiones:
+  1. Opción B (brief §8): envoltorio propio `BrltX.sol` con CFA simplificado.
+  2. Panel admin 100% on-chain con wallet + MongoDB para lo administrativo.
+  3. Suite del Empleado con acceso solo por wallet.
+  4. Repos existentes (GitHub/GitLab.com/GitLab-CodeCrypto), rama `superfluidv2`.
+  5. GCP: reutilizar plataforma Cloud Run existente.
+  6. BRLT con **18 decimales**.
+  7. Flujos programados: aviso + firma manual del admin.
+  8. Una sola organización; montos configurables por empleado/periodo.
 
-### Hitos completados FASE 2
-- [x] Auditoría @audita V1 sobre documentación Fase 1 → `INFORME_OPTIMIZACION_V1.md`
-      (32 hallazgos: 4 críticos / 13 altos / 11 medios / 4 bajos; 27 descartes Anexo A).
-- [x] Entrevista de resolución: 21 preguntas en 7 bloques, TODAS respondidas por el usuario.
-- [x] Quick wins aplicados: BRIEF §8 enmendado, D9–D16, RF-12..14, RNF-08..13, `.gitignore`,
-      `LICENSE.md` con disclaimer, métricas de red reales en entornos_globales.md.
-- [x] `casos_uso.md`: 13 CU + matriz completa (14 RF + 13 RNF + 8 RT) con Gherkin/EARS RE-nn.
-- [x] Auditoría de casos de uso (3 lentes + verificación adversarial): errata DEP_3 corregida
-      (canónico: 8_333_333_333_333_323_200 = 3×RATE×3600), modelo de dos tasas
-      (netFlowRate solo activos / netOutflowGarantizado activos+pausados), reglas contables del
-      devengo (earnedUnclaimed, pendingDeficit, pendingPool), settle por ESTADO no reloj (RE-07c),
-      política única de escasez (prorrateo proporcional; orden solo para residuos), RNF-08 reformulada.
-- [x] `diagramas_casos_uso.md`: diagrama UML de casos + 2 secuencias + stateDiagram + componentes (Mermaid).
-- [x] `documento_tecnico.md` con nota comparativa CFA real vs envoltorio (§5, P21 ✅).
-- [x] Auditoría del documento técnico (3 lentes + adversarial) y aplicación de hallazgos:
-      invariantes core con forma canónica, trazabilidad §2.1–2.3 completa (RT/CU huérfanos
-      asignados), comando deploy unificado (ruta autoritativa entornos_globales), lista cerrada
-      de eventos RNF-10, registro canónico `sc/out/deployments/codecrypto.json`, erratas
-      corregidas (foundry.toml, nombres Flow, decimals, glosa 1:1, settledUpTo inicial).
+## Archivos RepoTecnico/
 
-### FASE 3 — hitos completados
-- [x] **H1 Contratos+tests**: `sc/` con foundry.toml (via-IR), Euro/EuroX/EuroxFactory.
-      Suite: 4 Euro + 22 EuroX + invariantes fuzz (custodia 1:1, real≥dep, fórmula depósito)
-      = **27/27 verdes**. Greps estáticos delegatecall/selfdestruct = 0.
-      Descubrimiento del fuzz: materialización sin respaldo → se endureció createFlow
-      (deps + buffer 1h) y downgrade (undercollateralization guard). `tools/constants-check.mjs` OK.
-- [x] **H2 Deploy a Besu**: DeployAllScript con preflight (chainId+saldo CC). Dos corridas
-      broadcast (RNF-07): EUR 0x9E54…3042, FACTORY 0xa82f…CFC9, EURx 0x6A35…93E2 (vivos y verificados).
-      Smoke en vivo completo: wrap 100 EUR ✓, createFlow 2000/mes ✓ (+40 s devengo exacto),
-      closeFlow ✓ libera deps, claimSettled por receptor ✓ (3.24e16 EURx).
-      Registro canónico `sc/out/deployments/codecrypto.json`; `tools/check-deployments.mjs` OK.
-- [x] **H3 Scaffolding web**: Next 15.5.4 + TS(ES2020) + Tailwind + ethers 5.7.2.
-      `tools/sync-abi.mjs` → ABIs en `web/src/abi/`; `config/web3.ts` con addresses del registro
-      canónico (sobrescribibles por NEXT_PUBLIC_*); `lib/superfluid.ts` con las 6 firmas del brief
-      + pause/resume/close/settle/claimSettled/getAccountInfo/incomingUnclaimed + humanizeError(D7);
-      `lib/polling.ts` RE-04 serializado/backoff 15→30 s/timeout 25 s/recuperación 3 éxitos.
-      Criterios: tsc --noEmit OK · npm run build OK · grep pk en bundle = 0 (RNF-02) ·
-      lecturas live desde Besu vía la capa web OK (real deployer 99.97e18, r1 3.24e16).
-      Registro canónico reapuntado a la corrida 1 (la del smoke verificado; nota RNF-07 conservada).
+- [x] `BRIEF_SUPERFLUID.md` (entrada del proyecto, ya existente)
+- [x] `requerimientos.md` (v Borrador-1, creado 2026-10-30)
+- [x] `diccionario_datos.md` (v Borrador-1, creado 2026-10-30)
+- [x] `entornos_globales.md` (v Borrador-1, creado 2026-10-30)
+- [x] `estado_proyecto.md` (memoria de trabajo, actualizada al día)
+- [x] `INFORME_OPTIMIZACION_V1.md` (auditoría de documentación, 37 hallazgos H-*)
+- [x] `casos_uso.md` (CU-01..CU-16 con auditoría aplicada y Bloque 1 de decisiones; creado 2026-10-30)
+- [x] `INFORME_AUDITORIA_CASOS_USO_V1.md` (auditoría de casos de uso, 25 hallazgos AC-*)
+- [x] `documento_tecnico.md` (borrador completo, 13 secciones; actualizado 2026-11-01)
+- [x] `casos_uso/` (gráficos Mermaid: diagrama de CUs, máquina de estados y secuencias)
+- [x] `INFORME_AUDITORIA_DOCUMENTO_TECNICO_V1.md` (auditoría del documento técnico, 2026-11-01)
+- [x] `plan_desarrollo.md` (plan vertical H1..H7, creado 2026-11-01)
+- [x] `HITO_H1_NUCLEO_CONTRATOS.md` (cierre de H1: diseño, tests, cobertura y gas, 2026-11-01)
+- [x] `HITO_H2_DESPLIEGUE.md` (cierre de H2: addresses, tx hashes, verificación y smoke, 2026-11-04)
+- [x] `HITO_H3_IDENTIDAD_DATOS.md` (cierre de H3: panel + Suite, SIWE, MongoDB y E2E, 2026-11-04)
+- [x] `HITO_H4_CICLO_NOMINA.md` (cierre de H4: ciclo de nómina on-chain, lotes y tesorería, 2026-11-04)
+- [x] `HITO_H5_SUITE_COBRO.md` (cierre de H5: Suite con cobro autónomo, GDPR y ventana de retiro, 2026-11-04)
+- [x] `HITO_H6_OPERACION.md` (cierre de H6: jobs, reconciliación, GDPR y hardening, 2026-11-04)
+- [x] `HITO_H7_PREVIEW_GCP.md` (H7 preparado: imagen standalone verificada, cutover/rollback, 2026-11-04)
+- [x] `INFORME_PRUEBAS_F4.md` (cierre de Fase 4: detalle por suite, errores resueltos y evidencia headless, 2026-11-04)
+- [x] `INFORME_MANUALES_F5.md` + `docs/Manuales/**` + `docs/imagenes/**` + `web/public/ayuda/**` (Fase 5 completa, 2026-11-04)
+- [x] `pruebas/` (pantallazos E2E Chromium: guardas de sesión y panel admin completo)
 
-- [x] **H4 Dashboard completo**: `components/Dashboard.tsx` con disclaimer sin scroll (RNF-12),
-      connect/guard de red (RE-09a), wrap/unwrap validados (D7→humanizeError), modal irrevocabilidad
-      (D15), tabla streams paginada 10/página (RE-03b), pestaña Recibidos vía eventos FlowCreated
-      (CU-08, sin índice inverso global), settle/claim keeper (CU-07), aria-labels/tabular-nums (RNF-09).
-      Fix WCAG real detectado por axe: contraste botón Pausar 2.93→amber-800 AA. tsc+build OK.
-- [x] **H5 E2E automatizados**: Playwright 1.49 + chromium headless global + mock EIP-1193 que firma
-      con la pk pública del curso (solo test). Specs: wallet(4) · dashboard::live_balance_monotonic ·
-      received::list_incoming · axe::dashboard_contrast = **7/7 verdes en 2 corridas consecutivas**
-      (criterio H5). Herramientas nuevas: `tools/rpc-latency.mjs` (RNF-04: hoy p50 9 ms, 100 % válidas)
-      y `tools/coverage-check.mjs` (RNF-03: 13 RF-MUST con tests existentes ✔).
+## Workspace
 
-- [x] **H5b Preview Cloud Run**: `next.config.ts output:"standalone"` + Dockerfile multi-stage.
-      Build remoto vía Cloud Build (sin docker local): imagen `superfluid/dashboard:0eff1c4f…` SUCCESS.
-      Servicio `superfluid-dashboard` en europe-west1 desplegado; smoke HTTP 200 con disclaimer visible.
-      Gate RNF-13: `tools/preview-policy-check.sh` OK — estado actual allUsers = riesgo ACEPTADO y
-      documentado (Bloque 4 Q12); la allow-list de IPs del curso queda como acción pendiente del
-      operador humano (requiere lista de IPs que solo el director puede proporcionar).
+- `sc/` (Foundry): `src/Brlt.sol`, `src/BrltX.sol`, tests en `test/`, scripts de deploy en
+  `script/` y dependencias en `lib/` (no versionadas). `forge test` verde (44/44).
+- `web/` (Next.js 15): panel admin + Suite del Empleado con SIWE, MongoDB y auditoría;
+  ciclo de nómina H4 reconciliado, Suite H5 con cobro autónomo, jobs H6 con panel y
+  assets de despliegue H7 (`Dockerfile`, `verify:standalone`, `gcp/`).
+  `npm run typecheck`, `npm test` (43/43) y `npm run build` (38 rutas) limpios;
+  `npm run smoke` (H3), `smoke:h4`, `smoke:h5` y `smoke:h6` (Besu real) OK;
+  `npm run verify:standalone` OK; Ayuda pública en `/ayuda/`.
+- No es repo git todavía; nada commiteado ni subido.
 
-### Progreso H6 — Cierre beta (en curso, retomado tras pausa del usuario)
-- [x] README.md raíz end-to-end (run/deploy/disclaimer/checklist custodia RNF-11) → RNF-06.
-- [x] slither 0.11.6 instalado (pip --user) y ejecutado: **0 hallazgos high/medium en src/**
-      tras corregir: incorrect-equality (status por rango) y 3 uninitialized-local.
-- [x] Fix funcional detectado en vivo: getOpenOutflows no persistía el registro de emisores
-      (UI Recibidos vacía). Corrección: registro outflowList on-chain + reactivación
-      Closed→Active conservando earnedUnclaimed + test nuevo `test_reopen_closed_flow_keeps_credit`.
-- [x] **Contratos V2** desplegados y smoke en vivo completo (wrap/flow/pause/resume/close/claim ✔).
-      Registro canónico `sc/out/deployments/codecrypto.json` con historial de las 3 corridas;
-      web3.ts/README/cloudbuild sincronizados a V2 (EUR 0xf505…6f36, EURx 0x3fA4…50F2, FAC 0x9540…3778).
-- [x] Gates: forge 28/28 · playwright 7/7 · coverage-check OK · constants-check OK ·
-      check-deployments OK · preview Cloud Run revision 00002 sirviendo V2 (HTTP 200 ✔).
-- [x] **Re-auditoría @audita V2 sobre código** (workflow 3 lentes + verificación adversarial):
-      destapó defectos REALES que mi V2 aún tenía — 2 CRÍTICOS (sobre-emisión vía
-      claimSettled sin respaldo; BigNumber-vs-bigint con cifras falsas en la UI) y 5 ALTOS
-      (doble conteo de depósitos en settle, lockout de retirada tras 1 h, deuda perpetua
-      tras close, índices sin poda, etc.).
-- [x] **Reescritura contable V3 (modelo de reserva)**: earnedUnclaimed como pasivo dentro de
-      real; claim = débito+crédito; gate create deps+owed+buffer; insolvencia owed>real;
-      prorateo nominal con recorte; poda swap-and-pop; motor de polling reescrito (backoff
-      real, epoch, reset por cuenta); coerción BigNumber→bigint en toda la frontera de
-      lectura; guard de red en requireSigner. Decisión **D17** registrada + §0/CU/diagramas
-      actualizados. 5 tests de regresión nuevos nombrados por hallazgo.
-- [x] **V3 desplegada y verificada en vivo** (EURx 0x7046…D16E): smoke completo con
-      conservación exacta; registro canónico versionado `sc/deployments/` con fs_permissions
-      (hallazgo H2-11 cerrado); preview revision 00003; slither 0 high/medium post-lint;
-      ABI idéntico tras fixes de estilo (no se requirió redeploy, nota §6 del informe).
-- [x] Suite final: **forge 31/31 · E2E 8/8 en 2 corridas consecutivas · gates OK**
-      (coverage/constants/check-deployments). `INFORME_OPTIMIZACION_V2.md` con registro de
-      revisión firmada (§4) — falta solo la ratificación humana de 3 riesgos (§7 del informe).
-- [x] Estado → **BETA OPERATIVA**. Pendientes del director: allow-list IPs curso;
-      riesgo RPC académico aceptado; limitación first-mover D17.
+## Decisiones registradas
 
-### Pendientes para cerrar Fase 2
+| # | Decisión | Fecha | Fuente |
+|---|----------|-------|--------|
+| 1 | Opción B: envoltorio mínimo propio `BrltX.sol` con CFA simplificado (no framework Superfluid soberano) | 2026-09-29 | Brief §8 |
+| 2 | Panel admin 100% on-chain con wallet + MongoDB para lo administrativo | 2026-10-30 | Entrevista Bl. 1 |
+| 3 | Suite del Empleado: portal aparte con acceso solo por wallet (flujos activos/próximos/terminados, proyecto, perfil) | 2026-10-30 | Entrevista Bl. 1 |
+| 4 | Repos: GitHub + GitLab.com + gitlab.codecrypto.academy (anlucorporations/superfluid), rama `superfluidv2` | 2026-10-30 | Entrevista Bl. 2 |
+| 5 | GCP: reutilizar plataforma Cloud Run existente (europe-west1) con faucet on-chain + MongoDB off-chain | 2026-10-30 | Entrevista Bl. 2 |
+| 6 | Cobro del empleado: CU-16 / RF-21 (`downgrade` BrltX→BRLT a su wallet; retiro tras baja) | 2026-11-01 | Auditoría AC-01 |
+| 7 | Fin de flujo: `settleFlow` público/sin permiso y estado «vencido pendiente de liquidación» | 2026-11-01 | Auditoría AC-02 |
+| 8 | Ownership: Ownable2Step completado dentro de la sesión de deploy (sin diferido) | 2026-11-01 | Auditoría AC-06 |
+| 9 | `flujos_programados`: enum próximo/ejecutado/cancelado/fallido; terminados desde eventos + `flows_history` | 2026-11-01 | Auditoría AC-05 |
+| 10 | Cambio de wallet atómico: `changeReceiver` + EIP-712 ligado + step-up admin + auditoría | 2026-11-01 | Auditoría AC-03 |
+| 11 | Flujos solapados por empleado permitidos con confirmación y total agregado | 2026-11-01 | Auditoría AC-23 |
+| 12 | BrltX robusto: ReentrancyGuard + CEI, Pausable que no atrapa saldos, shortfall explícito | 2026-11-01 | Auditoría AC-07 |
+| 13 | Sesiones: admin 2 h / empleado 8 h, nonce 5 min, rate-limit 5/15, revocación inmediata, CSRF | 2026-11-01 | Auditoría AC-08 |
+| 14 | GDPR: borrado inmediato, anonimización a 30 días, retención anónima 5 años | 2026-11-01 | Auditoría AC-10 |
 
-### Pendientes para cerrar Fase 2
-- [x] Confirmación del usuario (`/siguiente_fase`) recibida; Fase 3 iniciada.
+## Pendientes (para siguientes fases)
 
-### Próximos pasos (Fase 3, hitos verticales aprobados al iniciar)
-H1 contracts+tests · H2 deploy a Besu · H3 scaffolding web+config · H4 dashboard full ·
-H5 E2E · H5b preview Cloud Run · beta.
+1. `MONGODB_URI` de producción y política de backups (el resto de la conexión ya está
+   resuelto: base `superfluid` e índices creados por `npm run seed`).
+2. Confirmar `project_id` textual de GCP y método de autenticación (gcloud ADC o JSON de servicio).
+3. Formalizar owner/minter (wallet admin desplegante) en el documento técnico de Fase 2.
+
+## Criterios de aceptación Fase 1 — verificación
+
+| Criterio | Estado |
+|----------|--------|
+| 3 archivos .md en RepoTecnico/ (`requerimientos`, `diccionario_datos`, `entornos_globales`) | ✅ |
+| Preguntas de la entrevista respondidas | ✅ (3 bloques) |
+| URLs de repositorios + rama almacenadas | ✅ (rama `superfluidv2`) |
+| Credenciales/información GCP almacenadas | ✅ parcial (proyecto 1095249147821, región, URL de la plataforma v1; pendiente `project_id` textual + credenciales explícitas) |
+
+> El punto parcial se valida durante Fase 3 (despliegue/preview). Fase 1 dada por cerrada salvo
+> confirmación del director del proyecto.

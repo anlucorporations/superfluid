@@ -1,0 +1,39 @@
+steps:
+  # Build multi-stage del Dockerfile de web/ (deps → build → runtime standalone).
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build"
+    args: ["build", "-t", "$_IMAGE", "."]
+  # Push a Artifact Registry.
+  - name: "gcr.io/cloud-builders/docker"
+    id: "push"
+    args: ["push", "$_IMAGE"]
+  # Despliegue en Cloud Run con las variables de runtime del archivo.
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: "deploy"
+    args:
+      - "run"
+      - "deploy"
+      - "$_SERVICE"
+      - "--project"
+      - "$PROJECT_ID"
+      - "--region"
+      - "$_REGION"
+      - "--image"
+      - "$_IMAGE"
+      - "--port"
+      - "8080"
+      - "--min-instances"
+      - "1"
+      - "--max-instances"
+      - "2"
+      - "--cpu"
+      - "1"
+      - "--memory"
+      - "512Mi"
+      - "--timeout"
+      - "120s"
+      - "--allow-unauthenticated"
+images:
+  - "$_IMAGE"
+options:
+  logging: CLOUD_LOGGING_ONLY
