@@ -1,10 +1,12 @@
 # Estado del proyecto — Superfluid Brlt Streaming v2
 
-> Memoria de trabajo. Última actualización: **Proyecto programado y documentado** — Fases 1..5 cerradas (2026-11-04). Único pendiente operacional: el despliegue real de H7 (credenciales GCP) y el push a repos (solo por orden del usuario).
+> Memoria de trabajo. Última actualización: **todas las fases cerradas y despliegue en GCP operando** (2026-11-07): `brltv2` en Cloud Run del proyecto `opencode-txbarlovento` (cuenta txbarlovento), smoke E2E verde desde la URL pública, escrow 0. Solo queda el push final a repos (ya ejecutado a GitHub/GitLab incluida la iteración del despliegue) y el backup diario de Mongo.
 
 ## Fase actual
 
-**FASE 5 — Manuales** ✅ Cerrada · **Proyecto listo para entrega** (falta el paso operacional de despliegue H7 y el `/push` si se ordena)
+**Proyecto Liberal** ✅ · lista para entrega · URL pública:
+**https://brltv2-crx2qw5whq-ew.a.run.app** · panel admin y Suite del Empleado operativos
+(cuenta administrador `txbarlovento@gmail.com` sobre `opencode-txbarlovento`).
 
 ## Progreso por fase
 
@@ -27,7 +29,7 @@
 | H4 — Ciclo de nómina | ✅ Cerrado | `HITO_H4_CICLO_NOMINA.md` · 39 tests Vitest + build 34 rutas + `npm run smoke:h4` real en Besu 81234 |
 | H5 — Suite y cobro | ✅ Cerrado | `HITO_H5_SUITE_COBRO.md` · 41 tests Vitest + build 36 rutas + `npm run smoke:h5` real en Besu 81234 |
 | H6 — Operación y reconciliación | ✅ Cerrado | `HITO_H6_OPERACION.md` · 43 tests Vitest + build 38 rutas + `npm run smoke:h6` real (deriva corregida, cron verificado) |
-| H7 — Preview GCP y cutover | 🟡 Preparado | `HITO_H7_PREVIEW_GCP.md` · Dockerfile standalone verificado (`verify:standalone`) + runbook de cutover/rollback; deploy real pendiente de credenciales |
+| H7 — Preview GCP y cutover | ✅ Desplegado | `HITO_H7_PREVIEW_GCP.md` · `brltv2` en Cloud Run (txbarlovento), Mongo en GCE/SIWE secreta, smoke E2E completo contra `https://brltv2-crx2qw5whq-ew.a.run.app` |
 
 ## Resumen de la Fase 1 (2026-10-30)
 

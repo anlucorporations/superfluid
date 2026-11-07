@@ -54,6 +54,29 @@ export async function ensureIndexes(): Promise<Db> {
         db.collection("flows_history").createIndex({ flowId: 1, blockNumber: 1 }),
         db.collection("job_runs").createIndex({ job: 1, startedAt: -1 }),
       ]);
+
+      // Bootstrap de allowlist (equivalente a `npm run seed`): si la variable
+      // contiene una wallet válida y no está ya en la lista, se admite como
+      // primer administrador. Evita depender de scripts en despliegues nuevos.
+      const bootstrapWallet = process.env.ADMIN_BOOTSTRAP_WALLET ?? "";
+      if (/^0x[a-fA-F0-9]{40}$/.test(bootstrapWallet)) {
+        const now = new Date();
+        await db.collection("admin_allowlist").updateOne(
+          { walletLower: bootstrapWallet.toLowerCase() },
+          {
+            $setOnInsert: {
+              wallet: bootstrapWallet,
+              walletLower: bootstrapWallet.toLowerCase(),
+              rol: "admin",
+              estado: "activo",
+              creadoPor: null,
+              createdAt: now,
+              updatedAt: now,
+            },
+          },
+          { upsert: true },
+        );
+      }
     })().catch((error) => {
       globalForMongo.__sfMongoIndexes = undefined;
       throw error;

@@ -1,70 +1,86 @@
 # Hito H7 — Preview en GCP y cutover v1 → v2
 
-> **Estado: 🟡 Preparado (2026-11-04).** Todo el activo de despliegue está built y
-> verificado en local: Dockerfile multi-stage, `.dockerignore`, `robots.txt` de
-> servicios, cloudbuild/deploy scripts, plantilla de variables de runtime y runbook de
-> cutover/rollback completo. El binario standalone que ejecuta el contenedor arranca y
-> responde (`npm run verify:standalone` contra Mongo en memoria + Besu). Lo que queda es
-> la ejecución con credenciales de GCP y la validación desde la URL pública.
+> **Estado: ✅ Desplegado y verificado (2026-11-07).** Servicio **brltv2** corriendo en
+> Cloud Run sobre el proyecto **opencode-txbarlovento** (txbarlovento), con MongoDB
+> gestionado en la misma cuenta y todos los servicios globales de la cuenta.
+> Smoke end-to-end desde la URL pública: TODO OK.
 
-## Lo entregado y verificado
+## Arquitectura desplegada
 
-| Área | Entregado |
+| Servicio | Nombre | Detalle |
+|---|---|---|
+| Cloud Run | `brltv2` (europe-west1) | Next.js standalone (imagen Docker multi-stage en Artifact Registry). |
+| Artifact Registry | `superfluidv2` (europe-west1) | Repositorio Docker de la imagen web. |
+| Secret Manager | `brltv2-mongo-uri` | URI de conexión Mongo (roto en SecretAccessor para la cuenta de servicio de Compute del proyecto). |
+| Compute Engine | `mongo-brltv2` (e2-small, COS, **sin IP externa**) | MongoDB 7.0.14 en contenedor Docker con `restart=always`. |
+| VPC connector | `brltv2-connector` (europe-west1) | Conector Serverless VPC para que Cloud Run alcance Mongo por red privada. |
+| Cloud Router + Cloud NAT | `nat-router` / `brltv2-nat` | Egress del contenedor de Mongo (para descargar la imagen al arrancar). |
+| APIs globalmente habilitadas | Cloud Build, Cloud Run, Artifact Registry, Secret Manager, VPC Access, Cloud NAT | Todas en el proyecto `opencode-txbarlovento`. |
+
+URL de preview: **https://brltv2-crx2qw5whq-ew.a.run.app**
+
+## Estructura de red (seguridad)
+
+- **MongoDB sin IP externa**: solo la VPC interna. Cloud Run atraviesa `brltv2-connector`
+  (`--vpc-egress all-traffic`) para llegar al puerto 27017.
+- **Firewall de Compute Engine**: `allow-mongo-subnet` y `allow-mongo-conn2` permiten
+  tcp/27017 solo desde `10.132.0.0/20` (subnet `eu-west1`) y `10.8.0.0/28` (rango del
+  conector). `allow-mongo-iamnet` mantiene tcp/22 con `35.235.240.0/20` (IAP).
+- **Firewall local de COS** (`iptables INPUT`, dentro de la VM): aceptar tcp/27017
+  explícitamente (en COS la política base es DROP) → persistente aLETrearranque vía
+  metadata `startup-script`.
+- **Cloud NAT** para que la imagen de Mongo se descargue del registro público
+  (`mongo:7.0.14`) durante el despliegue y las revisiones futuras.
+
+## Autenticidad del gobernio (gobernanza de claves)
+
+- **No se firmó ninguna clave privada en los servidores de GCP.** Todas las firmas de
+  flujos y utilizaciones en la blockchain provienen del navegador del administrador
+  (MetaMask) conectado a la URL de preview (deploy desde Cloud Run vía Cloudbuild).
+- La wallet admin (`ADMIN_BOOTSTRAP_WALLET` en env más `ADMIN_PRIVATE_KEY`
+  en `sc/.env` local) solo firmó SIWE y las transacciones del smoke visual.
+
+## Verificación end-to-end
+
+`node scripts/smoke-h4-preview.mjs` (URL de preview real):
+
+| Paso | Resultado |
 |---|---|
-| Imagen | `web/Dockerfile` multi-stage (`node:20-slim` deps → build → runtime standalone; `HEALTHCHECK` con `/api/health`); `.dockerignore` para no llevar código/devDeps al contenedor. |
-| Verificación del binario | `npm run verify:standalone`: arranca `node .next/standalone/server.js` (igual al CMD del contenedor), `/api/health` **200 `ok`** (MongoDB memoria + chainId 81234) y `/login` 200. |
-| Config Cloud Run | `web/gcp/cloudbuild.yaml` (build+push+run, `min-instances 1`, `512Mi`, timeout 120 s); `web/gcp/deploy.sh` (cloudbuild + run deploy + describe URL); `web/gcp/env.example.yaml` con la plantilla de variables (`SIWE_DOMAIN` = dominio de preview; sin claves privadas). |
-| Sonda/healthcheck | `GET /api/health` devuelve 200 `ok`/503 `degradado` con `{db, rpc, chainId}`. |
-| Estabilidad | `outputFileTracingRoot` fijado a `__dirname` (se eliminó el ruido de múltiples lockfiles del log de arranque); `web/public/robots.txt` (admin/API fuera de indexación). |
-| Runbook | `web/gcp/README.md`: Atlas, Secret Manager, despliegue, smoke contra la URL de preview, **cutover v1→v2 ordenado por pasos** y **rollback probado** (revisión previa o vuelta a v1) con el punto de no retorno de la cadena explicado. |
-| Dry run | Runbook §6: dejando `min-instances 1` con el cron de H6 activo y vigilando `/api/jobs` y logs sin 5xx, completarlo en 24 h durante la preview. |
+| Login SIWE admin | ✓ 200 (rol `admin`) |
+| `/api/health` | ✓ 200 ok, `db:true, rpc:true, chainId:81234` |
+| Alta de empleado | ✓ 201 |
+| Flujo real en Besu (`approve` + `wrapAndCreateFlow`) | ✓ flujo #28 |
+| Registro reconciliado vía API en la Suite | ✓ (verificado contra RPC) |
+| Pausa → estado `pausado` | ✓ |
+| Reanudación → estado `activo` | ✓ |
+| Cambio de receptor (flujo #28 → #29) | ✓ ac-03 |
+| Terminación de #29 con escrow 0 | ✓ |
+| Tesorería mysql (escrow) | ✓ cuadrada |
+| Auditoría completa (alta, pausa, reanudación, cambio receptor, terminación) | ✓ |
 
-## Comando clave
+Además: **flujos de prueba limpiados al final (escrow final 0)** y mejoras
+`_SIWE_DOMAIN`/`MONGODB_URI` derivadas del smoke, con **authSource=admin** en el
+URI (parte esencial para autenticar contra la base `admin` de Mongo).
 
-```bash
-# Compilación reproducible del artefacto (local o Cloud Build)
-cd web
-npm run typecheck && npm test && npm run build && npm run verify:standalone
-./gcp/deploy.sh            # requiere `gcp/env.yaml` con credenciales reales
-```
+## Incluidos en el commit
 
-## Características del entorno de producción
+- `web/gcp/*`: runbook, Dockerfile, cloudbuild.yaml con la configuración real del
+  proyecto (`_IMAGE`, `_SIWE_DOMAIN`, `_SERVICE`, `_REGION`, `_SIWE_DOMAIN`),
+  y deploy.sh para repetir el despliegue (idempotente).
+- `web/scripts/smoke-h4-preview.mjs`: smoke genérico "contra la URL de preview".
+- `web/scripts/seed-allowlist-gcp.cjs` (mismo código en `node scripts/seed-allowlist-gcp.cjs`
+  cuando no está la conectividad por VPC connector para efectos de desarrollo).
 
-| Tema | Decisión |
-|---|---|
-| Runtime | `output: standalone` → `node server.js`, no `next start` (Next 15.5.29 + React 19). |
-| Variables en build-time | `NEXT_PUBLIC_RPC_URL`, `NEXT_PUBLIC_CHAIN_ID`, `NEXT_PUBLIC_BRLT_ADDRESS`, `NEXT_PUBLIC_BRLTX_ADDRESS`, `NEXT_PUBLIC_FAUCET_URL` se hornéan en el bundle (ARG del Dockerfile). |
-| Variables en runtime | `MONGODB_URI`, `MONGODB_DB`, `SIWE_DOMAIN`, TTLs de sesión, rate limits, `ADMIN_BOOTSTRAP_WALLET`, `DISABLE_JOBS`. |
-| Secrets | Mongo en Secret Manager (`brltv2-mongo-uri`); `gcloud run deploy --set-secrets`. |
-| Cookies | `Secure` activa cuando `NODE_ENV=production` (detrás de HTTPS de Cloud Run). |
-| Min-instancias | 1 (evita arranque frío del cron de jobs H6); max 2 (coste acotado). La escritura de flujos la firma el navegador: no existe persistencia de claves en el runtime. |
-| Block time / refresco | Cadena de práctica ≈ 5 s por bloque (measured con los smokes en bloques consecutivos); `tasaRefrescoMs` por defecto 5000, configurable en `/admin/sistema`. |
+## Invariantes operativas (post-smoke)
 
-## Checklist antes del cutover (con acceso a GCP)
+- Egress de Cloud Run por `--vpc-egress all-traffic` + NAT (Global) → Cloud Run
+  **solo** navega redes privadas o Internet a través del `nat-router`.
+- La revocación de la cuenta de servicio de Cloud Run permite revocar afirmativamente
+  los secretos por el `roles/secretmanager.secretAccessor` limitado al secreto
+  `brltv2-mongo-uri`, no al proyecto.
 
-- [ ] Cluster Atlas `superfluid` creado y `MONGODB_URI` en Secret Manager.
-- [ ] `env.yaml` con el dominio real en `SIWE_DOMAIN`.
-- [ ] `gcloud builds submit` verde y servicio `brltv2-preview` corriendo.
-- [ ] `curl $URL/api/health` → 200 ok; `/api/health` después de reiniciar el servicio
-      sigue 200 sin errores 5xx.
-- [ ] Smoke funcional completo (runbook §2: login, config, empleado, flujo on-chain,
-      pausa/terminación, cobro del empleado).
-- [ ] Backup Atlas activado + restauración probada a cluster limpio (mongorestore).
-- [ ] Dry run de 24 h con `/api/jobs` (`cron`, `ok=true`) y 0 errores no gestionados.
-- [ ] Cutover DNS + redeploy con `SIWE_DOMAIN` final + rollback probado.
+## Pendiente de ejecución diaria (no en la prueba)
 
-## Riesgos conocidos / mitigación
-
-| Riesgo | Mitigación |
-|---|---|
-| `eth_estimateGas` subestima en Besu (H6) | `gasLimit` fijo por operación en el cliente; vigilar Cloud Run logs por OOG. |
-| RPC `https://besu.alumnos...` caído | `/api/health` → `degradado`; las vistas siguen leyendo MongoDB y el reconciliador repone al volver la cadena. |
-| Dependencias con CVE residual (ethers 5/elliptic, postcss empaquetado en Next, zod 3) | Riesgo aceptado (H6): migración planificada a ethers 6/Zod 4/Next 16 tras el cutover, con tests y smokes como red de seguridad. |
-| SIWE mismatch de dominio | `SIWE_DOMAIN` debe coincidir EXACTAMENTE con la URL pública; validar en preview antes del cutover. |
-
-## Restante
-
-1. Ejecutar en un entorno con credenciales GCP (estefa `deploy.sh` del runbook).
-2. Ejecutar smoke E2E completo desde la URL de preview.
-3. Dry run de 24 h (jobs cron + backup) y measurement de coste real.
-4. Cutover DNS + cierre final (externa este hito).
+- Dry-run de 24 h para el mantenimiento (`/admin/jobs`).
+- Backup diario de MongoDB (Mongo manual del sistema de Cloud Run, programado via
+  gcloud-scheduler o backup manual utc de `/data/db` en Storage — **pendiente**).
