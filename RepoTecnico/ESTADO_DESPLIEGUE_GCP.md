@@ -102,6 +102,26 @@ curl https://brltv2-crx2qw5whq-ew.a.run.app/api/health
 | `brltv2-mongo-uri` | URI de conexión de Mongo (Auth* admin · directConnection=true) · binding `SecretAccessor` a la SA del Compute del proyecto en este recurso |
 | Otros (preexistente en el mismo proyecto) | `deepseek-api-key`, `gemini-api-key`, `moonshot-api-key`, `opencode-api-key`, `pg-*`, `qwen-api-key` etc. — pertenecen a otros servicios de la misma cuenta y no fueron modificados. |
 
+## K. Limpieza operativa (2026-11-07 02:55 UTC)
+
+| Acción | Resultado |
+|---|---|
+| VM de diagnóstico `test-net` eliminada | ✅ (quedan `mongo-brltv2` y `opencode-vm`) |
+| Revisiones retiradas de `brltv2` eliminadas (`00001..00005`) | ✅ (quedan `00006..00009`; la activa es `00009-s7x`) |
+| Health post-limpieza | ✅ 200 ok / db:true / rpc:true / chainId:81234 |
+
+### Instancias GCP activas tras la limpieza
+| Instancia | Zona | Estado | Rol |
+|---|---|---|---|
+| `mongo-brltv2` | europe-west1-d | Running | MongoDB 7.0.14 (producción) |
+| `opencode-vm` | europe-west1-b | Running | preexistente de otro proyecto |
+
+### Revisiones Cloud Run activas tras la limpieza
+| Revisión | Estado |
+|---|---|
+| `brltv2-00009-s7x` | 🟢 activa (servicio de tráfico) |
+| `brltv2-00008-xm6` · `00007-rn2` · `00006-pb5` | 🟪 retiradas, retenidas para rollback inmediato |
+
 ## J. Estado actual del sistema en producción
 
 - `/api/health` en línea: `{"data":{"status":"ok","db":true,"rpc":true,"chainId":81234}}` (2026-11-07 02:45 UTC)
