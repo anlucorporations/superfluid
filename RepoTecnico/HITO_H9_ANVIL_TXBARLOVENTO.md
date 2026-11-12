@@ -3,6 +3,10 @@
 > Estado: ✅ Desplegado y verificado on-chain y en el health. Fecha: 2026-11-12.
 > Continúa `HITO_H8_DESPLIEGUE_PLATAFORMA_TXBARLOVENTO.md`. Pendiente: recorrido de
 > navegador con wallet (ver §7).
+>
+> **Actualización 2026-11-12**: la VM `mongo-brltv2` fue eliminada con su disco; `brltv2`
+> se migró al Mongo compartido de `vm-databases` (10.140.0.2). Ver
+> [`HITO_INFRA_MONGO_COMPARTIDO.md`](HITO_INFRA_MONGO_COMPARTIDO.md).
 
 ## 1. Objetivo
 

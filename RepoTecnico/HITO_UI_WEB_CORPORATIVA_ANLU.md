@@ -62,5 +62,20 @@ la instancia, por lo que el contenido de `superfluid_anvil` (`system_config`, al
 empleados y flujos de prueba) **no es recuperable**; habría que recrear el Mongo y volver a
 ejecutar seed + registro de despliegue.
 
-Recrear la VM es decisión del responsable (coste/alcance); queda propuesto en el informe de
-esta sesión.
+**Resuelto en la misma sesión**: se migró al Mongo compartido de `vm-databases`
+(ver §Resolución y `HITO_INFRA_MONGO_COMPARTIDO.md`).
+
+## Resolución del incidente de base de datos (misma sesión)
+
+La base de datos se recuperó migrando `brltv2` al **MongoDB compartido de `vm-databases`**
+(ver [`HITO_INFRA_MONGO_COMPARTIDO.md`](HITO_INFRA_MONGO_COMPARTIDO.md)). Tras la migración:
+
+| Comprobación | Resultado |
+|---|---|
+| `GET /api/health` | ✅ 200 `{"status":"ok","db":true,"rpc":true,"chainId":31337}` |
+| `POST /api/auth/role` owner | ✅ `admin` → `/admin` |
+| Login SIWE admin real (owner) | ✅ sesión creada; `/api/auth/me`, `/admin*` 200 |
+| APIs de lectura admin | ✅ 200 (`/api/system`, `/api/employees`, `/api/flows`, `/api/projects`, `/api/audit`, `/api/jobs`, `/api/scheduled-flows`) |
+| Reconciliación | ✅ el flujo #1 (on-chain) reaparece en `/api/flows` |
+
+Revisión vigente: `brltv2-00019-r5d`.

@@ -35,7 +35,9 @@
 
 - Hito H8 cerrado: `HITO_H8_DESPLIEGUE_PLATAFORMA_TXBARLOVENTO.md`.
 - Servicio `brltv2` en Cloud Run (europe-west1), URL `https://brltv2-szrmcf2hja-ew.a.run.app`,
-  health OK. Mongo 7.0.14 en `mongo-brltv2` (10.140.0.10, sin IP externa) vía `brltv2-connector`.
+  health OK. Mongo 7 en `vm-databases` (10.140.0.2:27017, contenedor compartido) vía `brltv2-connector`.
+  (La VM dedicada `mongo-brltv2` se eliminó el 2026-11-12; migración documentada en
+  `HITO_INFRA_MONGO_COMPARTIDO.md`.)
 - Backup nocturno de Mongo: diferido por decisión del usuario.
 - Hito H9 (2026-11-12): brltv2 apuntando al Anvil de `vm-blockchain` (chain 31337).
   Contratos BRLT `0x8Df5…4492` y BrltX `0x777C…c974`, base `superfluid_anvil`.
