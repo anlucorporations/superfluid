@@ -1,9 +1,9 @@
 # H7 — Cloud Build: imagen multi-stage + despliegue en Cloud Run.
-# Comando:
+# Proyecto: plataforma-txbarlovento (cuenta sa-dsh-dev). Comando:
 #   gcloud builds submit web \
-#     --project opencode-txbarlovento \
+#     --project plataforma-txbarlovento \
 #     --config web/gcp/cloudbuild.yaml \
-#     --substitutions _IMAGE=europe-west1-docker.pkg.dev/opencode-txbarlovento/superfluidv2/web:latest,_SERVICE=brltv2,_REGION=europe-west1
+#     --substitutions _IMAGE=europe-west1-docker.pkg.dev/plataforma-txbarlovento/superfluidv2/web:latest,_SERVICE=brltv2,_REGION=europe-west1,_CONNECTOR=brltv2-connector
 steps:
   - name: "gcr.io/cloud-builders/docker"
     id: "build"
@@ -11,13 +11,13 @@ steps:
     args:
       - "build"
       - "--build-arg"
-      - "NEXT_PUBLIC_RPC_URL=https://besu.alumnos.codecrypto.academy"
+      - "NEXT_PUBLIC_RPC_URL=https://hotel-anvil-proxy-szrmcf2hja-ew.a.run.app"
       - "--build-arg"
-      - "NEXT_PUBLIC_CHAIN_ID=81234"
+      - "NEXT_PUBLIC_CHAIN_ID=31337"
       - "--build-arg"
-      - "NEXT_PUBLIC_BRLT_ADDRESS=0x750508AD02404a30dF030466FBb3a29D9EE0482F"
+      - "NEXT_PUBLIC_BRLT_ADDRESS=0x8Df5a4207D139ccDb286E1A3Bb51bC1E07569492"
       - "--build-arg"
-      - "NEXT_PUBLIC_BRLTX_ADDRESS=0xCE5E017599073f60b3518Cf2f86fFdd49bc6e52F"
+      - "NEXT_PUBLIC_BRLTX_ADDRESS=0x777C3C94271bC8FC3060E7962074D3e0cc88c974"
       - "--build-arg"
       - "NEXT_PUBLIC_FAUCET_URL=https://faucet.codecrypto.academy/"
       - "-t"
@@ -42,7 +42,7 @@ steps:
           --cpu 1 --memory 512Mi \
           --timeout 120s \
           --allow-unauthenticated \
-          --vpc-connector brltv2-connector --vpc-egress all-traffic \
+          --vpc-connector "$_CONNECTOR" --vpc-egress all-traffic \
           --set-secrets "MONGODB_URI=brltv2-mongo-uri:latest" \
           --set-env-vars "SIWE_DOMAIN=brltv2-crx2qw5whq-ew.a.run.app,MONGODB_DB=superfluid,DISABLE_JOBS=0,ADMIN_BOOTSTRAP_WALLET=0x347789cf559a68262e4A444bc251AF8d0bE07EA9"
 images:

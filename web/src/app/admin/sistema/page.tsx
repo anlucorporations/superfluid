@@ -17,7 +17,7 @@ import {
   Input,
   Mono,
   Select,
-} from "@/components/ui";
+} from "@/components/adminlte";
 
 interface SystemResponse {
   config: SystemConfigDto;

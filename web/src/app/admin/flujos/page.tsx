@@ -46,7 +46,7 @@ import {
   Input,
   Mono,
   Select,
-} from "@/components/ui";
+} from "@/components/adminlte";
 
 interface FlowsResponse {
   flows: FlowDto[];

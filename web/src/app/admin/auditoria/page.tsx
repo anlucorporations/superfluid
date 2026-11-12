@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch, errorMessage } from "@/lib/client/api";
 import type { AuditEventDto } from "@/lib/repositories/audit";
-import { Alert, Badge, Card, CardHeader, EmptyState, Mono } from "@/components/ui";
+import { Alert, Badge, Card, CardHeader, EmptyState, Mono } from "@/components/adminlte";
 
 export default function AuditPage() {
   const [events, setEvents] = useState<AuditEventDto[]>([]);

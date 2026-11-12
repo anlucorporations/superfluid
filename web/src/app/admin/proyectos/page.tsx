@@ -15,7 +15,7 @@ import {
   Field,
   Input,
   Select,
-} from "@/components/ui";
+} from "@/components/adminlte";
 
 interface ProjectsResponse {
   projects: ProjectDto[];

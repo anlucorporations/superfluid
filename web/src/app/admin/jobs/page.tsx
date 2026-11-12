@@ -11,7 +11,7 @@ import {
   CardHeader,
   EmptyState,
   Mono,
-} from "@/components/ui";
+} from "@/components/adminlte";
 
 interface JobRun {
   job: JobName;

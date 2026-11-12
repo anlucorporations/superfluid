@@ -7,7 +7,7 @@ import { formatBrlt } from "@/lib/rates";
 import type { EmployeeDto, ProjectDto } from "@/lib/types";
 import type { SystemConfigDto } from "@/lib/repositories/system";
 import type { AuditEventDto } from "@/lib/repositories/audit";
-import { Badge, Card, CardBody, CardHeader, EmptyState, Mono } from "@/components/ui";
+import { Badge, Card, CardBody, CardHeader, EmptyState, Mono } from "@/components/adminlte";
 
 interface Health {
   status: string;

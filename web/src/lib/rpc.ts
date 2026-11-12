@@ -1,6 +1,10 @@
 import { publicEnv } from "./env";
 
-export const EXPECTED_CHAIN_ID = 81234;
+/**
+ * Chain esperada del RPC. Se toma de NEXT_PUBLIC_CHAIN_ID (81234 Besu por
+ * defecto; 31337 para Anvil), en lugar de estar fijada en el código.
+ */
+export const EXPECTED_CHAIN_ID = publicEnv.chainId;
 
 export interface RpcResult<T> {
   ok: boolean;

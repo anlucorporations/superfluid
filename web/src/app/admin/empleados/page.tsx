@@ -29,7 +29,7 @@ import {
   Input,
   Mono,
   Select,
-} from "@/components/ui";
+} from "@/components/adminlte";
 
 const CONCEPTO_LABEL: Record<Concepto, string> = {
   mantenimiento: "Mantenimiento",

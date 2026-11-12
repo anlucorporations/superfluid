@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch, errorMessage } from "@/lib/client/api";
-import { downgradeBrltx, settleFlow as settleOnchain } from "@/lib/client/contracts";
+import { downgradeBrltx } from "@/lib/client/contracts";
 import { connectWallet, ensureChain, shortAddress } from "@/lib/client/wallet";
 import { PERIOD_LABELS, formatBrlt, parseBrlt, timeLeft } from "@/lib/rates";
 import type { EmployeeDto, FlowDto, SessionInfo } from "@/lib/types";
@@ -85,7 +85,7 @@ export default function SuitePage() {
         setSession(data.session);
       })
       .catch(() => {
-        if (!cancelled) router.replace("/suite/login");
+        if (!cancelled) router.replace("/entrar");
       });
 
     if (cancelled) return;
@@ -109,7 +109,7 @@ export default function SuitePage() {
     } catch {
       // La cookie se limpia igualmente en la siguiente navegación.
     }
-    router.replace("/suite/login");
+    router.replace("/entrar");
     router.refresh();
   }
 
@@ -150,31 +150,6 @@ export default function SuitePage() {
     }
   }
 
-  /** Liquidación pública de un flujo vencido (AC-02). */
-  async function settleExpired(flow: FlowDto) {
-    if (!config) return;
-    setBusy(`liquidar-${flow.id}`);
-    setError(null);
-    setNotice(null);
-    try {
-      const account = await walletAccount();
-      const tx = await settleOnchain(config.brltXAddress, account, flow.flowId);
-      await apiFetch("/api/suite/actions", {
-        method: "POST",
-        body: JSON.stringify({
-          operacion: "liquidacion",
-          flowId: flow.flowId,
-          txHash: tx.hash,
-        }),
-      });
-      setNotice(`Flujo #${flow.flowId} liquidado: el acumulado ya es BrltX cobrable.`);
-      await load();
-    } catch (err) {
-      setError(errorMessage(err));
-    } finally {
-      setBusy(null);
-    }
-  }
 
   async function saveProfile(patch: {
     datosPersonales?: { email?: string; telefono?: string };
@@ -235,7 +210,11 @@ export default function SuitePage() {
   }
 
   const cobrableWei = balances ? BigInt(balances.walletBrltx) : 0n;
-  const expired = flows.filter((flow) => flow.estado === "vencido");
+  // El empleado ve solo flujos en proceso (activo/pausado) o terminados. Los vencidos
+  // pendientes de liquidar no se muestran: son un estado administrativo.
+  const visibleFlows = flows.filter(
+    (flow) => flow.estado === "activo" || flow.estado === "pausado" || flow.estado === "terminado",
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -275,13 +254,6 @@ export default function SuitePage() {
         ) : null}
 
         <SummaryCards employee={employee} balances={balances} />
-
-        {expired.length > 0 ? (
-          <Alert tone="warning">
-            Tienes {expired.length} flujo(s) vencido(s) sin liquidar. Al liquidar, lo
-            acumulado pasa a BrltX cobrable de esta misma wallet.
-          </Alert>
-        ) : null}
 
         <Card>
           <CardHeader
@@ -361,7 +333,7 @@ export default function SuitePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {flows.map((flow) => (
+                  {visibleFlows.map((flow) => (
                     <tr key={flow.id} className="align-top">
                       <td className="px-3 py-3 font-mono text-xs text-slate-600">
                         #{flow.flowId}
@@ -385,15 +357,8 @@ export default function SuitePage() {
                         <Badge tone={ESTADO_TONE[flow.estado]}>{flow.estado}</Badge>
                       </td>
                       <td className="px-3 py-3 text-right">
-                        {flow.estado === "vencido" ? (
-                          <Button
-                            size="sm"
-                            disabled={busy !== null}
-                            onClick={() => void settleExpired(flow)}
-                          >
-                            {busy === `liquidar-${flow.id}` ? "Liquidando…" : "Liquidar"}
-                          </Button>
-                        ) : null}
+                        {/* Solo lectura: el empleado no liquida flujos. El cobro (downgrade) se hace desde la tarjeta superior. */}
+                        <span className="text-xs text-slate-400">solo lectura</span>
                       </td>
                     </tr>
                   ))}

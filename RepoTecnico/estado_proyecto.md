@@ -31,6 +31,16 @@
 | H6 — Operación y reconciliación | ✅ Cerrado | `HITO_H6_OPERACION.md` · 43 tests Vitest + build 38 rutas + `npm run smoke:h6` real (deriva corregida, cron verificado) |
 | H7 — Preview GCP y cutover | ✅ Desplegado | `HITO_H7_PREVIEW_GCP.md` · `brltv2` en Cloud Run (txbarlovento), Mongo en GCE/SIWE secreta, smoke E2E completo contra `https://brltv2-crx2qw5whq-ew.a.run.app` |
 
+## Despliegue adicional — plataforma-txbarlovento (2026-11-11)
+
+- Hito H8 cerrado: `HITO_H8_DESPLIEGUE_PLATAFORMA_TXBARLOVENTO.md`.
+- Servicio `brltv2` en Cloud Run (europe-west1), URL `https://brltv2-szrmcf2hja-ew.a.run.app`,
+  health OK. Mongo 7.0.14 en `mongo-brltv2` (10.140.0.10, sin IP externa) vía `brltv2-connector`.
+- Backup nocturno de Mongo: diferido por decisión del usuario.
+- Hito H9 (2026-11-12): brltv2 apuntando al Anvil de `vm-blockchain` (chain 31337).
+  Contratos BRLT `0x8Df5…4492` y BrltX `0x777C…c974`, base `superfluid_anvil`.
+  Detalle y riesgos en `HITO_H9_ANVIL_TXBARLOVENTO.md`. Recorrido con wallet pendiente.
+
 ## Resumen de la Fase 1 (2026-10-30)
 
 - Brief `BRIEF_SUPERFLUID.md` analizado íntegramente; requerimientos clasificados y trazados al brief.
