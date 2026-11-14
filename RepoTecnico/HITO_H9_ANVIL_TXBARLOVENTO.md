@@ -191,3 +191,51 @@ pruebas, decisión que queda para el responsable del proyecto.
 
 - Flujo #1 activo (10 BRLT, 30 días) hacia `Empleado Prueba Anvil`.
 - El Anvil no tiene persistencia: si reinicia, el flujo y los contratos se pierden.
+
+## 11. Redespliegue tras reinicio del Anvil (2026-11-14)
+
+El Anvil de `vm-blockchain` **no persiste**: el 2026-11-14 el bloque había vuelto a ~56.375
+(antes 123.605) y los contratos del §4 ya no tenían código. Se redesplegó con
+`sc/script/DeployAll.s.sol` (misma wallet admin del §3, clave pasada por variable de entorno)
+y se volvió a registrar el despliegue.
+
+| Dato | Valor |
+|---|---|
+| Brlt | `0x020a699264d9f9caed6f0b65c1c25F000E7d6b56` |
+| BrltX | `0x6080788bc70756dD3c73b4AF2936D0eeA135bE71` |
+| Admin / owner / minter | `0xb4eCE9a93c2d400e4322EfFF9Ae9dA284aD200DF` |
+| Bloque de despliegue | `56395` |
+| Registro | `sc/deployments/31337.json` (ignorado por git) |
+
+Actualizaciones de configuración:
+
+- `system_config` en Mongo (`superfluid_anvil`) vía `npm run register:deploy`: nuevas
+  direcciones y `deployBlock=56395` (validó `chainId` y código de ambos contratos).
+- `web/gcp/env.yaml` y `web/gcp/cloudbuild.yaml`: `NEXT_PUBLIC_*` con las nuevas direcciones;
+  el paso de deploy de Cloud Build pasa a usar el entorno completo (SIWE_DOMAIN y
+  `MONGODB_DB=superfluid_anvil` correctos) en lugar de valores antiguos.
+
+### Estado de datos restaurado
+
+| Elemento | Valor |
+|---|---|
+| Empleado | `Empleado Prueba Anvil` · `0x9423e32e170E36dD5B33819629fB33bdaAA15cEF` · `nomina` · 10 BRLT / 30 d |
+| Flujo | `#1` activo · 10 BRLT / 30 días · `flowRate ≈ 3.858.024.691.358` wei/s |
+| Transacciones | `approve` `0x566ab0…5c924` · `wrapAndCreateFlow` `0xe5c525…cb702d` (bloque 56432) |
+
+### Verificación en vivo
+
+| Comprobación | Resultado |
+|---|---|
+| `GET /api/health` | ✅ `ok`, db true, rpc true, chainId 31337 |
+| `GET /api/system` | ✅ nuevas direcciones y bloque 56395 |
+| Alta de empleado (`POST /api/employees`) | ✅ 201 |
+| Creación on-chain + registro (`POST /api/flows`) | ✅ 201; flujo #1 vinculado al empleado |
+| Login SIWE del empleado + `GET /api/suite/me` | ✅ rol `empleado`, flujo #1 activo y `cobrable` creciendo |
+| `cast call owner()/minter()/brlt()` | ✅ owner y minter = admin; BrltX.brlt = Brlt |
+
+### Riesgo vigente
+
+- Cualquier reinicio de `vm-blockchain` vuelve a borrar contratos y flujos: hay que repetir
+  este §11 (redespliegue + `register:deploy` + recrear flujos). El Anvil es compartido con
+  otros proyectos de la plataforma.

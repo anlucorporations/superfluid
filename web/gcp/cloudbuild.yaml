@@ -15,9 +15,9 @@ steps:
       - "--build-arg"
       - "NEXT_PUBLIC_CHAIN_ID=31337"
       - "--build-arg"
-      - "NEXT_PUBLIC_BRLT_ADDRESS=0x8Df5a4207D139ccDb286E1A3Bb51bC1E07569492"
+      - "NEXT_PUBLIC_BRLT_ADDRESS=0x020a699264d9f9caed6f0b65c1c25F000E7d6b56"
       - "--build-arg"
-      - "NEXT_PUBLIC_BRLTX_ADDRESS=0x777C3C94271bC8FC3060E7962074D3e0cc88c974"
+      - "NEXT_PUBLIC_BRLTX_ADDRESS=0x6080788bc70756dD3c73b4AF2936D0eeA135bE71"
       - "--build-arg"
       - "NEXT_PUBLIC_FAUCET_URL=https://faucet.codecrypto.academy/"
       - "-t"
@@ -44,7 +44,7 @@ steps:
           --allow-unauthenticated \
           --vpc-connector "$_CONNECTOR" --vpc-egress all-traffic \
           --set-secrets "MONGODB_URI=brltv2-mongo-uri:latest" \
-          --set-env-vars "SIWE_DOMAIN=brltv2-crx2qw5whq-ew.a.run.app,MONGODB_DB=superfluid,DISABLE_JOBS=0,ADMIN_BOOTSTRAP_WALLET=0x347789cf559a68262e4A444bc251AF8d0bE07EA9"
+          --set-env-vars "SIWE_DOMAIN=brltv2-szrmcf2hja-ew.a.run.app,MONGODB_DB=superfluid_anvil,SESSION_TTL_ADMIN_SECONDS=7200,SESSION_TTL_EMPLOYEE_SECONDS=28800,AUTH_RATE_LIMIT=5,AUTH_RATE_WINDOW_SECONDS=900,ADMIN_BOOTSTRAP_WALLET=0xb4eCE9a93c2d400e4322EfFF9Ae9dA284aD200DF,NEXT_PUBLIC_RPC_URL=https://hotel-anvil-proxy-szrmcf2hja-ew.a.run.app,NEXT_PUBLIC_CHAIN_ID=31337,NEXT_PUBLIC_BRLT_ADDRESS=0x020a699264d9f9caed6f0b65c1c25F000E7d6b56,NEXT_PUBLIC_BRLTX_ADDRESS=0x6080788bc70756dD3c73b4AF2936D0eeA135bE71,NEXT_PUBLIC_FAUCET_URL=https://faucet.codecrypto.academy/,DISABLE_JOBS=0"
 images:
   - "$_IMAGE"
 options:
