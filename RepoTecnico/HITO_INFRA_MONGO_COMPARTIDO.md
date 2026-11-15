@@ -77,3 +77,27 @@ y su disco se borró con ella. La VM no tenía snapshot ni backup automático (y
   (`0xb4eC…00DF`); el mnemónico operativo de Anvil no está en ese secreto. Conviene
   corregirlo para que la recuperación no dependa de un fichero temporal.
 - La contraseña del usuario `brltv2` vive solo en el secreto `brltv2-mongo-uri` (v2).
+
+## Auditoría de la IP reservada `brltv2-mongo-ip` (2026-11-15)
+
+Estado de `10.140.0.10`: `RESERVED`, propósito `GCE_ENDPOINT`, región `europe-west1`,
+sin etiquetas y **sin usuarios** (la VM `mongo-brltv2` fue su único titular).
+
+| Alcance auditado | Referencias a 10.140.0.10 |
+|---|---|
+| VMs activas (interfaces de red) | 0 (la subred usa .2/.3/.4/.5; .16/.32 son rangos serverless) |
+| Reglas de firewall (reglas y políticas de org) | 0 |
+| Rutas de la VPC | 0 |
+| Plantillas de instancia | 0 |
+| Cloud DNS (zonas privadas) | 0 |
+| Cloud Armor | 0 |
+| Cloud Run (10 servicios, env actual) | 0 |
+| Cloud Run jobs + Cloud Scheduler | 0 |
+| Secretos (contenido de cada versión) | 0 activos (v1 de `brltv2-mongo-uri` la contiene, pero es histórica) |
+| Repos del workspace (`superfluid`, `RWA`, `ggto`, `hotel-room-mcp-trazable`) | 0 en código/config; solo 4 menciones en docs del incidente |
+| Otros proyectos GCP | 0: solo `plataforma-txbarlovento` es accesible y no hay peerings ni VPC compartida |
+
+**Conclusión:** ningún proyecto ni servicio vivo usa la IP. Referencias latentes:
+secreto `brltv2-mongo-uri` **v1** (contiene la URI vieja) y las revisiones inactivas
+`brltv2-00018-b2w` y anteriores (creadas antes de la v2); borrar v1 solo impediría
+rollback de esas revisiones. **Seguro liberar la reserva.**
