@@ -172,3 +172,30 @@ API y de las guardas de seguridad en `web/README.md` y `HITO_H3_IDENTIDAD_DATOS.
   (Codecrypto 81234); balances EUR/EURx, wrap/unwrap, streams de 2000/mes, refresco 5 s.
 - Tokens v1 en producción: EUR `0x36C02dA8…F8B570` · EURx `0x7046717d…FAd16E`.
 - v2 migrará a BRLT/BrltX y añade panel administrativo + Suite del Empleado.
+
+---
+
+## Parámetros globales de la plataforma (cuenta txbarlovento@gmail.com)
+
+Superfluid Brlt v2 está desplegado en `plataforma-txbarlovento` (HITO H8) y **reutiliza** los
+servicios globales de la plataforma. Fuente de verdad: `PlataformaGlobal/PARAMETROS_GLOBALES.md`
+(`/home/lucci/workspace/PlataformaGlobal/` en `vm-dsh-dev`).
+
+```bash
+source /home/lucci/workspace/PlataformaGlobal/plataforma-env.sh
+PLATAFORMA_SECRETS=1 source /home/lucci/workspace/PlataformaGlobal/plataforma-env.sh
+bash /home/lucci/workspace/PlataformaGlobal/plataforma-env.sh --check   # 15/15 OK (2026-11-15)
+```
+
+| Parámetro global | Valor |
+|---|---|
+| Proyecto / región | `plataforma-txbarlovento` / `europe-west1` |
+| Red / subred de egress | `plataforma-vpc` / `subnet-euw1` (`10.140.0.0/20`) |
+| RPC EVM (Anvil global) | `http://100.85.239.67:8545` · chainId `31337` (HITO H9) |
+| Gateway LLM (asistentes) | `http://100.125.94.21:4090` · `opencode-go/claude-haiku-5-5` |
+| PostgreSQL global | `100.89.28.1:5432` · `pg-user` / `pg-password` |
+| MongoDB global | `100.89.28.1:27017` · `mongo-user` / `mongo-password` (el Mongo propio `brltv2-mongo-*` sigue vigente hasta migrar) |
+| Coolify API | `http://100.113.94.52:8000/api/v1` · `coolify-api-token` |
+
+**Reglas:** secretos solo desde Secret Manager (RS-2); base por proyecto `proj_<nombre>` si se
+aloja en el PostgreSQL global; puertos preview `8100–8999`.

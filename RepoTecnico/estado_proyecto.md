@@ -42,6 +42,11 @@
 - Hito H9 (2026-11-12): brltv2 apuntando al Anvil de `vm-blockchain` (chain 31337).
   Contratos BRLT `0x8Df5…4492` y BrltX `0x777C…c974`, base `superfluid_anvil`.
   Detalle y riesgos en `HITO_H9_ANVIL_TXBARLOVENTO.md`. Recorrido con wallet pendiente.
+- Hito H10 (2026-11-15): despliegue completo desde `gh-integra` con servicios compartidos
+  (Cloud Build `7280d2a5…`, revisión `brltv2-00021-k96`, imagen sha256:789072e9…).
+  Pre-flight typecheck + 43/43 tests; verificación en vivo: health ok (db/rpc/31337),
+  páginas 200, on-chain supply 10M y owner/minter correctos, Mongo compartido intacto
+  (flujo #1 y empleado demo). Detalle en `HITO_H10_DESPLIEGUE_COMPLETO_COMPARTIDOS.md`.
 
 ## Resumen de la Fase 1 (2026-10-30)
 
