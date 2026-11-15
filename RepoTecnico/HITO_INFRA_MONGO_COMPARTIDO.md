@@ -101,3 +101,15 @@ sin etiquetas y **sin usuarios** (la VM `mongo-brltv2` fue su único titular).
 secreto `brltv2-mongo-uri` **v1** (contiene la URI vieja) y las revisiones inactivas
 `brltv2-00018-b2w` y anteriores (creadas antes de la v2); borrar v1 solo impediría
 rollback de esas revisiones. **Seguro liberar la reserva.**
+
+## Limpieza ejecutada (2026-11-15, 15:24 -04)
+
+Tras la auditoría de cero referencias activas:
+
+1. `gcloud compute addresses delete brltv2-mongo-ip --region=europe-west1` → **reserva liberada**.
+2. `gcloud secrets versions destroy 1 --secret=brltv2-mongo-uri` → **v1 destruida** (era la que
+   incrustaba `10.140.0.10`). Queda la **v2** (`10.140.0.2`, activa en `brltv2-00019-r5d`).
+
+Verificación post-limpieza: `/api/health` 200 ok (db/rpc/chainId 31337) · `/`, `/entrar`,
+`/admin` 200 · flujo #1 on-chain intacto (10 BRLT, receptor `0x9423…5cEF`, sin pausar) ·
+bloque 110.422.
