@@ -1,4 +1,5 @@
-import { assertCsrf, requireAdmin } from "@/lib/auth";
+import { assertCsrf } from "@/lib/auth";
+import { requireAdminSection as guard } from "@/lib/permisos";
 import { ApiError, handle, ok, readJson } from "@/lib/http";
 import { deleteProject, getProjectById, updateProject } from "@/lib/repositories/projects";
 import { readId } from "@/lib/repositories/guards";
@@ -6,7 +7,7 @@ import { projectUpdateSchema } from "@/lib/validation";
 
 /** GET /api/projects/:id */
 export const GET = handle(async (req, ctx) => {
-  await requireAdmin(req);
+  await guard(req, "proyectos");
   const id = await readId(ctx);
   const project = await getProjectById(id);
   if (!project) throw new ApiError(404, "no_encontrado", "Proyecto no encontrado");
@@ -15,7 +16,7 @@ export const GET = handle(async (req, ctx) => {
 
 /** PATCH /api/projects/:id */
 export const PATCH = handle(async (req, ctx) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "proyectos");
   assertCsrf(req, session);
   const id = await readId(ctx);
   const patch = await readJson(req, projectUpdateSchema);
@@ -25,7 +26,7 @@ export const PATCH = handle(async (req, ctx) => {
 
 /** DELETE /api/projects/:id — bloqueado si tiene empleados asignados. */
 export const DELETE = handle(async (req, ctx) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "proyectos");
   assertCsrf(req, session);
   const id = await readId(ctx);
   await deleteProject(id, session.wallet);

@@ -106,7 +106,7 @@ export const projectUpdateSchema = z.object({
 
 export const allowlistCreateSchema = z.object({
   wallet: walletSchema,
-  rol: z.enum(["admin", "operador"]).optional().default("admin"),
+  rol: z.enum(["super_admin", "admin", "operador"]).optional().default("admin"),
   /** Mensaje SIWE firmado por la wallet nueva (AC-15). */
   message: z.string().min(1).max(4000),
   signature: z.string().regex(/^0x[0-9a-fA-F]{130}$/),
@@ -118,7 +118,7 @@ export const allowlistChallengeSchema = z.object({
 
 export const allowlistUpdateSchema = z.object({
   estado: z.enum(["activo", "inactivo"]),
-  rol: z.enum(["admin", "operador"]).optional(),
+  rol: z.enum(["super_admin", "admin", "operador"]).optional(),
 });
 
 export const auditQuerySchema = z.object({

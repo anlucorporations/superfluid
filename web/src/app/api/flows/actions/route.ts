@@ -1,4 +1,5 @@
-import { assertCsrf, requireAdmin } from "@/lib/auth";
+import { assertCsrf } from "@/lib/auth";
+import { requireAdminSection as guard } from "@/lib/permisos";
 import { handle, ok, readJson } from "@/lib/http";
 import { recordFlowAction, registerFlow } from "@/lib/repositories/flows";
 import { flowActionSchema } from "@/lib/validation";
@@ -12,7 +13,7 @@ import { flowActionSchema } from "@/lib/validation";
  * acepta `newFlowId` y lo registra con la misma verificación que un alta (AC-03).
  */
 export const POST = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "flujos");
   assertCsrf(req, session);
   const body = await readJson(req, flowActionSchema);
 

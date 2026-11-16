@@ -1,4 +1,5 @@
-import { assertCsrf, requireAdmin } from "@/lib/auth";
+import { assertCsrf } from "@/lib/auth";
+import { requireAdminSection as guard } from "@/lib/permisos";
 import { handle, ok, readJson } from "@/lib/http";
 import {
   createScheduledFlow,
@@ -10,13 +11,13 @@ import { ApiError } from "@/lib/http";
 
 /** GET /api/scheduled-flows — programaciones de nómina (CU-05). */
 export const GET = handle(async (req) => {
-  await requireAdmin(req);
+  await guard(req, "flujos");
   return ok({ scheduled: await listScheduledFlows() });
 });
 
 /** POST /api/scheduled-flows — crea una programación en estado `proximo`. */
 export const POST = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "flujos");
   assertCsrf(req, session);
   const body = await readJson(req, scheduledFlowCreateSchema);
 
@@ -32,7 +33,7 @@ export const POST = handle(async (req) => {
 
 /** PATCH /api/scheduled-flows — ejecuta, cancela o marca fallido por `id`. */
 export const PATCH = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "flujos");
   assertCsrf(req, session);
   const id = req.nextUrl.searchParams.get("id");
   if (!id) throw new ApiError(400, "id_invalido", "Falta el identificador de la programación");

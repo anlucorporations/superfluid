@@ -1,4 +1,5 @@
-import { assertCsrf, requireAdmin } from "@/lib/auth";
+import { assertCsrf } from "@/lib/auth";
+import { requireAdminSection as guard } from "@/lib/permisos";
 import { handle, ok, readJson } from "@/lib/http";
 import { issueNonce } from "@/lib/repositories/nonces";
 import { buildSiweMessage } from "@/lib/siwe";
@@ -9,7 +10,7 @@ import { allowlistChallengeSchema } from "@/lib/validation";
  * Devuelve el mensaje SIWE que debe firmar la wallet candidata (CU-11 A6 / AC-15).
  */
 export const POST = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "sistema");
   assertCsrf(req, session);
   const body = await readJson(req, allowlistChallengeSchema);
 

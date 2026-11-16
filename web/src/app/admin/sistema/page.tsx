@@ -30,6 +30,7 @@ interface AllowlistResponse {
 export default function SystemPage() {
   const [config, setConfig] = useState<SystemConfigDto | null>(null);
   const [allowlist, setAllowlist] = useState<AllowlistDto[]>([]);
+  const [adminRol, setAdminRol] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -45,6 +46,11 @@ export default function SystemPage() {
 
   useEffect(() => {
     let cancelled = false;
+    apiFetch<{ session: { adminRol?: string } }>("/api/auth/me")
+      .then((d) => {
+        if (!cancelled) setAdminRol(d.session.adminRol ?? null);
+      })
+      .catch(() => undefined);
     load()
       .catch((err) => {
         if (!cancelled) setError(errorMessage(err));
@@ -82,12 +88,19 @@ export default function SystemPage() {
         onError={(message) => setError(message)}
       />
 
-      <AllowlistCard
-        entries={allowlist}
-        onReload={load}
-        onNotice={setNotice}
-        onError={setError}
-      />
+      {adminRol === "super_admin" ? (
+        <AllowlistCard
+          entries={allowlist}
+          onReload={load}
+          onNotice={setNotice}
+          onError={setError}
+        />
+      ) : (
+        <Alert tone="info">
+          La gestión de wallets y roles de la allowlist está reservada al Super
+          Administrador.
+        </Alert>
+      )}
     </div>
   );
 }
@@ -209,7 +222,7 @@ function AllowlistCard({
   onError: (message: string) => void;
 }) {
   const [wallet, setWallet] = useState("");
-  const [rol, setRol] = useState<"admin" | "operador">("admin");
+  const [rol, setRol] = useState<"super_admin" | "admin" | "operador">("admin");
   const [phase, setPhase] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -290,7 +303,7 @@ function AllowlistCard({
                       <Mono>{shortAddress(entry.wallet)}</Mono>
                     </td>
                     <td className="px-3 py-2">
-                      <Badge tone={entry.rol === "admin" ? "brand" : "neutral"}>{entry.rol}</Badge>
+                      <Badge tone={entry.rol === "super_admin" ? "danger" : entry.rol === "admin" ? "brand" : "neutral"}>{entry.rol}</Badge>
                     </td>
                     <td className="px-3 py-2">
                       {entry.estado === "activo" ? (
@@ -338,6 +351,7 @@ function AllowlistCard({
           </Field>
           <Field label="Rol">
             <Select value={rol} onChange={(e) => setRol(e.target.value as "admin" | "operador")}>
+              <option value="super_admin">super_admin</option>
               <option value="admin">admin</option>
               <option value="operador">operador</option>
             </Select>

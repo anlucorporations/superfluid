@@ -1,5 +1,6 @@
 import { SiweMessage } from "siwe";
-import { assertCsrf, requireAdmin } from "@/lib/auth";
+import { assertCsrf } from "@/lib/auth";
+import { requireAdminSection as guard, requireSuperAdmin } from "@/lib/permisos";
 import { ApiError, handle, ok, readJson } from "@/lib/http";
 import {
   addAllowlistEntry,
@@ -12,7 +13,7 @@ import { allowlistCreateSchema } from "@/lib/validation";
 
 /** GET /api/admin/allowlist — wallets autorizadas (CU-11 paso 6 / AC-15). */
 export const GET = handle(async (req) => {
-  await requireAdmin(req);
+  await guard(req, "sistema");
   return ok({ allowlist: await listAllowlist() });
 });
 
@@ -21,7 +22,7 @@ export const GET = handle(async (req) => {
  * Alta con confirmación firmada por la wallet nueva (AC-15 / CU-11 A6).
  */
 export const POST = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await requireSuperAdmin(req);
   assertCsrf(req, session);
   const body = await readJson(req, allowlistCreateSchema);
 

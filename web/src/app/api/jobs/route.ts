@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { assertCsrf, requireAdmin } from "@/lib/auth";
+import { assertCsrf } from "@/lib/auth";
+import { requireAdminSection as guard } from "@/lib/permisos";
 import { ApiError, handle, ok, readJson } from "@/lib/http";
 import { getJobStatus, runJob, isValidJob } from "@/lib/jobs/reconciler";
 
@@ -8,14 +9,14 @@ import { getJobStatus, runJob, isValidJob } from "@/lib/jobs/reconciler";
  * POST /api/jobs — lanza un job a mano desde el panel (`{ job }`).
  */
 export const GET = handle(async (req) => {
-  await requireAdmin(req);
+  await guard(req, "jobs");
   return ok(await getJobStatus());
 });
 
 const runSchema = z.object({ job: z.string().min(1) });
 
 export const POST = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "jobs");
   assertCsrf(req, session);
   const body = await readJson(req, runSchema);
   if (!isValidJob(body.job)) {

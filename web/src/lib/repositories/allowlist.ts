@@ -42,10 +42,12 @@ export async function getAllowlistByWallet(wallet: string): Promise<AllowlistDoc
     .findOne({ walletLower: wallet.toLowerCase() });
 }
 
-/** Solo las wallets activas con rol `admin` pueden acceder al panel (CU-01 / AC-15). */
+/** Wallets activas con rol `admin` o `super_admin` acceden al panel (CU-01 / AC-15 / H12). */
 export async function isAllowedAdmin(wallet: string): Promise<boolean> {
   const entry = await getAllowlistByWallet(wallet);
-  return Boolean(entry && entry.estado === "activo" && entry.rol === "admin");
+  return Boolean(
+    entry && entry.estado === "activo" && (entry.rol === "admin" || entry.rol === "super_admin"),
+  );
 }
 
 export async function countActiveAdmins(): Promise<number> {

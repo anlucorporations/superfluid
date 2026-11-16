@@ -55,6 +55,11 @@
   y script controlado de inyección operativa (`scripts/inyectar_datos_operativos.py`,
   validado con `--dry-run`). Detalle en `HITO_H11_REDESPLIEGUE_COMPLETO.md`.
 
+- Hito H12 (2026-11-16): sección Finanzas de usuario y permisos por sección en el
+  panel (roles super_admin/admin/operador/empleado; navegación filtrada + guards
+  API; gestión de allowlist solo para Super Admin). Verificado en vivo con sesiones
+  SIWE reales (#0, #1 y empleado #2). Detalle en `HITO_H12_FINANZAS_PERMISOS.md`.
+
 ## Resumen de la Fase 1 (2026-10-30)
 
 - Brief `BRIEF_SUPERFLUID.md` analizado íntegramente; requerimientos clasificados y trazados al brief.

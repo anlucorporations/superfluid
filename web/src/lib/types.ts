@@ -86,12 +86,29 @@ export interface AllowlistDoc {
   _id: ObjectId;
   wallet: string;
   walletLower: string;
-  rol: "admin" | "operador";
+  rol: "super_admin" | "admin" | "operador";
   estado: "activo" | "inactivo";
   creadoPor: string | null;
+  /** Secciones del panel autorizadas; si falta, se deriva del rol (lib/permisos). */
+  secciones?: Seccion[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+/** Secciones del panel admin (visibilidad por rol/allowlist, H12). */
+export const SECCIONES = [
+  "resumen",
+  "finanzas",
+  "empleados",
+  "flujos",
+  "proyectos",
+  "sistema",
+  "jobs",
+  "auditoria",
+] as const;
+export type Seccion = (typeof SECCIONES)[number];
+/** Alias del rol en la allowlist (H12). */
+export type AdminRol = AllowlistDoc["rol"];
 
 export interface AuditEventDoc {
   _id: ObjectId;
@@ -277,6 +294,10 @@ export interface SessionInfo {
   role: Role;
   employeeId: string | null;
   expiresAt: string;
+  /** Rol en la allowlist (solo sesiones admin). */
+  adminRol?: AdminRol;
+  /** Secciones del panel autorizadas para esta sesión. */
+  secciones: Seccion[];
 }
 
 export interface FlowDto {

@@ -1,4 +1,5 @@
-import { assertCsrf, requireAdmin } from "@/lib/auth";
+import { assertCsrf } from "@/lib/auth";
+import { requireAdminSection as guard } from "@/lib/permisos";
 import { handle, ok, readJson } from "@/lib/http";
 import { getTreasury } from "@/lib/flows-onchain";
 import { listFlows, registerFlow } from "@/lib/repositories/flows";
@@ -10,7 +11,7 @@ import type { FlowDoc } from "@/lib/types";
  * `?empleadoId=` y `?estado=` filtran; el estado real se lee de BrltX.
  */
 export const GET = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "flujos");
   const params = req.nextUrl.searchParams;
   const empleadoId = params.get("empleadoId") ?? undefined;
   const estado = params.get("estado") as FlowDoc["estado"] | null;
@@ -29,7 +30,7 @@ export const GET = handle(async (req) => {
 
 /** POST /api/flows — registra un flujo recién creado on-chain (verificado por RPC). */
 export const POST = handle(async (req) => {
-  const session = await requireAdmin(req);
+  const session = await guard(req, "flujos");
   assertCsrf(req, session);
   const body = await readJson(req, flowRegisterSchema);
 
