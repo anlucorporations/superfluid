@@ -16,5 +16,5 @@ RUN curl -fsSL -o /tmp/ttgz \
 
 RUN pip3 install --no-cache-dir google-cloud-storage==2.17.0
 
-COPY backup.py /app/backup.py
+COPY backup.py verify.py /app/
 ENTRYPOINT ["python3", "/app/backup.py"]
