@@ -60,6 +60,10 @@
   API; gestión de allowlist solo para Super Admin). Verificado en vivo con sesiones
   SIWE reales (#0, #1 y empleado #2). Detalle en `HITO_H12_FINANZAS_PERMISOS.md`.
 
+- Push 2026-11-16 (`/push` explícito): rama `gh-integra` `3325dc7..990c4cb` en los 3
+  remotos (GitHub, GitLab.com, GitLab CodeCrypto) · Redespliegue posterior en GCP
+  (revisión `brltv2-00027-sr7`, health ok, páginas 200, guards activos).
+
 ## Resumen de la Fase 1 (2026-10-30)
 
 - Brief `BRIEF_SUPERFLUID.md` analizado íntegramente; requerimientos clasificados y trazados al brief.
