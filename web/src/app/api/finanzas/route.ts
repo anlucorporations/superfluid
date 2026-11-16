@@ -12,6 +12,24 @@ import { listFlowsByReceiver } from "@/lib/repositories/flows";
  */
 export const GET = handle(async (req) => {
   const session = await requireSession(req);
+  const url = new URL(req.url);
+
+  // Modo ligero (?saldos=1): solo balances on-chain, sin flujos ni fichas.
+  // Lo usa el refresco automático de la UI (cada 10 s, solo saldos).
+  if (url.searchParams.get("saldos") === "1") {
+    if (session.role === "empleado") {
+      const balances = await getSuiteBalances(session.wallet);
+      return ok({ tipo: "empleado" as const, balances });
+    }
+    const empleados = (await listEmployees()).filter((e) => e.estado === "activo");
+    const saldos = await Promise.all(
+      empleados.map(async (e) => ({
+        employeeId: e.id,
+        balances: await getSuiteBalances(e.wallet),
+      })),
+    );
+    return ok({ tipo: "admin" as const, saldos });
+  }
 
   if (session.role === "empleado") {
     if (!session.employeeId) {

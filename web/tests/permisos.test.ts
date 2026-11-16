@@ -45,7 +45,7 @@ describe("permisos del panel (H12)", () => {
   });
 
   it("la allowlist puede sobreescribir las secciones (sin duplicados ni inválidas)", () => {
-    const override = seccionesPorRol("operador", ["flujos", "flujos", "inexistente"]);
+    const override = seccionesPorRol("operador", ["flujos", "flujos", "inexistente" as Seccion]);
     expect(override).toEqual(["flujos"]);
   });
 

@@ -39,6 +39,12 @@ interface FinanzasAdmin {
 
 type FinanzasData = FinanzasEmpleado | FinanzasAdmin;
 
+interface SaldosRefresco {
+  tipo: "empleado" | "admin";
+  balances?: SuiteBalances | null;
+  saldos?: { employeeId: string; balances: SuiteBalances | null }[];
+}
+
 const ESTADO_BADGE: Record<string, "success" | "warning" | "brand" | "neutral" | "danger"> = {
   activo: "success",
   pausado: "warning",
@@ -49,9 +55,12 @@ const ESTADO_BADGE: Record<string, "success" | "warning" | "brand" | "neutral" |
 
 export default function FinanzasPage() {
   const [data, setData] = useState<FinanzasData | null>(null);
+  const [saldos, setSaldos] = useState<SaldosRefresco | null>(null);
+  const [refrescadoAt, setRefrescadoAt] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Carga completa inicial (flujos y fichas incluidos; no se re-renuevan).
   useEffect(() => {
     let cancelled = false;
     apiFetch<FinanzasData>("/api/finanzas")
@@ -66,6 +75,25 @@ export default function FinanzasPage() {
       });
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  // Refresco automático cada 10 s: SOLO saldos on-chain (?saldos=1).
+  useEffect(() => {
+    let cancelled = false;
+    const refrescar = () =>
+      apiFetch<SaldosRefresco>("/api/finanzas?saldos=1")
+        .then((d) => {
+          if (cancelled) return;
+          setSaldos(d);
+          setRefrescadoAt(new Date());
+        })
+        .catch(() => undefined); // el próximo tick reintenta; no rompe la vista
+    refrescar();
+    const t = setInterval(refrescar, 10_000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
     };
   }, []);
 
@@ -91,11 +119,37 @@ export default function FinanzasPage() {
         ) : (
           <>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Metric label="Saldo BRLT" value={t ? formatBrlt(t.saldoBrltWei) : "—"} />
-              <Metric label="Saldo BrltX" value={t ? formatBrlt(t.saldoBrltxWei) : "—"} />
-              <Metric label="Cobrable ahora" value={t ? formatBrlt(t.cobrableWei) : "—"} />
+              <Metric
+                label="Saldo BRLT"
+                value={formatBrlt(
+                  data.tipo === "empleado" && saldos?.balances
+                    ? saldos.balances.walletBrlt
+                    : (t?.saldoBrltWei ?? "0"),
+                )}
+              />
+              <Metric
+                label="Saldo BrltX"
+                value={formatBrlt(
+                  data.tipo === "empleado" && saldos?.balances
+                    ? saldos.balances.walletBrltx
+                    : (t?.saldoBrltxWei ?? "0"),
+                )}
+              />
+              <Metric
+                label="Cobrable ahora"
+                value={formatBrlt(
+                  data.tipo === "empleado" && saldos?.balances
+                    ? saldos.balances.cobrable
+                    : (t?.cobrableWei ?? "0"),
+                )}
+              />
               <Metric label="Flujos activos" value={t ? String(t.flujosActivos) : "—"} />
             </div>
+
+            <p className="text-xs text-adminlte-muted">
+              Saldos on-chain renovados automáticamente cada 10 s
+              {refrescadoAt ? ` · última actualización ${refrescadoAt.toLocaleTimeString("es-ES")}` : ""}
+            </p>
 
             <Card>
               <CardHeader title="Movimientos y flujos de tu wallet" />
@@ -122,6 +176,12 @@ export default function FinanzasPage() {
       {data.detalle.length === 0 ? (
         <EmptyState>No hay empleados activos con finanzas que mostrar.</EmptyState>
       ) : (
+        <p className="text-xs text-adminlte-muted">
+          Saldos on-chain renovados automáticamente cada 10 s
+          {refrescadoAt ? ` · última actualización ${refrescadoAt.toLocaleTimeString("es-ES")}` : ""}
+        </p>
+      )}
+      {data.detalle.length > 0 && (
         <Card>
           <CardHeader title={`Empleados activos (${data.detalle.length})`} />
           <CardBody className="overflow-x-auto">
@@ -138,25 +198,29 @@ export default function FinanzasPage() {
                 </tr>
               </thead>
               <tbody>
-                {data.detalle.map((d) => (
+                {data.detalle.map((d) => {
+                  const fresco = saldos?.saldos?.find((x) => x.employeeId === d.employee.id)?.balances;
+                  const bal = fresco ?? d.balances;
+                  return (
                   <tr key={d.employee.id} className="border-t border-adminlte-border">
                     <td className="px-2 py-2 font-medium">{d.employee.nombre}</td>
                     <td className="px-2 py-2">
                       <Mono>{d.employee.wallet.slice(0, 10)}…</Mono>
                     </td>
                     <td className="px-2 py-2 text-right font-mono">
-                      {d.balances ? formatBrlt(d.balances.walletBrlt) : "—"}
+                      {bal ? formatBrlt(bal.walletBrlt) : "—"}
                     </td>
                     <td className="px-2 py-2 text-right font-mono">
-                      {d.balances ? formatBrlt(d.balances.walletBrltx) : "—"}
+                      {bal ? formatBrlt(bal.walletBrltx) : "—"}
                     </td>
                     <td className="px-2 py-2 text-right font-mono">
-                      {d.balances ? formatBrlt(d.balances.cobrable) : "—"}
+                      {bal ? formatBrlt(bal.cobrable) : "—"}
                     </td>
                     <td className="px-2 py-2 text-right">{d.flujosActivos}</td>
                     <td className="px-2 py-2 text-right">{d.flujosTotales}</td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </CardBody>

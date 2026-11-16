@@ -54,6 +54,20 @@
 | `/api/health` | ✅ ok (db/rpc/31337) |
 | Páginas `/`, `/admin`, `/admin/finanzas` | ✅ 200 |
 
+## Complemento: refresco de saldos cada 10 s (2026-11-16, revisión `brltv2-00029-2vk`)
+
+- La sección Finanzas muestra los saldos on-chain y **solo los saldos se renuevan
+  cada 10 s**: la carga completa (flujos, fichas, tablas) se hace una vez al entrar
+  y no se vuelve a pedir.
+- Nuevo modo ligero `GET /api/finanzas?saldos=1`: devuelve únicamente balances
+  (`walletBrlt`, `walletBrltx`, `cobrable`) — para empleado, la lista por empleado
+  activo para admins — sin tocar flujos ni fichas.
+- La UI indica la última actualización ("Saldos on-chain renovados automáticamente
+  cada 10 s · última actualización hh:mm:ss").
+- Verificado en vivo: `?saldos=1` con sesión de empleado devolvió solo balances
+  (100 BRLT / 0,039 BrltX / 0,98 cobrable) y la carga completa siguió operativa
+  (2 flujos). Pre-flight: typecheck limpio · Vitest 50/50.
+
 ## Cumplimiento de los 3 requisitos
 
 1. **Sección Finanzas** ✅ — nueva en el panel, visible para todos los roles con
