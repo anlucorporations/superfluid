@@ -36,3 +36,6 @@ next-env.d.ts
 # --- Mongo en memoria (descarga de binarios) ---
 .msb/
 web/gcp/env.yaml
+
+# Documento confidencial local: claves del Anvil dev
+RepoTecnico/ANVIL_CUENTAS_CLAVES.md
