@@ -89,15 +89,15 @@ Derivadas del mnemónico del Anvil compartido (secreto
 **la frase nunca se registra en el repo**). Derivación BIP-44 estándar
 (`m/44'/60'/0'/0/<índice>`, `cast wallet derive --accounts N`).
 
-### 4.1 Tabla completa
+### 4.1 Tabla completa (saldos al 2026-11-16 tras la inyección operativa)
 
 | # | Índice | Wallet | ETH | Nonce | BRLT | Rol asignado |
 |---|---|---|---|---|---|---|
-| 1 | 0 | `0xb4eCE9a93c2d400e4322EfFF9Ae9dA284aD200DF` | 9.899,9994 | 38 | **9.999.990** | **Owner del despliegue + Super Admin** (owner y minter de Brlt/BrltX; `ADMIN_BOOTSTRAP_WALLET`) |
-| 2 | 1 | `0x9423e32e170E36dD5B33819629fB33bdaAA15cEF` | 9.999,9999 | 2 | 0 | **Administrador de sistema** (proposta aprobada; hoy tiene la ficha demo de empleado que se borrará al inyectar) |
-| 3 | 2 | `0x89Dd06d6f8b0CC425Eff702fE7b026e829AB4eBe` | 10.000 | 0 | 0 | **Empleado de la empresa** (Empleado Uno ANLU) |
-| 4 | 3 | `0xc4d47529Cf91Fab4dF069D2014C9B11065FdFB41` | 10.000 | 0 | 0 | **Empleado de la empresa** (Empleado Dos ANLU) |
-| 5 | 4 | `0xf100d77F47B9ffF6a42C8b69Fe28295100B2C828` | 10.000 | 0 | 0 | **Empleado de la empresa** (Empleado Tres ANLU) |
+| 1 | 0 | `0xb4eCE9a93c2d400e4322EfFF9Ae9dA284aD200DF` | 9.899,9994 | 40 | **10.009.990** | **Owner del despliegue + Super Admin** (owner y minter de Brlt/BrltX; `ADMIN_BOOTSTRAP_WALLET`) |
+| 2 | 1 | `0x9423e32e170E36dD5B33819629fB33bdaAA15cEF` | 9.999,9999 | 3 | **100** | **Administrador de sistema** (ficha demo eliminada; alta en `admin_allowlist`) |
+| 3 | 2 | `0x89Dd06d6f8b0CC425Eff702fE7b026e829AB4eBe` | 10.000 | 0 | **100** | **Empleado de la empresa** (Empleado Uno ANLU) |
+| 4 | 3 | `0xc4d47529Cf91Fab4dF069D2014C9B11065FdFB41` | 10.000 | 0 | **100** | **Empleado de la empresa** (Empleado Dos ANLU) |
+| 5 | 4 | `0xf100d77F47B9ffF6a42C8b69Fe28295100B2C828` | 10.000 | 0 | **100** | **Empleado de la empresa** (Empleado Tres ANLU) |
 
 ### 4.2 Cómo obtener las cuentas (operador autorizado)
 
@@ -176,16 +176,17 @@ usuario `brltv2`** y actualizar el secreto `brltv2-mongo-uri` (v3).
 
 ---
 
-## 7. Inyección operativa (preparada, pendiente de ejecución)
+## 7. Inyección operativa (✅ ejecutada el 2026-11-16 01:29 UTC)
 
 - Script controlado: `scripts/inyectar_datos_operativos.py` (confirmación
   interactiva, `--dry-run`, log sin secretos en
   `RepoTecnico/BaseOperaciones/inyeccion_datos.log`).
-- Plan aprobado: #0 super admin · #1 admin de sistema · #2..#4 empleados ·
-  mint **10.000 BRLT → #0** y **100 BRLT → #1..#4** · borrar ficha demo ·
-  ETH intacto · Anvil compartido intacto.
-- `--dry-run` validado de punta a punta. Ejecución manual del responsable:
-  `python3 -W ignore scripts/inyectar_datos_operativos.py --leer-secreto`.
+- **Ejecutada en vivo**: allowlist con #0 y #1 como admin · ficha demo borrada ·
+  proyecto `Nomina ANLU` · 3 empleados (#2..#4, 100 BRLT/30d) · mint **10.000 BRLT
+  → #0** (`0x3a714911…41fc78`) y **100 BRLT → #1..#4** (`0xa2fbeb04…`,
+  `0x49cd87c8…`, `0xf95a4890…`, `0x8c014351…`).
+- Post-verificación: supply on-chain **10.001.040 BRLT** · `/api/health` ok ·
+  admins=2 · empleados=3 · ETH y Anvil compartido sin cambios.
 
 ---
 
@@ -207,8 +208,8 @@ usuario `brltv2`** y actualizar el secreto `brltv2-mongo-uri` (v3).
 
 1. **Rotar contraseña Mongo `brltv2`** (incidente de logs §6) y publicar
    `brltv2-mongo-uri` v3 en la revisión.
-2. **Ejecutar la inyección operativa** (§7) con la cuenta #0.
-3. **Recorrido SIWE con MetaMask** desde navegador local (no reproducible desde
-   esta sesión: la clave del owner no se expone).
-4. El flujo #1 quedará huérfano de ficha al borrar el empleado demo (decisión
-   aprobada); puede vincularse después desde `/admin/flujos` si se desea.
+2. **Recorrido SIWE con MetaMask** desde navegador local (no reproducible desde
+   esta sesión: la clave del owner no se expone). Ahora ambas wallets admin
+   (#0 y #1) están en la allowlist y pueden entrar al panel.
+3. El flujo #1 queda huérfano de ficha (empleado demo borrado, decisión aprobada);
+   puede vincularse después desde `/admin/flujos` si se desea.

@@ -31,8 +31,26 @@
 - [x] Paso 3: cuentas consultadas (`cuentas_anvil.md`).
 - [x] Paso 5: plan aprobado (saldos: 10.000 BRLT a #0 y 100 BRLT a #1..#4; demo borrado, 3 empleados nuevos).
 - [x] Paso 6: script `scripts/inyectar_datos_operativos.py` generado y validado con `--dry-run` (2026-11-16).
-- [ ] Ejecución del script (manual, con confirmación interactiva) — **pendiente del responsable**.
-- [ ] Verificación y cierre.
+- [x] **Ejecución real completada (2026-11-16 01:29 UTC)** — ver resultado abajo.
+- [x] Verificación y cierre.
+
+## Resultado de la ejecución (2026-11-16 01:28–01:29 UTC)
+
+| Operación | Resultado | Tx |
+|---|---|---|
+| Allowlist: #0 y #1 como `admin` activos | ✅ 2 admins | — (Mongo) |
+| Empleado demo (wallet #1) borrado | ✅ | — (Mongo) |
+| Proyecto `Nomina ANLU` creado | ✅ | — (Mongo) |
+| 3 empleados creados (#2..#4, 100 BRLT/30d) | ✅ empleados activos=3 | — (Mongo) |
+| Mint 10.000 BRLT → #0 | ✅ saldo 10.009.990 | `0x3a714911…41fc78` |
+| Mint 100 BRLT → #1 | ✅ saldo 100 | `0xa2fbeb04…b8648ed` |
+| Mint 100 BRLT → #2 | ✅ saldo 100 | `0x49cd87c8…bcf3a6` |
+| Mint 100 BRLT → #3 | ✅ saldo 100 | `0xf95a4890…3f3a6477` |
+| Mint 100 BRLT → #4 | ✅ saldo 100 | `0x8c014351…ffd19c8` |
+
+Verificación post-inyección: supply on-chain **10.001.040 BRLT** (10M + 10.000 + 4×100) ·
+`/api/health` ok (db/rpc/31337) · admins activos=2 · empleados activos=3 · ETH sin
+cambios · Anvil compartido sin reinicio (solo 5 tx `mint`).
 
 ## Cómo ejecutar el script (manual)
 
