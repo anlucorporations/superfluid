@@ -47,6 +47,13 @@
   Pre-flight typecheck + 43/43 tests; verificación en vivo: health ok (db/rpc/31337),
   páginas 200, on-chain supply 10M y owner/minter correctos, Mongo compartido intacto
   (flujo #1 y empleado demo). Detalle en `HITO_H10_DESPLIEGUE_COMPLETO_COMPARTIDOS.md`.
+- Hito H11 (2026-11-16): redespliegue completo con pre-flight verde (typecheck +
+  43/43), revisión `brltv2-00023-7j8` al 100 %, verificado en vivo (health ok,
+  páginas 200, supply 10M, Mongo compartido intacto con cron corriendo). Novedades
+  incluidas: backup nocturno de Mongo operativo (bucket `brltv2-mongo-backups` 90d +
+  job `brltv2-mongo-backup` + scheduler `brltv2-nocturno-dump` 04:00 UTC + `verify.py`)
+  y script controlado de inyección operativa (`scripts/inyectar_datos_operativos.py`,
+  validado con `--dry-run`). Detalle en `HITO_H11_REDESPLIEGUE_COMPLETO.md`.
 
 ## Resumen de la Fase 1 (2026-10-30)
 
