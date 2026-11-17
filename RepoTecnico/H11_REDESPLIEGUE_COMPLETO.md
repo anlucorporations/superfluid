@@ -29,8 +29,8 @@ bash web/gcp/deploy.sh    # Cloud Build (Dockerfile multi-stage) + Cloud Run (en
 |---|---|
 | Cloud Build | `1eceb4e0-3f47-43ab-b18c-4cc8d08499c0` · 3M59S · SUCCESS · logs en Cloud Logging |
 | Imagen | `europe-west1-docker.pkg.dev/plataforma-txbarlovento/superfluidv2/web:latest` |
-| **Revisión activa** | **`brltv2-00023-7j8`** (100 % del tráfico) |
-| Rollback inmediato | `brltv2-00022…`/`brltv2-00021-k96` y anteriores retenidas (`gcloud run services update-traffic brltv2 --to-revisions brltv2-00021-k96=100`) |
+| **Revisión activa** | **`brltv2-00033-dmn`** (100 % del tráfico) — despliegue 2026-11-17, commit `aab670e` (Portal del Empleado + downgrade de flujos tope 80%) |
+| Rollback inmediato | `brltv2-00032…` y anteriores retenidas (`gcloud run services update-traffic brltv2 --to-revisions brltv2-00032-…=100`) |
 | URL pública | **https://brltv2-szrmcf2hja-ew.a.run.app** |
 | URL alternativa | https://brltv2-173076294289.europe-west1.run.app (misma revisión) |
 
