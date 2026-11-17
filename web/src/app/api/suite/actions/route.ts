@@ -1,6 +1,7 @@
 import { assertCsrf, requireEmployee } from "@/lib/auth";
 import { ApiError, handle, ok, readJson } from "@/lib/http";
 import { verifyWalletAction } from "@/lib/flows-onchain";
+import { getDowngradeLimit, assertDowngradeLimit } from "@/lib/downgrade-limit";
 import { recordFlowAction } from "@/lib/repositories/flows";
 import { suiteActionSchema } from "@/lib/validation";
 
@@ -32,6 +33,14 @@ export const POST = handle(async (req) => {
       "tx_no_verificada",
       "La transacción no corresponde a la operación declarada (cartera, evento o estado).",
     );
+  }
+
+  // Tope del 80% (CU-16 ampliado): el downgrade acumulado no puede superar el
+  // 80% de lo asignado a la cuenta. La verificación del tope se hace con la
+  // auditoría ya reconstruida ANTES de registrar este nuevo cobro.
+  if (verified.operacion === "cobro" && verified.amount) {
+    const limite = await getDowngradeLimit(session.wallet);
+    assertDowngradeLimit(limite, BigInt(verified.amount));
   }
 
   await recordFlowAction({

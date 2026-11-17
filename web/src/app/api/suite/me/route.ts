@@ -3,6 +3,7 @@ import { ApiError, handle, ok } from "@/lib/http";
 import { getEmployeeById } from "@/lib/repositories/employees";
 import { getSystemConfig } from "@/lib/repositories/system";
 import { getSuiteBalances } from "@/lib/flows-onchain";
+import { getDowngradeLimit } from "@/lib/downgrade-limit";
 import { listFlowsByReceiver } from "@/lib/repositories/flows";
 
 /**
@@ -17,11 +18,12 @@ export const GET = handle(async (req) => {
   const employee = await getEmployeeById(session.employeeId.toString());
   if (!employee) throw new ApiError(404, "no_encontrado", "Empleado no encontrado");
 
-  const [config, balances, flows] = await Promise.all([
+  const [config, balances, flows, limites] = await Promise.all([
     getSystemConfig(),
     getSuiteBalances(session.wallet),
     listFlowsByReceiver(session.wallet),
+    getDowngradeLimit(session.wallet),
   ]);
 
-  return ok({ employee, config, balances, flows });
+  return ok({ employee, config, balances, flows, limites });
 });

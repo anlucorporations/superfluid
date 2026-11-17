@@ -42,6 +42,14 @@ const config: Config = {
           text: "#212529",
           muted: "#6c757d",
         },
+        // Tokens del Portal del Empleado (/suite): identidad visual propia,
+        // oscura, distinta del AdminLTE de /admin.
+        empleado: {
+          bg: "#0d1425",        // fondo del portal (azul noche)
+          card: "#131c30",      // tarjeta oscura
+          header: "#1b1140",    // cabecera degradada (violeta noche)
+          header2: "#101a33",   // fin del degradado
+        },
       },
       boxShadow: {
         // Sombra de tarjeta AdminLTE (card)
