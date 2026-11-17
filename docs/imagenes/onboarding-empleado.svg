@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 660" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Onboarding del empleado en 6 pasos">
+  <defs>
+    <marker id="oe" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="oer" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#fb7185"/>
+    </marker>
+    <linearGradient id="oh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1140"/><stop offset="1" stop-color="#3b2a7a"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .num{font-size:14px;font-weight:800;fill:#0d1425}
+    .numB{fill:#8b5cf6}
+    .lbl{font-size:14px;font-weight:700;fill:#e2e8f0}
+    .mut{font-size:11.5px;fill:#94a3b8}
+    .arr{stroke:#8b5cf6;stroke-width:2.2;fill:none;marker-end:url(#oe)}
+    .arrR{stroke:#fb7185;stroke-width:2;fill:none;stroke-dasharray:5 4;marker-end:url(#oer)}
+    .noB{fill:#131c30;stroke:#fb7185;stroke-width:1.8}
+    .dec{fill:#1b1140;stroke:#8b5cf6;stroke-width:1.8}
+    .em{fill:#34d399;font-weight:700}
+  </style>
+  <rect class="bg" width="900" height="660"/>
+  <text x="450" y="40" text-anchor="middle" class="h1">De cero a ver tu nómina — Portal del Empleado</text>
+  <text x="450" y="63" text-anchor="middle" class="h2">Empezar en 5 minutos · la pantalla se refresca sola cada 5 segundos</text>
+
+  <!-- paso 1 -->
+  <rect class="card" x="90" y="95" width="300" height="66" rx="12"/>
+  <circle class="numB" cx="120" cy="128" r="14"/>
+  <text x="120" y="133" text-anchor="middle" class="num">1</text>
+  <text x="145" y="124" class="lbl">Entra en /entrar</text>
+  <text x="145" y="146" class="mut">la puerta única de la plataforma</text>
+
+  <!-- paso 2 -->
+  <rect class="card" x="90" y="190" width="300" height="66" rx="12"/>
+  <circle class="numB" cx="120" cy="223" r="14"/>
+  <text x="120" y="228" text-anchor="middle" class="num">2</text>
+  <text x="145" y="219" class="lbl">Conecta MetaMask</text>
+  <text x="145" y="241" class="mut">elige cuenta y red si lo pide</text>
+
+  <!-- decisión -->
+  <path class="dec" d="M240,280 L340,330 L240,380 L140,330 Z"/>
+  <text x="240" y="324" text-anchor="middle" class="lbl">3. ¿Quién eres?</text>
+  <text x="240" y="346" text-anchor="middle" class="mut">pregunta el servidor</text>
+  <path class="arr" d="M240,258 L240,278"/>
+
+  <!-- error -->
+  <rect class="noB" x="440" y="295" width="240" height="70" rx="12"/>
+  <text x="560" y="325" text-anchor="middle" class="lbl" style="fill:#fb7185">Sin alta → error</text>
+  <text x="560" y="347" text-anchor="middle" class="mut">«pide alta al administrador»</text>
+  <path class="arrR" d="M342,330 L436,330"/>
+
+  <!-- paso 4 -->
+  <rect class="card" x="440" y="120" width="240" height="66" rx="12"/>
+  <circle class="numB" cx="470" cy="153" r="14"/>
+  <text x="470" y="158" text-anchor="middle" class="num">4</text>
+  <text x="495" y="149" class="lbl">Firma SIWE</text>
+  <text x="495" y="171" class="mut">abre la sesión · no gasta dinero</text>
+  <path class="arr" d="M340,300 C390,270 400,200 436,158"/>
+
+  <!-- paso 5 -->
+  <rect class="card" x="90" y="420" width="300" height="76" rx="12" stroke="#8b5cf6" stroke-width="1.8"/>
+  <circle class="numB" cx="120" cy="458" r="14"/>
+  <text x="120" y="463" text-anchor="middle" class="num">5</text>
+  <text x="145" y="450" class="lbl">Portal /suite (Resumen)</text>
+  <text x="145" y="472" class="mut"><tspan class="em">BRLT en saldo</tspan> · <tspan class="em">Cobrable BrltX</tspan></text>
+  <text x="145" y="490" class="mut">salario por periodo · cara azul noche + violeta</text>
+  <path class="arr" d="M240,382 L240,416"/>
+  <path class="arr" d="M680,153 C740,180 560,380 394,444" style="display:none"/>
+
+  <!-- paso 6 -->
+  <rect class="card" x="90" y="530" width="340" height="76" rx="12"/>
+  <circle class="numB" cx="120" cy="568" r="14"/>
+  <text x="120" y="573" text-anchor="middle" class="num">6</text>
+  <text x="145" y="560" class="lbl">Downgrade de flujos</text>
+  <text x="145" y="582" class="mut">elige flujo → importe (botón «Máximo»)</text>
+  <text x="145" y="600" class="mut">pulsa «Descargar» → firma en MetaMask</text>
+  <path class="arr" d="M240,498 L240,526"/>
+
+  <!-- resultado -->
+  <rect x="470" y="530" width="220" height="76" rx="12" fill="#0f2a24" stroke="#34d399" stroke-width="1.8"/>
+  <text x="580" y="562" text-anchor="middle" class="lbl" style="fill:#34d399">BRLT a tu wallet</text>
+  <text x="580" y="584" text-anchor="middle" class="mut">«Ya descargado» sube</text>
+  <text x="580" y="602" text-anchor="middle" class="mut">tope del 80% respetado</text>
+  <path class="arr" d="M434,568 L466,568"/>
+
+  <text x="450" y="640" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/onboarding-empleado.svg · manual del empleado · actualizado 2026-11-17</text>
+</svg>

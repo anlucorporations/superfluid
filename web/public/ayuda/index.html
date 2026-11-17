@@ -37,7 +37,8 @@
 <main>
   <nav>
     <a class="seccion" href="#empezar">Empezar en 5 minutos</a>
-    <a href="#empleado">Empleado: cobrar</a>
+    <a href="#empleado">Empleado: tu portal</a>
+    <a href="#tope">Cobro: tope del 80%</a>
     <a href="#admin">Admin: crear flujos</a>
     <a href="#estados">Estados de un flujo</a>
     <a href="#pausa">Pausa / reanudación</a>
@@ -50,26 +51,81 @@
 
     <section id="empezar">
       <h2>Empezar en 5 minutos</h2>
-      <p><b>Empleado:</b> entra en <code>/suite/login</code>, conecta MetaMask y verás tus saldos.
-         <b>Admin:</b> entra en <code>/login</code> con la wallet autorizada.</p>
+      <p><b>Empleado:</b> entra en <code>/entrar</code> (la puerta única), pulsa
+         <b>conectar wallet</b> (MetaMask) y firma un mensaje para abrir la sesión
+         (no gasta dinero). Si tienes ficha de empleado, la app te lleva a tu
+         <b>Portal del Empleado</b> (<code>/suite</code>). Si no, verás «pide alta
+         al administrador».
+         <b>Admin:</b> entra igual por <code>/entrar</code> y acabarás en el panel
+         <code>/admin</code>.</p>
       <img src="01-portada-app.png" alt="Portada de la aplicación">
       <figcaption>Portada pública de la aplicación.</figcaption>
+      <img src="onboarding-empleado.png" alt="Del alta a tu primera descarga">
+      <figcaption>De la puerta <code>/entrar</code> a tu primera descarga en el portal.</figcaption>
     </section>
 
     <section id="empleado">
-      <h2>Empleado: cobriminatorio</h2>
-      <p>En tu Suite verás <b>Cobrable ahora</b> (devengo incluido) y <b>BRLT en cartera</b>.
-         Escribe el importe o pulsa <b>«Todo»</b> y después <b>«Cobrar»</b>: tu wallet
-         recibe BRLT en la misma transacción.</p>
-      <img src="03-login-suite.png" alt="Acceso de la Suite">
-      <figcaption>Acceso de la Suite del Empleado. La pantalla se refresca cada 5 segundos.</figcaption>
+      <h2>Empleado: tu Portal del Empleado</h2>
+      <p>Tu portal (<code>/suite</code>) tiene identidad visual propia (fondo azul
+         noche, tarjetas oscuras y cabecera violeta) y se refresca solo cada
+         <b>5 segundos</b>. De arriba abajo:</p>
       <table>
-        <tr><th>Estado del flujo</th><th>Qué significa</th><th>Tu acción</th></tr>
-        <tr><td>activo</td><td>el grifo corre</td><td>cobra cuando quieras</td></tr>
-        <tr><td>pausado</td><td>devengo congelado (el tiempo se aplaza)</td><td>espera</td></tr>
-        <tr><td>vencido</td><td>el plazo terminó</td><td>«Liquidar»</td></tr>
-        <tr><td>terminado</td><td>todo cerrado</td><td>cobra lo restante</td></tr>
+        <tr><th>Sección</th><th>Qué encuentras</th></tr>
+        <tr><td>Resumen</td><td>BRLT en tu wallet, BrltX cobrable con devengo y tu salario por periodo</td></tr>
+        <tr><td>Downgrade de flujos</td><td>El cobro «con nómina»: eliges el flujo y respetas el <a href="#tope">tope del 80%</a></td></tr>
+        <tr><td>Cobro autónomo</td><td>El cobro libre de siempre: conviertes BrltX de tu cartera sin elegir flujo (también cuenta para el tope)</td></tr>
+        <tr><td>Mis flujos</td><td>Tabla de tus «grifos»: estado, acumulado y botón «Descargar» por fila</td></tr>
+        <tr><td>Mi ficha</td><td>Tu ficha laboral (proyecto, concepto, importe y periodo) · solo lectura</td></tr>
+        <tr><td>Mi perfil</td><td>Datos personales, consentimiento y <a href="#datos">borrar mis datos</a></td></tr>
       </table>
+      <img src="portal-empleado-secciones.png" alt="Secciones del Portal del Empleado">
+      <figcaption>Secciones del Portal del Empleado (<code>/suite</code>).</figcaption>
+      <h3>Tu sesión está ligada a tu wallet</h3>
+      <p>La app comprueba de forma continua que sigues siendo tú: compara la cuenta
+         activa de MetaMask con la de tu sesión <b>al vuelo</b> (si cambias de cuenta)
+         y además cada <b>10 segundos</b>.</p>
+      <ul style="color:#334155;font-size:14px;line-height:1.6">
+        <li>Si cambias de cuenta en MetaMask, aparece el aviso
+            <b>«Wallet distinta a tu sesión»</b> con un botón para revalidar en
+            <code>/entrar</code>. Hasta que no revalides no podrás seguir operando.</li>
+        <li>Antes de <b>cualquier firma</b>, la app vuelve a comparar la cuenta conectada
+            con la de tu sesión: si no coinciden, se cancela el envío.</li>
+        <li>Si abres <code>/suite</code> con una sesión de <b>admin</b>, te manda
+            directamente a <code>/admin</code>. Sin sesión, vuelves a <code>/entrar</code>.</li>
+      </ul>
+      <img src="validacion-wallet.png" alt="Validación continua de la wallet">
+      <figcaption>Validación continua: cuenta de MetaMask ≠ sesión → aviso y revalidación en <code>/entrar</code>.</figcaption>
+    </section>
+
+    <section id="tope">
+      <h2>Cobro: downgrade de flujos con tope del 80%</h2>
+      <p><b>Regla de la casa:</b> en total solo puedes convertir en BRLT el
+         <b>80% de todo lo que te asignaron</b> (la suma de todos tus flujos, vivos o
+         terminados). Lo ya convertido se va restando. Es una regla de la aplicación,
+         no del contrato, y aplica igual al «Cobro autónomo»: los dos comparten el
+         mismo contador.</p>
+      <h3>Las 4 fichas del panel</h3>
+      <table>
+        <tr><th>Ficha</th><th>Significado</th></tr>
+        <tr><td>Asignado a tu cuenta</td><td>Todo lo depositado en tus flujos</td></tr>
+        <tr><td>Tope 80%</td><td>Lo máximo que podrás convertir en total (80% de lo asignado)</td></tr>
+        <tr><td>Ya descargado</td><td>Lo que ya has convertido en BRLT hasta hoy</td></tr>
+        <tr><td>Disponible</td><td>Tope − ya descargado. Es tu margen actual</td></tr>
+      </table>
+      <p>Ejemplo: asignado <b>10.000</b> → tope <b>8.000</b> → ya descargado
+         <b>1.500</b> → disponible <b>6.500</b>.</p>
+      <h3>Cómo descargar, paso a paso</h3>
+      <p>1) Elige el <b>flujo</b> en el selector (activos, pausados o terminados) ·
+         2) Escribe el importe o pulsa <b>«Máximo»</b> (te propone lo menor entre tu
+         BrltX en cartera y lo disponible del tope) · 3) Pulsa <b>«Descargar»</b>:
+         MetaMask firma (no gasta nada) y en segundos sube tu BRLT en saldo.</p>
+      <p style="color:#7f1d1d"><b>Si superas el tope:</b> verás el aviso
+         <code>tope_80_superado</code> y no se cobra ni se registra nada. Y si
+         «Máximo» te da <b>0</b>, o el tope está agotado o tu BrltX en cartera es 0
+         (el devengo pendiente solo se convierte en cobrable cuando el flujo se
+         liquida on-chain).</p>
+      <img src="flujo-downgrade-80.png" alt="Downgrade de flujos con tope del 80%">
+      <figcaption>Downgrade de flujos: el servidor verifica el recibo y el tope del 80% antes de registrar el cobro.</figcaption>
     </section>
 
     <section id="admin">
@@ -81,6 +137,23 @@
       <img src="07-admin-flujos.png" alt="Sección de flujos">
       <figcaption>Flujos reconciliados con el contrato, con acciones por estado y pestañas
       (Crear, Programados, Lote, Tesorería).</figcaption>
+      <h3>El tope del 80% visto desde el admin</h3>
+      <p>De tu operativa <b>no cambia nada</b>: crear, pausar, reanudar, terminar y
+         liquidar flujos se hace igual que siempre — el tope solo limita el
+         <b>cobro</b> del empleado, no tu gestión. Lo que ves tú:</p>
+      <ul style="color:#334155;font-size:14px;line-height:1.6">
+        <li>Tu empleado puede convertir en BRLT, <b>acumulativamente</b>, el
+            <b>80% de todo lo asignado</b> a su cuenta (todos sus flujos, vivos o
+            terminados); lo ya cobrado se reconstruye de la <b>auditoría</b> de
+            cobros verificados contra la cadena.</li>
+        <li>Si un intento supera el tope, el servidor lo rechaza con el código
+            <code>tope_80_superado</code> y <b>no lo registra ni lo cobra</b>.</li>
+        <li>En <b>Auditoría</b> verás los cobros que <b>sí</b> pasaron el tope
+            (quién, cuánto, cuándo y la transacción); los intentos rechazados no
+            dejan huella allí.</li>
+      </ul>
+      <img src="tope-80-admin.png" alt="Tope del 80% desde el admin">
+      <figcaption>Disponible del empleado = tope (80% de lo asignado) − ya descargado (según auditoría).</figcaption>
     </section>
 
     <section id="estados">
@@ -100,8 +173,11 @@
     <section id="cambios">
       <h2>Cambio de wallet</h2>
       <p>El empleado firma con la <b>wallet nueva</b> y el admin confirma. Los flujos
-      activos se <b>migran</b> con `changeReceiver`: el flujo viejo se cierra y se abre
+      activos se <b>migran</b> con <code>changeReceiver</code>: el flujo viejo se cierra y se abre
       uno nuevo con el saldo restante. Sin pagos duplicados.</p>
+      <p>Recuerda: tu sesión va ligada a la wallet. Si cambias de cuenta en MetaMask,
+      verás el aviso <b>«Wallet distinta a tu sesión»</b>: vuelve a entrar con tu
+      cuenta en <code>/entrar</code> y seguirás donde estabas.</p>
       <img src="05-admin-empleados.png" alt="Sección de empleados">
       <figcaption>Gestión de plantilla: alta, edición, baja y cambio de wallet con doble firma.</figcaption>
     </section>
@@ -124,10 +200,11 @@
 
     <section id="pdf">
       <h2>Descargar PDF</h2>
-      <p>Manuales imprimibles generados desde la documentación viva del proyecto:</p>
-      <a class="pdf" href="pdf/Manual-Administrador.pdf">Manual del Administrador (PDF)</a>
-      <a class="pdf" href="pdf/Manual-Empleado.pdf">Manual del Empleado (PDF)</a>
-      <a class="pdf" href="pdf/Manual-Tecnico.pdf">Manual Técnico (PDF)</a>
+      <p>Manuales imprimibles generados desde la documentación viva del proyecto
+         (copias descargables en <code>/manual/</code>):</p>
+      <a class="pdf" href="/manual/Manual-Empleado.pdf">Manual del Empleado (PDF)</a>
+      <a class="pdf" href="/manual/Manual-Administrador.pdf">Manual del Administrador (PDF)</a>
+      <a class="pdf" href="/manual/Manual-Tecnico.pdf">Manual Técnico (PDF)</a>
       <img src="09-admin-auditoria.png" alt="Auditoría">
       <figcaption>Historial de auditoría: quién hizo qué y cuándo (sin secretos ni PII).</figcaption>
     </section>

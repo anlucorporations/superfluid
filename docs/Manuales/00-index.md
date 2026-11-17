@@ -1,24 +1,46 @@
 # Manual principal — Superfluid Brlt
 
-**Nómina que se transmite segundo a segundo, en BRLT, sobre la red de práctica Besu.**
+**Nómina que se transmite segundo a segundo, en BRLT, sobre la red de práctica.**
 
 ## Empezar en 5 minutos
 
 ### Empleado
-1. Abre la Suite: `/suite/login`.
-2. Conecta MetaMask o **pide al administrador** que registre tu wallet.
-3. Verás tu saldo disponible y tus flujos. Botón **«Cobrar»** → recibes BRLT en tu wallet.
+1. Abre la web y ve a **`/entrar`** (entrada única).
+2. Conecta tu wallet (MetaMask). La app consulta qué eres: si tienes ficha de
+   empleado, te lleva a tu **Portal del Empleado** (`/suite`).
+3. Verás tu resumen: **BRLT en saldo**, **cobrable en BrltX** y tu **salario por
+   periodo**. En **«Downgrade de flujos»** eliges un flujo y pulsas **«Descargar»**
+   para pasar BrltX a BRLT real.
+4. Si no tienes alta, la app te dirá: «pide alta al administrador».
 
 ### Administrador
-1. Abre el panel: `/login`.
-2. Conecta la wallet admin (aparece en tu navegadores solo si está autorizada).
-3. Crea un empleado → crea su flujo → listo: el salario empieza a fluir.
+1. Abre la web y ve a **`/entrar`**. Con la wallet admin la app detecta tu rol
+   y te lleva al **panel `/admin`**.
+2. Crea un empleado → crea su flujo → listo: el salario empieza a fluir.
+
+> **Novedad (2026-11-17):** el Portal del Empleado se rediseñó con su propia
+> cara visual (tonos azul noche y violeta, distinta del panel admin) y estrena
+> el **tope acumulado del 80%** al cobrar. Todo el detalle está en
+> [Manual del Empleado](07-Manual-del-Admin/manual-empleado.md) y en
+> [Manual del Admin](07-Manual-del-Admin/manual-admin.md).
+
+<!-- GENERAR_IMAGEN: arquitectura-portales.svg|png -->
+
+```mermaid
+flowchart LR
+    U["Persona con MetaMask"] --> E["Entrada única /entrar"]
+    E -->|"rol: admin"| PA["Panel /admin<br/>(estilo AdminLTE)"]
+    E -->|"rol: empleado"| PE["Portal del Empleado /suite<br/>(azul noche + violeta)"]
+    E -->|"sin alta"| X["Error: pide alta al administrador"]
+```
 
 ## ¿Cómo funciona? (versión simple)
 
 1. El admin **envuelve** BRLT en BrltX (1:1) y con eso financia un flujo a tu wallet.
 2. El flujo **acumula** tu salario segundo a segundo (verás el número subir).
-3. Cuando cobras, ese BrltX acumulado se cambia por **BRLT real** en tu wallet.
+3. Cuando descargas (downgrade), ese BrltX acumulado se cambia por **BRLT real**
+   en tu wallet. Ojo con el **tope**: en total solo puedes convertir el **80% de
+   todo lo asignado** a tu cuenta; lo ya convertido se resta.
 4. Si tu nómina termina (vence), cualquiera puede **liquidarla**: lo no cobrado pasa a
    tu saldo y lo sobrante vuelve al admin.
 
@@ -27,7 +49,8 @@ flowchart LR
     A[Admin: BRLT] -->|1:1 wrap| B[Admin: BrltX]
     B -->|wrapAndCreateFlow| C[Flujo #N a tu wallet]
     C -->|acumula por segundo| D[Tu saldo BrltX]
-    D -->|downgrade = Cobrar| E[Tu BRLT]
+    D -->|downgrade = Descargar| E[Tu BRLT]
+    D -.->|"tope del 80% sobre lo asignado"| E
 ```
 
 ## Índice de manuales
@@ -40,7 +63,13 @@ flowchart LR
 | Despliegue | DevOps | `…/04-Despliegue/04-despliegue.md` |
 | Diccionario de datos | analistas | `…/05-Diccionario-de-Datos/05-diccionario.md` |
 | Diagrama relacional | analistas | `…/06-Diagrama-Relacional/06-relacional.md` |
+| **Manual del Admin** | administradores | `…/07-Manual-del-Admin/manual-admin.md` |
+| **Manual del Empleado** | empleados | `…/07-Manual-del-Admin/manual-empleado.md` |
 
 ### Ayuda en la plataforma
 La misma documentación navegable con imágenes está en
 **`/ayuda/manual/index.html`** (servida por la propia app).
+
+---
+
+*Actualizado 2026-11-17*

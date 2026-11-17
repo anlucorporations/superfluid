@@ -9,9 +9,11 @@ La plataforma consta de tres piezas:
 
 - **Contratos Solidity** (`sc/`): `Brlt.sol` (token ERC-20 con tope y minter) y
   `BrltX.sol` (envoltorio 1:1 con streaming de nómina tipo CFA simplificado).
-- **App web** (`web/`): Next.js 15 App Router, panel admin (`/admin/*`) y Suite del
-  Empleado (`/suite/*`), con APIs REST en `web/src/app/api/**`.
-- **Infraestructura**: Besu Codecrypto (chainId 81234), MongoDB (estado administrativo
+- **App web** (`web/`): Next.js 15 App Router con **tres superficies**: entrada única
+  `/entrar`, panel admin (`/admin/*`, look AdminLTE) y Portal del Empleado
+  (`/suite/*`, identidad visual propia), con APIs REST en `web/src/app/api/**`.
+- **Infraestructura**: red EVM (Besu 81234 por defecto; el despliegue actual opera contra
+  Anvil 31337 vía proxy, ver `04-despliegue.md`), MongoDB (estado administrativo
   y reconciliación) y Cloud Run como destino de despliegue (H7).
 
 ```text
@@ -31,7 +33,17 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
 - El **servidor nunca custodia claves**: las escrituras on-chain se firman en el
   navegador (`web/src/lib/client/contracts.ts`).
 - El **cobro del empleado** es `downgrade` de BrltX → BRLT en la misma tx
-  (`sc/src/BrltX.sol:144`, llama el empleado desde la Suite H5).
+  (`sc/src/BrltX.sol:144`, evento `Downgraded` en `sc/src/BrltX.sol:99`, llama el
+  empleado desde el Portal H5).
+- El **tope de downgrade del 80%** es una regla de producto aplicada por el backend
+  (`web/src/lib/downgrade-limit.ts`), no por el contrato: el acumulado cobrado no puede
+  superar el 80% del total asignado a la cuenta; se exige en `/api/suite/actions` antes
+  de auditar (`422 tope_80_superado`).
+- La **entrada es única por wallet**: `/entrar` conecta la wallet, consulta
+  `POST /api/auth/role` y redirige admin → `/admin`, empleado → `/suite`, sin alta →
+  error (`web/src/components/EntryLogin.tsx`). En `/suite` la cuenta activa de la wallet
+  se valida de forma **continua** (eth_accounts + `accountsChanged` + poll de 10 s) contra
+  la sesión (`web/src/app/suite/page.tsx:117-141`).
 
 ### Stack Web3
 #### Red y contratos
@@ -60,8 +72,11 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
 ### APIs REST
 #### Inventario
 
-- Identidad: `/api/auth/*` (nonce/verify/logout/me), `/api/suite/me` (H5).
-- Datos: `/api/employees[/id][/wallet]`, `/api/projects[/id]`, allowlist.
+- Identidad: `/api/auth/*` (nonce/verify/logout/me y **`/api/auth/role`**, decisión de
+  portal sin firma), `/api/suite/me` (H5, con `limites` del tope 80%),
+  `/api/suite/actions` (auditoría de cobro/liquidación con exigencia del tope).
+- Datos: `/api/employees[/id][/wallet]`, `/api/projects[/id]`, allowlist,
+  `/api/suite/profile`, `/api/suite/erase`.
 - Flujos: `/api/flows`, `/api/flows/[id]`, `/api/flows/actions`, `/api/scheduled-flows`,
   `/api/batches[/id]` (H4).
 - Operación: `/api/jobs` (H6), `/api/health`.
@@ -69,7 +84,8 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
 #### Estilo
 
 - `handle()`/`ok()`/`readJson()` en `web/src/lib/http.ts` unifican errores `ApiError`
-  con códigos estables (`rate_limit`, `tx_no_verificada`, …).
+  con códigos estables (`rate_limit`, `tx_no_verificada`, `tope_80_superado`,
+  `importe_invalido`, …).
 - Validación de entrada con **Zod** en `web/src/lib/validation.ts`.
 
 ### Seguridad de sesión
@@ -86,11 +102,24 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
 ### Pattern del front
 #### Rutas UI
 
-- Panel admin: `web/src/app/admin/**` (layout con nav y guardas de sesión cliente).
-- Suite: `web/src/app/suite/**` (página de cobro autónomo + perfil GDPR).
-- UI kit interno: `web/src/components/ui.tsx` (Button/Card/Alert/Badge/Input…).
+- Entrada única: `web/src/app/entrar/page.tsx` + `web/src/components/EntryLogin.tsx`
+  (wallet decide portal; SIWE del propósito correspondiente).
+- Panel admin: `web/src/app/admin/**` (layout con nav y guardas de sesión cliente,
+  tokens `adminlte.*`).
+- Portal del Empleado: `web/src/app/suite/page.tsx` (página única con resumen, Downgrade
+  de flujos con tope 80%, cobro autónomo, flujos, ficha y perfil GDPR; tokens
+  `empleado.*` en `web/tailwind.config.ts:45-52`).
+- UI kit interno: `web/src/components/ui.tsx` (Button/Card/Alert/Badge/Input…) y
+  `web/src/components/adminlte.tsx` (componentes del estilo del panel).
 
 #### Estado
 
 - `apiFetch` (`web/src/lib/client/api.ts`) para llamadas con CSRF implícito.
-- Refresco 5 s en la Suite (`RF-08`), polling declarativo con `setInterval`.
+- Refresco 5 s en `/suite` (`RF-08`), polling declarativo con `setInterval`.
+- Validación continua de wallet en `/suite`: `eth_accounts` + evento `accountsChanged`
+  + poll de 10 s (`web/src/app/suite/page.tsx:117-141`); si la cuenta activa diverge de
+  la sesión, se exige revalidar en `/entrar`.
+
+---
+
+*Actualizado 2026-11-17 · commit aab670e*

@@ -1,63 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" font-family="system-ui,Segoe UI,Arial" role="img" aria-label="Flujo de una nómina">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Ciclo de vida de un flujo de nómina">
   <defs>
-    <style>
-      .t{font-size:20px;font-weight:600;fill:#0f172a}
-      .s{font-size:13px;fill:#475569}
-      .box{fill:#fff;stroke:#e2e8f0;stroke-width:2}
-      .step{fill:#eef2ff;stroke:#6366f1;stroke-width:2}
-      .ok{fill:#ecfdf5;stroke:#10b981}
-      .money{fill:#fffbeb;stroke:#f59e0b}
-      .lbl{font-size:14px;font-weight:600;fill:#1e293b}
-      .lbl2{font-size:12px;fill:#475569}
-      .arrow{stroke:#94a3b8;stroke-width:2;fill:none;marker-end:url(#ah2)}
-    </style>
-    <marker id="ah2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
+    <marker id="fn" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
     </marker>
+    <linearGradient id="fh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1140"/><stop offset="1" stop-color="#3b2a7a"/>
+    </linearGradient>
   </defs>
-  <text x="480" y="40" text-anchor="middle" class="t">Flujo de una nómina (6 días · 10 BRLT)</text>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .lbl{font-size:15px;font-weight:700;fill:#e2e8f0}
+    .mut{font-size:12.5px;fill:#94a3b8}
+    .msg{font-size:12.5px;fill:#e2e8f0}
+    .ret{fill:#34d399}
+    .life{stroke:#334155;stroke-width:2;stroke-dasharray:6 6}
+    .arrow{stroke:#8b5cf6;stroke-width:2;fill:none;marker-end:url(#fn)}
+    .back{stroke:#34d399;stroke-width:2;fill:none;stroke-dasharray:5 4;marker-end:url(#fn)}
+    .step{font-size:11px;font-weight:700;fill:#a78bfa;letter-spacing:1px}
+    .phase{fill:none;stroke:#334155;stroke-width:1.2}
+    .phaseT{font-size:11.5px;font-weight:600;fill:#94a3b8}
+  </style>
+  <rect class="bg" width="960" height="620"/>
+  <text x="480" y="40" text-anchor="middle" class="h1">Pausa, reanudación y cierre de una nómina (flujo #N)</text>
+  <text x="480" y="63" text-anchor="middle" class="h2">Al pausar se guarda la tasa · al reanudar el fin se aplaza: nadie pierde devengo</text>
 
-  <rect x="30" y="80" width="180" height="90" rx="12" class="step"/>
-  <text x="120" y="112" text-anchor="middle" class="lbl">1 · Crear</text>
-  <text x="120" y="134" text-anchor="middle" class="lbl2">approve + wrapAndCreateFlow</text>
-  <text x="120" y="154" text-anchor="middle" class="lbl2">deposita 10 BRLT en escrow</text>
+  <!-- participantes -->
+  <rect class="card" x="110" y="90" width="210" height="56" rx="12"/>
+  <rect x="110" y="90" width="210" height="56" rx="12" fill="url(#fh)"/>
+  <text x="215" y="116" text-anchor="middle" class="lbl">Admin (MetaMask)</text>
+  <text x="215" y="136" text-anchor="middle" class="mut">gestiona el grifo</text>
+  <line x1="215" y1="146" x2="215" y2="560" class="life"/>
 
-  <rect x="270" y="80" width="180" height="90" rx="12" class="money"/>
-  <text x="360" y="112" text-anchor="middle" class="lbl">2 · Acumular</text>
-  <text x="360" y="134" text-anchor="middle" class="lbl2">tasa ≈ 19290123456790 wei/s</text>
-  <text x="360" y="154" text-anchor="middle" class="lbl2">el empleado ve su pendiente subir</text>
+  <rect class="card" x="430" y="90" width="160" height="56" rx="12"/>
+  <rect x="430" y="90" width="160" height="56" rx="12" fill="url(#fh)"/>
+  <text x="510" y="124" text-anchor="middle" class="lbl">Contrato BrltX</text>
+  <line x1="510" y1="146" x2="510" y2="560" class="life"/>
 
-  <rect x="510" y="80" width="170" height="90" rx="12" class="box"/>
-  <text x="595" y="112" text-anchor="middle" class="lbl">3 · Pausar / reanudar</text>
-  <text x="595" y="134" text-anchor="middle" class="lbl2">tramo liquidado al pausar</text>
-  <text x="595" y="154" text-anchor="middle" class="lbl2">el fin se aplaza, no se pierde</text>
+  <rect class="card" x="700" y="90" width="170" height="56" rx="12"/>
+  <rect x="700" y="90" width="170" height="56" rx="12" fill="url(#fh)"/>
+  <text x="785" y="124" text-anchor="middle" class="lbl">Empleado</text>
+  <line x1="785" y1="146" x2="785" y2="560" class="life"/>
 
-  <rect x="740" y="80" width="190" height="90" rx="12" class="ok"/>
-  <text x="835" y="112" text-anchor="middle" class="lbl">4 · Terminar</text>
-  <text x="835" y="134" text-anchor="middle" class="lbl2">deleteFlow: paga y devuelve</text>
-  <text x="835" y="154" text-anchor="middle" class="lbl2">escrow queda a 0</text>
+  <!-- 1 crear -->
+  <text x="215" y="172" class="step">1 · CREAR</text>
+  <path class="arrow" d="M215,196 L508,196"/>
+  <text x="362" y="188" text-anchor="middle" class="msg">wrapAndCreateFlow(10 BRLT, 6 días)</text>
+  <path class="back" d="M508,228 L218,228"/>
+  <text x="362" y="220" text-anchor="middle" class="msg ret">FlowCreated #N (tasa floor)</text>
 
-  <path class="arrow" d="M210,125 L270,125"/>
-  <path class="arrow" d="M450,125 L510,125"/>
-  <path class="arrow" d="M680,125 L740,125"/>
+  <!-- 2 pausa -->
+  <text x="215" y="262" class="step">2 · PAUSA</text>
+  <path class="arrow" d="M215,286 L508,286"/>
+  <text x="362" y="278" text-anchor="middle" class="msg">updateFlow(#N, 0) — pausa</text>
+  <path class="back" d="M508,318 L782,318"/>
+  <text x="650" y="310" text-anchor="middle" class="msg ret">liquida el tramo (minta BrltX)</text>
+  <rect class="phase" x="330" y="336" width="360" height="30" rx="8"/>
+  <text x="510" y="356" text-anchor="middle" class="phaseT">tasa congelada · el tiempo restante se aplaza al reanudar</text>
 
-  <!-- Cobro -->
-  <rect x="120" y="230" width="300" height="120" rx="12" class="ok"/>
-  <text x="270" y="262" text-anchor="middle" class="lbl">Cobro (empleado, CU-16)</text>
-  <text x="270" y="286" text-anchor="middle" class="lbl2">downgrade(BrltX) → quema BrltX</text>
-  <text x="270" y="306" text-anchor="middle" class="lbl2">y entrega BRLT al empleado</text>
-  <text x="270" y="332" text-anchor="middle" class="lbl2">incluso con contrato pausado (AC-07)</text>
+  <!-- 3 reanudar -->
+  <text x="215" y="392" class="step">3 · REANUDAR</text>
+  <path class="arrow" d="M215,416 L508,416"/>
+  <text x="362" y="408" text-anchor="middle" class="msg">updateFlow(#N, tasa) — reanudar</text>
 
-  <path class="arrow" d="M360,175 C330,210 300,220 280,230"/>
+  <!-- 4 terminar -->
+  <text x="215" y="450" class="step">4 · TERMINAR</text>
+  <path class="arrow" d="M215,474 L508,474"/>
+  <text x="362" y="466" text-anchor="middle" class="msg">deleteFlow(#N) — terminar</text>
+  <path class="back" d="M508,508 L782,508"/>
+  <text x="646" y="500" text-anchor="middle" class="msg ret">paga lo devengado al empleado</text>
+  <path class="back" d="M508,540 L218,540"/>
+  <text x="362" y="532" text-anchor="middle" class="msg ret">remanente vuelve al admin</text>
 
-  <!-- Liquidar -->
-  <rect x="540" y="230" width="300" height="120" rx="12" class="step"/>
-  <text x="690" y="262" text-anchor="middle" class="lbl">Liquidar flujo vencido (AC-02)</text>
-  <text x="690" y="286" text-anchor="middle" class="lbl2">settleFlow público y sin permiso</text>
-  <text x="690" y="306" text-anchor="middle" class="lbl2">solo si block.timestamp ≥ endsAt</text>
-  <text x="690" y="332" text-anchor="middle" class="lbl2">acumulado → BrltX del empleado</text>
-
-  <path class="arrow" d="M860,175 C760,220 720,220 690,230"/>
-
-  <text x="480" y="395" text-anchor="middle" class="s">docs/imagenes/flujo-nomina.svg · Fase 5 · Superfluid Brlt Streaming v2</text>
+  <text x="480" y="585" text-anchor="middle" class="mut">el servidor lee getFlow y getPending para reconciliar el estado · nada se pierde</text>
+  <text x="480" y="605" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/flujo-nomina.svg · actualizado 2026-11-17</text>
 </svg>

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Arquitectura de los dos portales">
+  <defs>
+    <marker id="ap" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+    </marker>
+    <linearGradient id="hdr" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1140"/><stop offset="1" stop-color="#3b2a7a"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .hdr{fill:url(#hdr);stroke:none}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .lbl{font-size:15px;font-weight:600;fill:#e2e8f0}
+    .sub{font-size:12px;fill:#a5b4fc}
+    .mut{font-size:12px;fill:#94a3b8}
+    .tag{font-size:11px;fill:#64748b}
+    .arr{stroke:#8b5cf6;stroke-width:2.5;fill:none;marker-end:url(#ap)}
+    .arr2{stroke:#475569;stroke-width:2;fill:none;stroke-dasharray:5 4;marker-end:url(#ap)}
+    .violet{fill:#8b5cf6}.green{fill:#34d399}.rose{fill:#fb7185}
+  </style>
+  <rect class="bg" width="960" height="500" rx="0"/>
+  <text x="480" y="44" text-anchor="middle" class="h1">Dos portales, una sola entrada: <tspan fill="#a78bfa">/entrar</tspan></text>
+  <text x="480" y="68" text-anchor="middle" class="h2">La wallet decide a dónde vas · actualizado 2026-11-17</text>
+
+  <!-- Persona -->
+  <rect class="card" x="50" y="150" width="200" height="150" rx="12"/>
+  <circle cx="150" cy="190" r="24" fill="#8b5cf6"/>
+  <text x="150" y="197" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">M</text>
+  <text x="150" y="242" text-anchor="middle" class="lbl">Persona con</text>
+  <text x="150" y="262" text-anchor="middle" class="lbl">MetaMask</text>
+  <text x="150" y="286" text-anchor="middle" class="mut">firma · nunca guarda claves</text>
+
+  <!-- Entrar -->
+  <rect class="card" x="340" y="160" width="220" height="130" rx="12"/>
+  <rect class="hdr" x="340" y="160" width="220" height="40" rx="12"/>
+  <rect x="340" y="188" width="220" height="12" fill="#1b1140"/>
+  <text x="450" y="187" text-anchor="middle" font-size="15" font-weight="700" fill="#e2e8f0">Entrada única /entrar</text>
+  <text x="450" y="225" text-anchor="middle" class="mut">conecta la wallet</text>
+  <text x="450" y="245" text-anchor="middle" class="mut">pregunta el rol al servidor</text>
+  <text x="450" y="270" text-anchor="middle" class="sub">admin · empleado · sin alta</text>
+
+  <!-- Portal admin -->
+  <rect class="card" x="660" y="110" width="260" height="120" rx="12"/>
+  <rect class="hdr" x="660" y="110" width="260" height="40" rx="12"/>
+  <rect x="660" y="138" width="260" height="12" fill="#1b1140"/>
+  <text x="790" y="137" text-anchor="middle" font-size="15" font-weight="700" fill="#e2e8f0">Panel /admin</text>
+  <text x="790" y="172" text-anchor="middle" class="mut">crea empleados y flujos</text>
+  <text x="790" y="192" text-anchor="middle" class="mut">auditoría · jobs · tesorería</text>
+  <text x="790" y="216" text-anchor="middle" class="sub">estilo clásico AdminLTE (claro)</text>
+
+  <!-- Portal empleado -->
+  <rect x="660" y="255" width="260" height="120" rx="12" fill="#131c30" stroke="#8b5cf6" stroke-width="2"/>
+  <rect class="hdr" x="660" y="255" width="260" height="40" rx="12"/>
+  <rect x="660" y="283" width="260" height="12" fill="#1b1140"/>
+  <text x="790" y="282" text-anchor="middle" font-size="15" font-weight="700" fill="#e2e8f0">Portal del Empleado /suite</text>
+  <text x="790" y="317" text-anchor="middle" class="mut">resumen · downgrade de flujos</text>
+  <text x="790" y="337" text-anchor="middle" class="mut">mis flujos · ficha · perfil</text>
+  <text x="790" y="361" text-anchor="middle" class="sub">azul noche #0d1425 + violeta</text>
+
+  <!-- Sin alta -->
+  <rect class="card" x="340" y="360" width="220" height="80" rx="12" stroke="#fb7185"/>
+  <text x="450" y="392" text-anchor="middle" class="lbl" fill="#fb7185">Sin alta</text>
+  <text x="450" y="414" text-anchor="middle" class="mut">«pide alta al administrador»</text>
+  <text x="450" y="432" text-anchor="middle" class="tag">no se abre sesión</text>
+
+  <!-- flechas -->
+  <path class="arr" d="M250,222 L338,222"/>
+  <path class="arr" d="M560,195 L658,165"/>
+  <path class="arr" d="M560,250 L658,305"/>
+  <path class="arr2" d="M450,292 L450,358"/>
+
+  <!-- leyenda -->
+  <circle class="violet" cx="70" cy="470" r="5"/>
+  <text x="82" y="474" class="mut">ruta del admin</text>
+  <circle class="green" cx="220" cy="470" r="5"/>
+  <text x="232" y="474" class="mut">ruta del empleado (tope 80% en su cobro)</text>
+  <circle class="rose" cx="560" cy="470" r="5"/>
+  <text x="572" y="474" class="mut">bloqueo sin alta</text>
+  <text x="480" y="494" text-anchor="middle" class="tag">docs/imagenes/arquitectura-portales.svg · Superfluid Brlt</text>
+</svg>

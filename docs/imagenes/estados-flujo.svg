@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Estados de un flujo">
+  <defs>
+    <marker id="ef" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+    </marker>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .st{fill:#131c30;stroke:#2a3a5c;stroke-width:1.6}
+    .stV{fill:#1b1140;stroke:#8b5cf6;stroke-width:2}
+    .stG{fill:#0f2a24;stroke:#34d399;stroke-width:2}
+    .stA{fill:#2a1a10;stroke:#f59e0b;stroke-width:2}
+    .lbl{font-size:15px;font-weight:700;fill:#e2e8f0}
+    .mut{font-size:11.5px;fill:#94a3b8}
+    .eT{font-size:12px;font-weight:600;fill:#a78bfa}
+    .eG{fill:#34d399}
+    .arr{stroke:#8b5cf6;stroke-width:2;fill:none;marker-end:url(#ef)}
+    .arrG{stroke:#34d399;stroke-width:2;fill:none;marker-end:url(#ef)}
+    .ini{fill:#131c30;stroke:#2a3a5c;stroke-width:1.6}
+  </style>
+  <rect class="bg" width="960" height="480"/>
+  <text x="480" y="40" text-anchor="middle" class="h1">Los cuatro estados de un flujo</text>
+  <text x="480" y="63" text-anchor="middle" class="h2">Qué pasa en cada estado y qué puede hacer el empleado (tabla de «Mis flujos»)</text>
+
+  <!-- inicio -->
+  <circle cx="70" cy="150" r="14" class="ini"/>
+  <circle cx="70" cy="150" r="6" fill="#e2e8f0"/>
+
+  <!-- activo -->
+  <rect class="stV" x="150" y="105" width="150" height="90" rx="45"/>
+  <text x="225" y="145" text-anchor="middle" class="lbl">activo</text>
+  <text x="225" y="166" text-anchor="middle" class="mut">el grifo corre</text>
+  <text x="225" y="184" text-anchor="middle" class="mut">descarga cuando quieras</text>
+
+  <!-- pausado -->
+  <rect class="stA" x="390" y="105" width="150" height="90" rx="45"/>
+  <text x="465" y="145" text-anchor="middle" class="lbl" style="fill:#fbbf24">pausado</text>
+  <text x="465" y="166" text-anchor="middle" class="mut">devengo congelado</text>
+  <text x="465" y="184" text-anchor="middle" class="mut">espera · el fin se aplaza</text>
+
+  <!-- vencido -->
+  <rect class="stA" x="630" y="105" width="150" height="90" rx="45"/>
+  <text x="705" y="145" text-anchor="middle" class="lbl" style="fill:#fbbf24">vencido</text>
+  <text x="705" y="166" text-anchor="middle" class="mut">terminó su plazo</text>
+  <text x="705" y="184" text-anchor="middle" class="mut">espera liquidación on-chain</text>
+
+  <!-- terminado -->
+  <rect class="stG" x="410" y="300" width="160" height="90" rx="45"/>
+  <text x="490" y="340" text-anchor="middle" class="lbl" style="fill:#34d399">terminado</text>
+  <text x="490" y="361" text-anchor="middle" class="mut">todo liquidado</text>
+  <text x="490" y="379" text-anchor="middle" class="mut">cobra lo restante</text>
+
+  <!-- fin -->
+  <circle cx="700" cy="345" r="14" class="ini"/>
+  <circle cx="700" cy="345" r="6" fill="#e2e8f0"/>
+  <circle cx="700" cy="345" r="20" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- flechas -->
+  <path class="arr" d="M86,150 L146,150"/>
+  <text x="116" y="138" text-anchor="middle" class="eT">se crea</text>
+  <path class="arr" d="M302,132 L386,132"/>
+  <text x="344" y="122" text-anchor="middle" class="eT">pausa del admin</text>
+  <path class="arrG" d="M386,166 L302,166"/>
+  <text x="344" y="188" text-anchor="middle" class="eT" style="fill:#34d399">reanudación</text>
+  <path class="arr" d="M542,132 L626,132"/>
+  <text x="584" y="122" text-anchor="middle" class="eT">pasa su tiempo</text>
+  <path class="arrG" d="M706,197 C710,260 640,290 560,330"/>
+  <text x="710" y="260" text-anchor="middle" class="eT" style="fill:#34d399">liquidación (cualquiera)</text>
+  <path class="arr" d="M310,190 C290,260 350,300 400,330"/>
+  <text x="255" y="270" text-anchor="middle" class="eT">terminación del admin</text>
+  <path class="arrG" d="M574,345 L682,345"/>
+  <text x="628" y="333" text-anchor="middle" class="eT" style="fill:#34d399">fin</text>
+
+  <!-- nota -->
+  <rect x="60" y="290" width="230" height="110" rx="12" class="st"/>
+  <text x="175" y="318" text-anchor="middle" class="lbl" style="font-size:13.5px">Recordatorio</text>
+  <text x="175" y="340" text-anchor="middle" class="mut">pausar guarda la tasa aparte</text>
+  <text x="175" y="360" text-anchor="middle" class="mut">reanudar prolonga el tiempo restante</text>
+  <text x="175" y="380" text-anchor="middle" class="mut">el servidor lee getFlow y getPending</text>
+
+  <text x="480" y="440" text-anchor="middle" class="mut">Estados refrescados cada 5 s en «Mis flujos» · si te crean un flujo nuevo, aparece al momento.</text>
+  <text x="480" y="460" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/estados-flujo.svg · actualizado 2026-11-17</text>
+</svg>

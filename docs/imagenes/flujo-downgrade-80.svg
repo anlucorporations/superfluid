@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 700" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Flujo del downgrade con tope del 80%">
+  <defs>
+    <marker id="dg" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="dgg" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#34d399"/>
+    </marker>
+    <marker id="dgr" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#fb7185"/>
+    </marker>
+    <linearGradient id="dh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1140"/><stop offset="1" stop-color="#3b2a7a"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .lbl{font-size:14.5px;font-weight:700;fill:#e2e8f0}
+    .mut{font-size:12px;fill:#94a3b8}
+    .msg{font-size:12.5px;fill:#e2e8f0}
+    .life{stroke:#334155;stroke-width:2;stroke-dasharray:6 6}
+    .arrow{stroke:#8b5cf6;stroke-width:2;fill:none;marker-end:url(#dg)}
+    .back{stroke:#34d399;stroke-width:2;fill:none;stroke-dasharray:5 4;marker-end:url(#dgg)}
+    .bad{stroke:#fb7185;stroke-width:2;fill:none;stroke-dasharray:5 4;marker-end:url(#dgr)}
+    .alt{fill:none;stroke:#8b5cf6;stroke-width:1.5}
+    .altT{font-size:12px;font-weight:700;fill:#a78bfa}
+    .div{stroke:#334155;stroke-width:1.5;stroke-dasharray:5 5}
+    .ok{fill:#34d399;font-weight:700}
+    .no{fill:#fb7185;font-weight:700}
+    .act{fill:#1b1140;stroke:#8b5cf6;stroke-width:1.2}
+    .actT{font-size:11.5px;font-weight:600;fill:#e2e8f0}
+  </style>
+  <rect class="bg" width="980" height="700"/>
+  <text x="490" y="40" text-anchor="middle" class="h1">«Descargar» (downgrade) con tope acumulado del 80%</text>
+  <text x="490" y="63" text-anchor="middle" class="h2">BrltX → BRLT real · regla de producto aplicada por el servidor · novedad 2026-11-17</text>
+
+  <!-- participantes -->
+  <rect class="card" x="90" y="90" width="220" height="56" rx="12"/>
+  <rect x="90" y="90" width="220" height="56" rx="12" fill="url(#dh)"/>
+  <text x="200" y="116" text-anchor="middle" class="lbl">Empleado (MetaMask)</text>
+  <text x="200" y="136" text-anchor="middle" class="mut">portal /suite</text>
+  <line x1="200" y1="146" x2="200" y2="655" class="life"/>
+
+  <rect class="card" x="400" y="90" width="190" height="56" rx="12"/>
+  <rect x="400" y="90" width="190" height="56" rx="12" fill="url(#dh)"/>
+  <text x="495" y="116" text-anchor="middle" class="lbl">Contrato BrltX</text>
+  <text x="495" y="136" text-anchor="middle" class="mut">cadena · la verdad</text>
+  <line x1="495" y1="146" x2="495" y2="655" class="life"/>
+
+  <rect class="card" x="700" y="90" width="200" height="56" rx="12"/>
+  <rect x="700" y="90" width="200" height="56" rx="12" fill="url(#dh)"/>
+  <text x="800" y="116" text-anchor="middle" class="lbl">Servidor</text>
+  <text x="800" y="136" text-anchor="middle" class="mut">/api/suite/actions</text>
+  <line x1="800" y1="146" x2="800" y2="655" class="life"/>
+
+  <!-- mensajes previos -->
+  <path class="arrow" d="M200,182 L798,182"/>
+  <text x="490" y="174" text-anchor="middle" class="msg">pulsa «Descargar» (importe ≤ Máximo)</text>
+
+  <path class="arrow" d="M200,226 L493,226"/>
+  <text x="347" y="218" text-anchor="middle" class="msg">firma downgrade (quema BrltX, paga BRLT)</text>
+
+  <path class="back" d="M493,262 L202,262"/>
+  <text x="347" y="254" text-anchor="middle" class="msg ok">evento Downgraded(cuenta, importe)</text>
+
+  <path class="arrow" d="M800,298 L497,298"/>
+  <text x="648" y="290" text-anchor="middle" class="msg">verifica el recibo (misma wallet + evento)</text>
+
+  <rect class="act" x="700" y="330" width="200" height="54" rx="10"/>
+  <text x="800" y="352" text-anchor="middle" class="actT">¿ya descargado + importe</text>
+  <text x="800" y="370" text-anchor="middle" class="actT">≤ 80% del asignado?</text>
+
+  <!-- alt -->
+  <rect class="alt" x="70" y="410" width="840" height="200" rx="10"/>
+  <text x="90" y="433" class="altT">alt</text>
+  <text x="470" y="433" text-anchor="middle" class="msg" style="fill:#34d399">[ pasa el tope ]</text>
+
+  <rect class="act" x="660" y="448" width="235" height="40" rx="8" style="stroke:#34d399"/>
+  <text x="777" y="465" text-anchor="middle" class="actT" style="fill:#34d399">audita el cobro</text>
+  <text x="777" y="481" text-anchor="middle" class="actT" style="fill:#34d399">(quien · cuánto · tx)</text>
+
+  <path class="back" d="M700,500 L204,500"/>
+  <text x="450" y="492" text-anchor="middle" class="msg ok">OK — BRLT en tu wallet · «Ya descargado» sube</text>
+
+  <line class="div" x1="70" y1="518" x2="910" y2="518"/>
+  <text x="470" y="538" text-anchor="middle" class="msg" style="fill:#fb7185">[ supera el tope ]</text>
+
+  <path class="bad" d="M798,562 L204,562"/>
+  <text x="470" y="554" text-anchor="middle" class="msg no">aviso «tope_80_superado» (sin registrar, sin cobrar)</text>
+
+  <path class="bad" d="M798,592 L204,592"/>
+  <text x="470" y="584" text-anchor="middle" class="msg">nada se cobra de más · los intentos fallidos no quedan en la auditoría</text>
+
+  <!-- footer -->
+  <text x="490" y="648" text-anchor="middle" class="mut">El botón «Máximo» propone lo menor entre tu BrltX en cartera y lo disponible del tope.</text>
+  <text x="490" y="668" text-anchor="middle" class="mut">También aplica al «Cobro autónomo»: los dos comparten el mismo contador.</text>
+  <text x="490" y="690" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/flujo-downgrade-80.svg · actualizado 2026-11-17</text>
+</svg>

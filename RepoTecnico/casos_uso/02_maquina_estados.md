@@ -71,3 +71,52 @@ stateDiagram-v2
 4. Lo devengado nunca supera `deposited` (shortfall explícito, AC-07).
 5. La pausa de emergencia no impide `deleteFlow`, `settleFlow` ni `downgrade`.
 6. `flujos_programados` nunca pasa a «terminado»: ese estado solo existe on-chain.
+
+## 5. Estados de la sesión de wallet del Portal del Empleado (CU-13, CU-14)
+
+> Implementación: `web/src/app/suite/page.tsx:90-141` (comprobación de sesión y
+> validación continua) y `web/src/components/EntryLogin.tsx` (entrada `/entrar`).
+> No son estados on-chain: son estados de la **sesión HTTP** frente a la **wallet
+> conectada en el navegador**.
+
+```mermaid
+stateDiagram-v2
+    [*] --> sinSesion: GET /api/auth/me falla
+    sinSesion --> entrada: router.replace("/entrar")
+    entrada --> firmando: wallet con alta<br/>(/api/auth/role → empleado)
+    firmando --> validada: SIWE verificado<br/>(cookie de sesión 8 h)
+
+    validada --> validada: eth_accounts == sesión<br/>(poll 10 s / accountsChanged)
+    validada --> divergente: cuenta activa ≠ sesión
+    validada --> adminPortal: GET /api/auth/me<br/>rol admin → /admin
+
+    divergente --> entrada: aviso «Wallet distinta a tu sesión»<br/>+ botón revalidar
+    adminPortal --> [*]
+
+    validada --> [*]: logout → /entrar
+```
+
+### Reglas de transición de la wallet
+
+| Desde | Evento | Hacia | Quién actúa |
+|---|---|---|---|
+| `sin sesión` | `GET /api/auth/me` responde 401 | `entrada (/entrar)` | Navegador (redirect) |
+| `validada` | `GET /api/auth/me` rol ≠ empleado | `adminPortal (/admin)` | Navegador (redirect) |
+| `validada` | `eth_accounts[0]` ≠ `session.wallet` | `divergente` | Wallet (poll 10 s o evento `accountsChanged`) |
+| `divergente` | empleado revalida en `/entrar` | `validada` | EMPLEADO (firma SIWE de nuevo) |
+| `validada` | `POST /api/auth/logout` | `entrada (/entrar)` | EMPLEADO |
+
+### Invariantes de la validación
+
+1. Mientras la cuenta activa de la wallet no coincida con la sesión, el portal muestra el
+   aviso de wallet distinta y no se firma ninguna transacción nueva (el empleado debe
+   revalidar en `/entrar`); los refrescos de datos de 5 s continúan.
+2. La decisión de portal es **independiente de la firma**: `POST /api/auth/role`
+   (`web/src/app/api/auth/role/route.ts:20-36`) solo consulta el rol; la identidad se
+   demuestra después con la firma SIWE en `/api/auth/verify`.
+3. La validación continua no cambia el estado on-chain: solo bloquea la operativa del
+   portal hasta revalidación.
+
+---
+
+*Actualizado 2026-11-17 · commit aab670e*

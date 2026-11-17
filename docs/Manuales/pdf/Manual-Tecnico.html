@@ -1,69 +1,150 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8">
-<title>Manual técnico — Superfluid Brlt v2</title><style>
-  @page { margin: 0 }
-  body{font-family:'Segoe UI',system-ui,Arial;color:#0f172a;margin:0}
-  header{background:#4f46e5;color:#fff;padding:48px 40px}
-  header h1{margin:0;font-size:28px}
-  header p{margin:6px 0 0;color:#e0e7ff;font-size:14px}
-  section.tema{padding:28px 40px;border-top:1px solid #e2e8f0;page-break-before:always}
-  .ruta{font-size:11px;color:#94a3b8;margin:0 0 12px}
-  h1,h2{color:#312e81}h3,h4{color:#1e293b}
-  img{max-width:100%;border:1px solid #e2e8f0;border-radius:8px}
-  table{border-collapse:collapse;width:100%;font-size:12px}
-  th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
-  th{background:#f8fafc}
-  pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto;font-size:11px}
-  code{background:#f1f5f9;padding:1px 4px;border-radius:4px;font-size:12px}
-  pre code{background:transparent;padding:0}
-  blockquote{border-left:4px solid #6366f1;margin:0;padding:4px 12px;color:#475569;background:#f8fafc}
-  footer{padding:16px 40px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0}
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Manual técnico — Superfluid Brlt v2</title>
+<style>
+  @page { size: A4; margin: 24mm 16mm 20mm 16mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: system-ui, 'Segoe UI', Arial, sans-serif; color: #17203a; font-size: 10.5pt; line-height: 1.55; }
+  h2 { font-size: 14pt; color: #241a4f; margin: 7mm 0 2.5mm; }
+  h3 { font-size: 11.5pt; color: #17203a; margin: 5mm 0 2mm; }
+  h3::before { content: '›'; color: #34d399; font-weight: 700; margin-right: 2mm; }
+  p { margin: 0 0 3mm; }
+  strong { color: #101a33; }
+  a { color: #059669; text-decoration: none; }
+  ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1.2mm; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 0 0 4mm; page-break-inside: avoid; }
+  th, td { border: 1px solid #e2e8f0; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f1edfb; color: #241a4f; border-bottom: 2px solid #34d399; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  pre { background: #101a33; color: #dbe4f5; padding: 10px 12px; border-radius: 8px; overflow: auto;
+        font-size: 8.5pt; line-height: 1.45; page-break-inside: avoid; border-left: 3px solid #34d399; }
+  code { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+  p code, li code, td code { background: #f1f5f9; color: #0f2e46; padding: 1px 4px; border-radius: 4px; font-size: 9pt; }
+  pre code { background: transparent; padding: 0; color: inherit; }
+  blockquote { border-left: 4px solid #34d399; background: #f2fbf7; margin: 0 0 4mm; padding: 8px 12px;
+               color: #27513f; border-radius: 0 8px 8px 0; page-break-inside: avoid; }
+  blockquote p { margin: 0; }
+  figure.grafico { margin: 4mm 0 5mm; text-align: center; page-break-inside: avoid; }
+  figure.grafico img { max-width: 100%; max-height: 110mm; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
+  figure.grafico figcaption { margin-top: 2mm; font-size: 8.5pt; color: #5b6478; }
+  figure.grafico .fig-n { color: #059669; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-right: 3mm; }
+  figure.pantalla { margin: 4mm 0 5mm; page-break-inside: avoid; }
+  figure.pantalla img { max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; }
+  figure.pantalla figcaption { margin-top: 2mm; font-size: 8.5pt; color: #5b6478; font-style: italic; }
+  .captura { border: 1px dashed #34d399; background: #f2fbf7; border-radius: 8px; padding: 6px 10px;
+             font-size: 8.5pt; color: #27513f; margin: 3mm 0 4mm; page-break-inside: avoid; }
+  .captura .cam { margin-right: 2mm; }
+  .pgmark { color: #ffffff; font-size: 6px; }
+
+  @page { size: A4; margin: 0; }
+  .cover { height: 100vh; background: linear-gradient(160deg, #1b1140 0%, #17133c 45%, #101a33 100%);
+           color: #fff; padding: 34mm 22mm 24mm; display: flex; flex-direction: column; }
+  .cover .badge { display: inline-block; align-self: flex-start; border: 1px solid rgba(52,211,153,.55); color: #34d399;
+                  border-radius: 999px; padding: 4px 14px; font-size: 8.5pt; letter-spacing: .08em; text-transform: uppercase; }
+  .cover .linea { width: 64mm; height: 3px; background: linear-gradient(90deg, #34d399, rgba(52,211,153,0)); margin: 10mm 0 8mm; border-radius: 2px; }
+  .cover h1 { margin: 0; font-size: 30pt; line-height: 1.2; font-weight: 700; }
+  .cover h1 small { display: block; margin-top: 6mm; font-size: 12.5pt; font-weight: 400; color: #c7d2ea; line-height: 1.5; }
+  .cover .resumen { margin-top: 12mm; max-width: 125mm; color: #dfe6f5; font-size: 10pt; line-height: 1.7; }
+  .cover .resumen ul { padding-left: 5mm; margin: 0; }
+  .cover .resumen li { margin-bottom: 2.5mm; }
+  .cover .pie { margin-top: auto; border-top: 1px solid rgba(255,255,255,.18); padding-top: 5mm;
+                display: flex; justify-content: space-between; font-size: 8.5pt; color: #aeb9d6; }
+  .cover .pie b { color: #34d399; font-weight: 600; }
+.cover { page-break-after: always; }
+  .toc h2 { font-size: 17pt; color: #1b1140; margin: 0 0 3mm; }
+  .toc .linea { width: 30mm; height: 3px; background: #34d399; border-radius: 2px; margin-bottom: 8mm; }
+  .toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+  .toc li { counter-increment: toc; display: flex; align-items: baseline; gap: 4mm;
+            padding: 3.2mm 0; border-bottom: 1px solid #e7ebf3; }
+  .toc li::before { content: counter(toc, decimal-leading-zero); font-size: 9pt; font-weight: 700; color: #34d399; min-width: 9mm; }
+  .toc .t { font-weight: 600; color: #1b1140; }
+  .toc .s { color: #5b6478; font-size: 9pt; flex: 1; }
+  .toc .p { font-size: 9pt; color: #6b7280; font-variant-numeric: tabular-nums; }
+  .toc .nota { margin-top: 8mm; font-size: 8.5pt; color: #8b93a7; }
+  section.tema { page-break-before: always; }
+  .ruta { font-size: 8.5pt; color: #94a3b8; margin: 0 0 2mm; font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+  section.tema h1 { font-size: 20pt; color: #1b1140; margin: 0 0 3mm; line-height: 1.25; }
+  section.tema h1::after { content: ''; display: block; width: 26mm; height: 3px; background: #34d399; border-radius: 2px; margin-top: 2.5mm; }
 </style></head><body>
-<header><h1>Manual técnico — Superfluid Brlt v2</h1><p>Nómina en streaming sobre Besu 81234 · generado 2026-11-04</p></header>
-<section class="tema"><p class="ruta">01-Tecnologia\01-plataforma.md</p>
-<h1>Tecnología (versión sencilla)</h1>
+<div class="cover">
+  <span class="badge">Equipo técnico</span>
+  <div class="linea"></div>
+  <h1>Manual técnico<small>Nómina en streaming sobre red de práctica EVM (Besu 81234 / Anvil 31337)</small></h1>
+  <div class="resumen"><ul><li>Tecnología (versión sencilla)</li><li>Dependencias (versión sencilla)</li><li>Implementación (versión sencilla)</li><li>Despliegue (versión sencilla)</li><li>Diccionario de datos (versión sencilla)</li><li>y 1 sección(es) más…</li></ul></div>
+  <div class="pie">
+    <span>Superfluid Brlt Streaming v2 · <b>documentación literal</b></span>
+    <span>Actualizado <b>2026-11-17</b> · 6 fuente(s) .md</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <h2>Índice de contenidos</h2>
+  <div class="linea"></div>
+  <ol>
+<li><span class="t">Tecnología (versión sencilla)</span><span class="s">¿Qué es la plataforma? · ¿Cómo entra cada uno? · ¿Cómo sabe la app el estado real? · ¿Qué pasa cuando se pausa? · …</span><span class="p">p. 2</span></li>
+<li><span class="t">Dependencias (versión sencilla)</span><span class="s">¿Qué programa necesita mi ordenador? · Programas que usa el proyecto · ¿Qué cambió con el Portal del Empleado nuevo? · Cómo revisar que todo está en orden</span><span class="p">p. 5</span></li>
+<li><span class="t">Implementación (versión sencilla)</span><span class="s">El ciclo de vida de un salario · El tope del 80% (novedad) · ¿Y si cambio de wallet? · ¿Qué pasa si la web se apaga? · …</span><span class="p">p. 6</span></li>
+<li><span class="t">Despliegue (versión sencilla)</span><span class="s">¿Dónde vive la aplicación? · ¿Qué trae esta revisión? · Cómo poner la aplicación en marcha · ¿Qué pide la app para conectarse? · …</span><span class="p">p. 8</span></li>
+<li><span class="t">Diccionario de datos (versión sencilla)</span><span class="s">¿Dónde vive cada cosa? · Cosas que la base guarda · Los 4 números del tope del 80% · Datos personales (y tus derechos) · …</span><span class="p">p. 10</span></li>
+<li><span class="t">Diagrama relacional (versión sencilla)</span><span class="s">El mapa de la base de datos · La doble contabilidad</span><span class="p">p. 12</span></li>
+  </ol>
+  <p class="nota">Los números de página corresponden a la numeración impresa en el pie de página.</p>
+</nav>
+<section class="tema"><p class="ruta">01-Tecnologia/01-plataforma.md</p>
+<h1><span class="pgmark">⟦§1⟧</span>Tecnología (versión sencilla)</h1>
 <h2>¿Qué es la plataforma?</h2>
 <h3>En una frase</h3>
 <p><strong>Una nómina que corre sobre un contrato: el admin deposita el salario y este se
-transmite Como una gota a gota; tú cobras cuando quieres.</strong></p>
+transmite como una gota a gota; tú cobras cuando quieres.</strong></p>
 <h3>Las piezas</h3>
 <ul>
 <li><strong>BRLT</strong>: el dinero (token) con 18 decimales.</li>
 <li><strong>BrltX</strong>: la “versión en streaming” del dinero.</li>
-<li><strong>La app web</strong> (<code>/admin</code> y <code>/suite</code>): las pantallas para administrador y empleado.</li>
-<li><strong>La red Besu</strong> (chainId 81234): donde viven los contratos.</li>
+<li><strong>La entrada única</strong> (<code>/entrar</code>): una sola puerta. Conectas la wallet y la app
+decide a qué portal ir.</li>
+<li><strong>Dos portales, dos caras</strong>:<ul>
+<li><strong>Panel admin</strong> (<code>/admin</code>): para el administrador, con el estilo clásico
+AdminLTE (fondo claro, azul de acción).</li>
+<li><strong>Portal del Empleado</strong> (<code>/suite</code>): para el empleado, con <strong>identidad visual
+propia</strong> y oscura: fondo azul noche (<code>#0d1425</code>), tarjetas azul noche más claro
+(<code>#131c30</code>) y una cabecera con degradado violeta (<code>#1b1140</code>).</li>
 </ul>
-<!-- GENERAR_IMAGEN: arquitectura.svg -->
-
-<pre><code class="language-mermaid">flowchart TB
-    subgraph Navegador
-        M[MetaMask firma todo]
-    end
-    subgraph AppWeb[&quot;App web (Cloud Run)&quot;]
-        P[&quot;Panel admin /admin&quot;]
-        S[&quot;Suite del Empleado /suite&quot;]
-    end
-    subgraph Cadena[&quot;Besu 81234&quot;]
-        BRLT[&quot;BRLT (token)&quot;]
-        BRLTX[&quot;BrltX (streaming)&quot;]
-    end
-    subgraph Datos[&quot;MongoDB&quot;]
-        D[Empleados · Flujos · Historial · Jobs]
-    end
-    M --&gt; P --&gt;|eth_call: lee estado| BRLTX
-    M --&gt; S --&gt;|downgrade: cobro| BRLTX
-    P --&gt; D
-    S --&gt; D
-</code></pre>
+</li>
+<li><strong>La red</strong> (Besu por defecto, chainId 81234; el despliegue actual opera contra
+Anvil 31337): donde viven los contratos.</li>
+</ul>
+<figure class="grafico"><img src="../../imagenes/arquitectura.png" alt="Arquitectura: navegador, app web, cadena y base de datos"><figcaption><span class="fig-n">Figura</span>Arquitectura: navegador, app web, cadena y base de datos</figcaption></figure>
 <p>⚠ <em>(nota del manual: el bloque “BR LTX” se dibujó por el archivo; es “BrltX”).
 Corregido en el gráfico <code>arquitectura.svg</code> de <code>docs/imagenes/</code>.</em></p>
+<h2>¿Cómo entra cada uno?</h2>
+<h3>La puerta con decodificador</h3>
+<ol>
+<li>En <code>/entrar</code> conectas la wallet.</li>
+<li>La app pregunta al servidor <strong>qué eres</strong> (sin firmar nada todavía): admin,
+empleado o nadie.</li>
+<li><strong>Admin</strong> → te lleva a <code>/admin</code>. <strong>Empleado</strong> → a <code>/suite</code>.
+<strong>Nadie</strong> → mensaje: «pide alta al administrador».</li>
+<li>Ya dentro de tu portal, firmas un mensaje (SIWE) para abrir la sesión.</li>
+</ol>
+<h3>Y después, la app te vigila la wallet (para protegerte)</h3>
+<ul>
+<li>Mientras estás en <code>/suite</code>, la app comprueba de forma <strong>continua</strong> (cada 10
+segundos y también al instante si MetaMask cambia de cuenta) que la cuenta
+activa de la wallet <strong>sigue siendo la de tu sesión</strong>.</li>
+<li>Si cambias de cuenta en MetaMask, aparece el aviso <strong>«Wallet distinta a tu
+sesión»</strong> y se te pide <strong>revalidar en <code>/entrar</code></strong>. Nadie puede usar tu sesión
+con otra cuenta.</li>
+<li>Si la sesión es de admin y entras a <code>/suite</code>, te manda a <code>/admin</code> (cada uno a
+lo suyo).</li>
+</ul>
+<figure class="grafico"><img src="../../imagenes/validacion-wallet.png" alt="Validación continua de la wallet en /suite"><figcaption><span class="fig-n">Figura</span>Validación continua de la wallet en /suite</figcaption></figure>
 <h2>¿Cómo sabe la app el estado real?</h2>
 <h3>La regla de oro</h3>
 <p><strong>El contrato manda.</strong> Cada vez que la app pinta una lista de flujos,
 vuelve a preguntarle al contrato por el número de flujo y actualiza su copia
 (MongoDB). Si alguien cambia algo a mano, la app se corrige La app se corrige sola en minutos.</p>
-<blockquote>
-<p>📷 <em>Captura: 04-admin-resumen.png — url: /admin — panel admin con tarjetas de resumen</em>  </p>
-</blockquote>
+<div class="captura"><span class="cam">📷</span><span>04-admin-resumen.png — url: /admin — panel admin con tarjetas de resumen</span></div>
+
 <h2>¿Qué pasa cuando se pausa?</h2>
 <h3>Pausa y reanudación</h3>
 <ul>
@@ -71,33 +152,24 @@ vuelve a preguntarle al contrato por el número de flujo y actualiza su copia
 <li>Al reanudar, el tiempo restante se <strong>prolonga</strong>: no pierdes devengo.</li>
 <li>Todo esto lo hace el servidor leyendo <code>getFlow</code> y <code>getPending</code>.</li>
 </ul>
-<!-- GENERAR_IMAGEN: flujo-nomina.svg -->
-
-<pre><code class="language-mermaid">sequenceDiagram
-    participant A as Admin (MetaMask)
-    participant X as BrltX
-    participant E as Empleado
-    A-&gt;&gt;X: wrapAndCreateFlow(10 BRLT, 6 días)
-    X--&gt;&gt;A: FlowCreated #N (tasa floor)
-    A-&gt;&gt;X: updateFlow(#N, 0) — pausa
-    X-&gt;&gt;E: liquida el tramo (minta BrltX)
-    A-&gt;&gt;X: updateFlow(#N, tasa) — reanudar
-    A-&gt;&gt;X: deleteFlow(#N) — terminar
-    X-&gt;&gt;E: paga lo devengado · remanente vuelve al admin
-</code></pre>
+<figure class="grafico"><img src="../../imagenes/flujo-nomina.png" alt="Ciclo de un flujo: crear, pausar, reanudar y terminar"><figcaption><span class="fig-n">Figura</span>Ciclo de un flujo: crear, pausar, reanudar y terminar</figcaption></figure>
 <h2>Seguridad en palabras simples</h2>
 <h3>¿Quién puede hacer qué?</h3>
 <ul>
 <li>El admin necesita estar <strong>autorizado</strong> (allowlist) e iniciar sesión firmando un
 mensaje (SIWE).</li>
-<li>Cada empleado solo accede <strong>a su propia Suite</strong>: nadie puede pedir tus flujos.</li>
+<li>Cada empleado solo accede <strong>a su propio portal</strong>: nadie puede pedir tus flujos.</li>
 <li>Cada acción peligrosa pide otro paso (CSRF + firma).</li>
 <li>El <strong>cobro lo firma tu wallet</strong>: la web solo dice que lo hiciste si el contrato
-lo confirma.</li>
+lo confirma, y solo si <strong>no supera el tope del 80%</strong> (ver
+<a href="03-implementacion.md">Implementación</a>, sección «El tope del 80%»).</li>
+<li>La <strong>wallet se valida sin parar</strong> en el Portal del Empleado: si la cuenta activa
+de MetaMask deja de coincidir con la sesión, se pide revalidar.</li>
 </ul>
 
-</section><section class="tema"><p class="ruta">02-Dependencias\02-dependencias.md</p>
-<h1>Dependencias (versión sencilla)</h1>
+</section>
+<section class="tema"><p class="ruta">02-Dependencias/02-dependencias.md</p>
+<h1><span class="pgmark">⟦§2⟧</span>Dependencias (versión sencilla)</h1>
 <h2>¿Qué programa necesita mi ordenador?</h2>
 <h3>Para usar la plataforma (empleado o admin)</h3>
 <p>Solo un navegador (Chrome/Edge/Firefox) y <strong>MetaMask</strong> instalado en el navegador.</p>
@@ -163,6 +235,17 @@ que se borra al cerrar (útil en Windows).</li>
 <td>Los estilos visuales.</td>
 </tr>
 </tbody></table>
+<h2>¿Qué cambió con el Portal del Empleado nuevo?</h2>
+<h3>Sin instalar nada nuevo</h3>
+<ul>
+<li>El rediseño del Portal (<code>/suite</code>), el tope del 80% y la validación continua de
+la wallet usan lo que ya había: <strong>BigInt nativo</strong> y la API de MetaMask.</li>
+<li>La nueva cara visual (azul noche <code>#0d1425</code>, tarjeta <code>#131c30</code>, cabecera violeta
+<code>#1b1140</code>) son <strong>colores de configuración</strong> de Tailwind (tokens <code>empleado.*</code>),
+no un paquete nuevo.</li>
+<li>Resultado: <strong>no se añadió ninguna dependencia nueva</strong> de producción ni de
+desarrollo (ver <a href="../../../RepoTecnico/Manuales/02-Dependencias/02-dependencias.md">manual técnico de dependencias</a>).</li>
+</ul>
 <h2>Cómo revisar que todo está en orden</h2>
 <h3>Comandos de control</h3>
 <pre><code class="language-bash">cd web
@@ -172,8 +255,9 @@ npm run e2e:ui         # prueba con el navegador automático
 </code></pre>
 <p>Si todos acaban con “<strong>TODO OK</strong>”, el sistema está sano.</p>
 
-</section><section class="tema"><p class="ruta">03-Implementacion\03-implementacion.md</p>
-<h1>Implementación (versión sencilla)</h1>
+</section>
+<section class="tema"><p class="ruta">03-Implementacion/03-implementacion.md</p>
+<h1><span class="pgmark">⟦§3⟧</span>Implementación (versión sencilla)</h1>
 <h2>El ciclo de vida de un salario</h2>
 <h3>De principio a fin</h3>
 <ol>
@@ -181,20 +265,48 @@ npm run e2e:ui         # prueba con el navegador automático
 “grifo” hacia tu wallet.</li>
 <li><strong>Cada segundo cuenta</strong>: el grifo reparte el importe entre los días del periodo
 (6, 15, 30 o 90 días).</li>
-<li><strong>Tú decides cuándo cobrar</strong>: pulsas «Cobrar» y tu wallet recibe BRLT real.</li>
+<li><strong>Tú decides cuándo descargar</strong>: eliges flujo en tu portal y pasas BrltX a
+BRLT real (o usas el cobro libre). Con el <strong>tope del 80%</strong> en el total.</li>
 <li><strong>Si el flujo termina</strong> (vence o el admin lo cierra): lo ganado pasa a tu saldo y
 lo que aún no corresponde vuelve al admin. Nada se pierde.</li>
 </ol>
-<pre><code class="language-mermaid">timeline
-    title Nómina de 6 días (10 BRLT)
-    Día 0 : Flujo creado (depositado 10 BRLT)
-    Día 1 : ~1,67 BRLT devengado (acumulando)
-    Día 3 : Pausa → liquida lo devengado → tasas congeladas
-    Día 3 : Reanudar → el “fin del flujo” se aplaza
-    Día 6 : Flujo vencido → pendiente de liquidar
-    Día 6 : Liquidar (público) → acumulado → BrltX cobrable
-    Siempre : «Cobrar» → BRLT a tu wallet
-</code></pre>
+<figure class="grafico"><img src="../../imagenes/ciclo-salario.png" alt="Ciclo de vida de un salario (nómina de 6 días)"><figcaption><span class="fig-n">Figura</span>Ciclo de vida de un salario (nómina de 6 días)</figcaption></figure>
+<h2>El tope del 80% (novedad)</h2>
+<h3>¿Qué es?</h3>
+<p><strong>Regla de la casa:</strong> en total solo puedes convertir en BRLT (downgrade) el
+<strong>80% de todo lo que te asignaron</strong> — la suma de todos los flujos que te crearon,
+vivos o terminados. Lo ya convertido se va restando.</p>
+<h3>Un ejemplo con números</h3>
+<ul>
+<li>Te asignaron en total <strong>10.000 BRLT</strong> (suma de todos tus flujos).</li>
+<li>Tu tope es el 80%: <strong>8.000 BRLT</strong> como máximo en toda tu vida de empleado.</li>
+<li>Ya has descargado <strong>1.500 BRLT</strong> → te quedan <strong>6.500 disponibles</strong>.</li>
+<li>Si ya hubieras descargado 8.000, el botón diría que el tope está agotado: no
+podrías descargar más (aunque aún te quede BrltX en cartera).</li>
+</ul>
+<h3>¿Por qué es así?</h3>
+<ul>
+<li>Es una <strong>regla de producto</strong>, no del contrato: la impone el servidor de la app
+<strong>antes</strong> de registrar tu cobro. El contrato solo, sin la app, no la pone.</li>
+<li>Se aplica a <strong>todos los cobros verificados</strong> (los del bloque «Downgrade de
+flujos» y el «Cobro autónomo»), y comparten el mismo contador.</li>
+<li>Si un cobro rompería el tope, el servidor responde con el aviso
+<strong>«tope_80_superado»</strong> y <strong>no lo registra</strong>. Nada se cobra de más.</li>
+</ul>
+<h3>¿De dónde salen los cuatro números que ves?</h3>
+<ol>
+<li><strong>Asignado a tu cuenta</strong>: el contrato (suma del dinero depositado en tus flujos).</li>
+<li><strong>Ya descargado</strong>: la auditoría de la app (solo cobros confirmados por la cadena).</li>
+<li><strong>Tope 80%</strong>: el 80% del número 1.</li>
+<li><strong>Disponible</strong>: el tope menos lo ya descargado (nunca negativo).</li>
+</ol>
+<h3>Detalle importante de la cadena</h3>
+<p>El devengo pendiente de un flujo <strong>activo</strong> solo se convierte en BrltX cobrable
+cuando alguien <strong>liquida</strong> el flujo on-chain (y liquidar exige que haya vencido).
+Por eso, lo que de verdad puedes descargar hoy es lo <strong>menor</strong> entre: tu BrltX
+en cartera y lo disponible del tope. El botón <strong>«Máximo»</strong> ya calcula ese mínimo
+por ti.</p>
+<figure class="grafico"><img src="../../imagenes/flujo-downgrade-80.png" alt="Downgrade con verificación del tope del 80%"><figcaption><span class="fig-n">Figura</span>Downgrade con verificación del tope del 80%</figcaption></figure>
 <h2>¿Y si cambio de wallet?</h2>
 <h3>Cambio de receptor seguro</h3>
 <ul>
@@ -203,9 +315,8 @@ confirmación.</li>
 <li>El contrato cierra el flujo viejo y abre uno <strong>nuevo</strong> hacia tu wallet nueva con
 el saldo restante. <strong>Sin pagar dos veces.</strong></li>
 </ul>
-<blockquote>
-<p>📷 <em>Captura: 06-admin-empleados.png — url: /admin/empleados — cambio de wallet con doble firma</em>  </p>
-</blockquote>
+<div class="captura"><span class="cam">📷</span><span>06-admin-empleados.png — url: /admin/empleados — cambio de wallet con doble firma</span></div>
+
 <h2>¿Qué pasa si la web se apaga?</h2>
 <h3>Se acabó la sesión</h3>
 <ul>
@@ -213,9 +324,8 @@ el saldo restante. <strong>Sin pagar dos veces.</strong></li>
 <li>Cuando la web vuelve, los “trabajos automáticos” (jobs) vuelven a leer la cadena
 y <strong>corrigen su copia</strong> en la base de datos.</li>
 </ul>
-<blockquote>
-<p>📷 <em>Captura: 08-admin-jobs.png — url: /admin/jobs — panel de jobs con estado y botón Ejecutar</em>  </p>
-</blockquote>
+<div class="captura"><span class="cam">📷</span><span>08-admin-jobs.png — url: /admin/jobs — panel de jobs con estado y botón Ejecutar</span></div>
+
 <h2>La regla del cobro (lo importante)</h2>
 <h3>Protección del empleado</h3>
 <ul>
@@ -223,16 +333,42 @@ y <strong>corrigen su copia</strong> en la base de datos.</li>
 aunque el contrato esté en pausa de mantenimiento.</li>
 <li>La web <strong>registra tu cobro solo si la cadena lo confirma</strong>; un comprobante falso
 se rechaza (“tx_no_verificada”).</li>
+<li>Y con el tope: un cobro por encima del 80% acumulado se rechaza
+(“tope_80_superado”) antes de quedar registrado.</li>
+</ul>
+<h2>Cómo entra el empleado ahora (resumen técnico)</h2>
+<h3>Puerta única y vigilancia</h3>
+<ul>
+<li>La entrada es <strong><code>/entrar</code></strong>: conecta la wallet, pregunta al servidor el rol y
+redirige (admin → <code>/admin</code>, empleado → <code>/suite</code>, sin alta → error).</li>
+<li>En <code>/suite</code> la app <strong>recomprueba cada 10 segundos</strong> (y al vuelo si MetaMask
+cambia de cuenta) que la wallet activa sigue siendo la de la sesión; si no,
+avisa y manda a revalidar a <code>/entrar</code>.</li>
 </ul>
 
-</section><section class="tema"><p class="ruta">04-Despliegue\04-despliegue.md</p>
-<h1>Despliegue (versión sencilla)</h1>
+</section>
+<section class="tema"><p class="ruta">04-Despliegue/04-despliegue.md</p>
+<h1><span class="pgmark">⟦§4⟧</span>Despliegue (versión sencilla)</h1>
 <h2>¿Dónde vive la aplicación?</h2>
-<h3>Hoy (red de práctica)</h3>
+<h3>Hoy (revisión vigente, 17/11/2026)</h3>
 <ul>
-<li><strong>Contratos</strong>: desplegados en la red de práctica Besu (chainId 81234), bloque
-6.412.104. Nada que instalar: la app ya está conectada.</li>
-<li><strong>App</strong>: se puede correr en cualquier ordenador con Node 20+.</li>
+<li><strong>App</strong>: servida desde <strong>Google Cloud Run</strong>, revisión <code>brltv2-00033-dmn</code>
+(compilación <code>66b59218</code>, commit <code>aab670e</code>).
+URL: <strong><a href="https://brltv2-szrmcf2hja-ew.a.run.app">https://brltv2-szrmcf2hja-ew.a.run.app</a></strong></li>
+<li><strong>Contratos</strong>: en la red de práctica; el entorno desplegado habla con una red
+de práctica tipo <strong>Anvil (chainId 31337)</strong> a través de un proxy RPC. El código
+admite también Besu (chainId 81234) si se configura.</li>
+<li>Nada que instalar para usarla: entra con MetaMask y listo.</li>
+</ul>
+<figure class="grafico"><img src="../../imagenes/despliegue-cloudrun.png" alt="Despliegue vigente en Google Cloud Run"><figcaption><span class="fig-n">Figura</span>Despliegue vigente en Google Cloud Run</figcaption></figure>
+<h2>¿Qué trae esta revisión?</h2>
+<h3>Novedades de la versión de 2026-11-17</h3>
+<ul>
+<li><strong>Portal del Empleado rediseñado</strong> (<code>/suite</code>): cara visual propia (azul noche y
+violeta) y secciones nuevas.</li>
+<li><strong>Tope acumulado del 80%</strong> al descargar (downgrade de flujos).</li>
+<li><strong>Entrada única</strong> <code>/entrar</code>: la wallet decide a qué portal ir, y la app
+comprueba sin parar que sigues usando la misma cuenta.</li>
 </ul>
 <h2>Cómo poner la aplicación en marcha</h2>
 <h3>Modo rápido (5 comandos)</h3>
@@ -247,7 +383,7 @@ npm run dev                   # http://localhost:3000
 npm run verify:standalone     # prueba el “ejecutable” de producción
 gcp/deploy.sh                 # sube a Google Cloud Run (requiere acceso)
 </code></pre>
-<p><img src="../imagenes/capturas/04-admin-resumen.png" alt="Panel admin con tarjetas de resumen">
+<p><img src="../../imagenes/capturas/04-admin-resumen.png" alt="Panel admin con tarjetas de resumen">
 <em>(El panel admin tal y como lo verá el administrador tras iniciar sesión.)</em></p>
 <h2>¿Qué pide la app para conectarse?</h2>
 <h3>Variables importantes (solo el administrador técnico)</h3>
@@ -256,21 +392,25 @@ gcp/deploy.sh                 # sube a Google Cloud Run (requiere acceso)
 <li><code>SIWE_DOMAIN</code> — <strong>debe coincidir exactamente</strong> con la dirección web usada.</li>
 <li><code>NEXT_PUBLIC_BRLT_ADDRESS</code> / <code>NEXT_PUBLIC_BRLTX_ADDRESS</code> — las direcciones de los contratos.</li>
 <li><code>ADMIN_BOOTSTRAP_WALLET</code> — la wallet que puede entrar como admin.</li>
+<li><code>NEXT_PUBLIC_CHAIN_ID</code> — la red a usar (31337 en el despliegue actual;
+81234 para Besu).</li>
 </ul>
 <h2>Healthcheck</h2>
 <h3>¿Está vivo el sistema?</h3>
 <p>Una visita a <strong><code>/api/health</code></strong> responde:</p>
 <ul>
-<li><code>200 ok</code> — base de datos y red funcionando.</li>
-<li><code>503 degradado</code> — algo no responde (la app no está muerta solo degradada).</li>
+<li><code>200 ok</code> — base de datos y red funcionando (la revisión vigente informa
+chainId <strong>31337</strong>).</li>
+<li><code>503 degradado</code> — algo no responde (la app no está muerta, solo degradada).</li>
 </ul>
 
-</section><section class="tema"><p class="ruta">05-Diccionario-de-Datos\05-diccionario.md</p>
-<h1>Diccionario de datos (versión sencilla)</h1>
+</section>
+<section class="tema"><p class="ruta">05-Diccionario-de-Datos/05-diccionario.md</p>
+<h1><span class="pgmark">⟦§5⟧</span>Diccionario de datos (versión sencilla)</h1>
 <h2>¿Dónde vive cada cosa?</h2>
 <h3>Dos manos que trabajan juntas</h3>
 <ol>
-<li><strong>La cadena (Besu)</strong> guarda lo que cuesta dinero: quién cobró, cuánto y cuándo.</li>
+<li><strong>La cadena</strong> guarda lo que cuesta dinero: quién cobró, cuánto y cuándo.</li>
 <li><strong>La base MongoDB</strong> guarda papeleo: fichas, proyectos, permisos, historial y avisos.</li>
 <li>La app <strong>compara siempre</strong> las dos y se corrige si difieren.</li>
 </ol>
@@ -315,46 +455,56 @@ gcp/deploy.sh                 # sube a Google Cloud Run (requiere acceso)
 <td>Auditoría</td>
 <td>Quién hizo qué y cuándo (sin secretos ni datos íntimos).</td>
 </tr>
+<tr>
+<td><strong>Límites del tope</strong> (<code>limites</code>)</td>
+<td>Los 4 números que ve el empleado: asignado, tope 80%, ya descargado y disponible.</td>
+</tr>
 </tbody></table>
+<h2>Los 4 números del tope del 80%</h2>
+<h3>¿De dónde salen?</h3>
+<table>
+<thead>
+<tr>
+<th>Número</th>
+<th>De dónde viene</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Asignado a tu cuenta</strong></td>
+<td>Del contrato: todo el dinero depositado en tus flujos (vivos o terminados).</td>
+</tr>
+<tr>
+<td><strong>Tope 80%</strong></td>
+<td>El 80% de lo asignado (se calcula, redondeando hacia abajo).</td>
+</tr>
+<tr>
+<td><strong>Ya descargado</strong></td>
+<td>De la auditoría: suma de tus cobros confirmados por la cadena.</td>
+</tr>
+<tr>
+<td><strong>Disponible</strong></td>
+<td>El tope menos lo ya descargado (nunca sale negativo).</td>
+</tr>
+</tbody></table>
+<p>Ejemplo: asignado 10.000 BRLT → tope 8.000 → ya descargado 1.500 → <strong>disponible
+6.500 BRLT</strong>. Si un cobro supera el disponible, se rechaza con el aviso
+«tope_80_superado» y no se registra.</p>
 <h2>Datos personales (y tus derechos)</h2>
 <h3>Reglas del juego</h3>
 <ul>
 <li>Email y teléfono <strong>se borran al instante</strong> si lo pides («Borrar mis datos»).</li>
 <li>A los <strong>30 días</strong>, la app anonimiza el nombre automáticamente (ya no se sabe quién es).</li>
 <li>Tu <strong>wallet</strong> se aguanta hasta <strong>90 días</strong> después de la baja para que puedas
-retirar lo que te debían; después la compte queda sellada.</li>
+retirar lo que te debían; después la cuenta queda sellada.</li>
 </ul>
-<!-- GENERAR_IMAGEN: glosario-visual.svg -->
-
-<pre><code class="language-mermaid">mindmap
-  root((Datos))
-    Cadena
-      Flujos y pagos
-      Eventos (historial)
-      Escrow y tasas
-    MongoDB
-      Empleados y proyectos
-      Sesiones y permisos
-      Auditoría y jobs
-    Derechos
-      Borrado inmediato
-      Anonimizado a 30 días
-      Retiro hasta 90 días
-</code></pre>
+<figure class="grafico"><img src="../../imagenes/glosario-visual.png" alt="Glosario visual de los datos"><figcaption><span class="fig-n">Figura</span>Glosario visual de los datos</figcaption></figure>
 <h2>Estados de un flujo</h2>
 <h3>Los cuatro estados</h3>
-<pre><code class="language-mermaid">stateDiagram-v2
-    [*] --&gt; activo: se crea el flujo
-    activo --&gt; pausado: pausa del admin
-    pausado --&gt; activo: reanudación
-    activo --&gt; vencido: pasa su tiempo
-    vencido --&gt; terminado: liquidación (cualquiera)
-    activo --&gt; terminado: terminación del admin
-    terminado --&gt; [*]
-</code></pre>
+<figure class="grafico"><img src="../../imagenes/estados-flujo.png" alt="Estados de un flujo"><figcaption><span class="fig-n">Figura</span>Estados de un flujo</figcaption></figure>
 
-</section><section class="tema"><p class="ruta">06-Diagrama-Relacional\06-relacional.md</p>
-<h1>Diagrama relacional (versión sencilla)</h1>
+</section>
+<section class="tema"><p class="ruta">06-Diagrama-Relacional/06-relacional.md</p>
+<h1><span class="pgmark">⟦§6⟧</span>Diagrama relacional (versión sencilla)</h1>
 <h2>El mapa de la base de datos</h2>
 <h3>Relaciones que importan</h3>
 <ul>
@@ -363,17 +513,11 @@ retirar lo que te debían; después la compte queda sellada.</li>
 <li>Un <strong>Flujo</strong> puede venir de un <strong>Lote</strong> (por si se crearon varios a la vez).</li>
 <li>Cada <strong>Flujo</strong> deja rastro en el <strong>Historial</strong> al igual que su despedida.</li>
 <li>Los <strong>Trabajos (jobs)</strong> anotan las veces que la app se revisa a sí misma.</li>
+<li>La <strong>Auditoría</strong> no solo guarda historia: es el <strong>contador</strong> del tope del 80%.
+Cada cobro confirmado por la cadena suma ahí, y así la app sabe cuánto has
+descargado ya.</li>
 </ul>
-<pre><code class="language-mermaid">flowchart LR
-    PRO[Proyectos] --&gt;|agrupa| EMP[Empleados]
-    EMP --&gt;|tiene| FLO[Flujos]
-    EMP --&gt;|tendrá| SCH[Programados]
-    BAT[Lotes] --&gt;|crea| FLO
-    FLO --&gt;|deja rastro| HIS[Historial]
-    EMP --&gt; AUD[Auditoría]
-    JOBS[Trabajos] --- NOTA((auto-revisión))
-    style NOTA fill:#f1f5f9,stroke:#94a3b8
-</code></pre>
+<figure class="grafico"><img src="../../imagenes/relacional-map.png" alt="Mapa relacional de la base de datos"><figcaption><span class="fig-n">Figura</span>Mapa relacional de la base de datos</figcaption></figure>
 <h2>La doble contabilidad</h2>
 <h3>Cadena + base (y nunca al revés)</h3>
 <ul>
@@ -382,7 +526,14 @@ retirar lo que te debían; después la compte queda sellada.</li>
 <li>Si alguien borra algo de la base, la app lo re-lee del <strong>bloque inicial de
 despliegue</strong> y lo repara. Ese es el papel de los jobs del panel <code>/admin/jobs</code>.</li>
 </ul>
+<h3>Cómo se cruzan para el tope del 80%</h3>
+<ul>
+<li>El <strong>asignado</strong> sale de los <strong>Flujos</strong> (lo depositado, según el contrato).</li>
+<li>Lo <strong>ya descargado</strong> sale de la <strong>Auditoría</strong> (cobros verificados).</li>
+<li>Los dos números juntos dan el tope y lo disponible que ve el empleado en su
+portal. Si se perdiera el historial de auditoría, lo ya descargado se
+recompondría solo con los cobros que queden registrados (caso raro; el equipo
+técnico lo vigila).</li>
+</ul>
 
 </section>
-<footer>Superfluid Brlt Streaming v2 · documentación v1 · 6 sección(es)</footer>
-</body></html>

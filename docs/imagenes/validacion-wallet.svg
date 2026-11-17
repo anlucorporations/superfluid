@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Validación continua de wallet en /suite">
+  <defs>
+    <marker id="vw" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#34d399"/>
+    </marker>
+    <marker id="vwr" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#fb7185"/>
+    </marker>
+    <linearGradient id="vh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1140"/><stop offset="1" stop-color="#3b2a7a"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .lbl{font-size:15px;font-weight:700;fill:#e2e8f0}
+    .mut{font-size:12.5px;fill:#94a3b8}
+    .msg{font-size:12.5px;fill:#e2e8f0}
+    .ok{fill:#34d399}.bad{fill:#fb7185}
+    .life{stroke:#334155;stroke-width:2;stroke-dasharray:6 6}
+    .arrow{stroke:#34d399;stroke-width:2;fill:none;marker-end:url(#vw)}
+    .arrowr{stroke:#34d399;stroke-width:2;fill:none;stroke-dasharray:5 4;marker-end:url(#vw)}
+    .arrowb{stroke:#fb7185;stroke-width:2;fill:none;stroke-dasharray:5 4;marker-end:url(#vwr)}
+    .loop{fill:none;stroke:#8b5cf6;stroke-width:1.5}
+    .loopt{font-size:12px;font-weight:600;fill:#a78bfa}
+    .note{fill:#1b1140;stroke:#8b5cf6;stroke-width:1.2}
+    .notet{font-size:12.5px;fill:#e2e8f0}
+  </style>
+  <rect class="bg" width="960" height="560"/>
+  <text x="480" y="40" text-anchor="middle" class="h1">La app comprueba que sigues siendo tú</text>
+  <text x="480" y="63" text-anchor="middle" class="h2">Portal del Empleado /suite · validación continua de wallet</text>
+
+  <!-- participantes -->
+  <rect class="card" x="130" y="90" width="200" height="56" rx="12"/>
+  <rect x="130" y="90" width="200" height="56" rx="12" fill="url(#vh)"/>
+  <text x="230" y="124" text-anchor="middle" class="lbl">MetaMask</text>
+  <line x1="230" y1="146" x2="230" y2="500" class="life"/>
+  <rect class="card" x="620" y="90" width="220" height="56" rx="12"/>
+  <rect x="620" y="90" width="220" height="56" rx="12" fill="url(#vh)"/>
+  <text x="730" y="116" text-anchor="middle" class="lbl">Portal /suite</text>
+  <text x="730" y="136" text-anchor="middle" class="mut">sesión ligada a tu wallet</text>
+  <line x1="730" y1="146" x2="730" y2="500" class="life"/>
+
+  <!-- mensaje inicial -->
+  <path class="arrow" d="M230,180 L728,180"/>
+  <text x="480" y="172" text-anchor="middle" class="msg">conecta cuenta 0xAAA… (sesión)</text>
+
+  <!-- loop -->
+  <rect class="loop" x="120" y="205" width="720" height="180" rx="10"/>
+  <text x="140" y="228" class="loopt">loop · cada 10 s + evento accountsChanged</text>
+  <path class="arrow" d="M730,262 L232,262"/>
+  <text x="480" y="254" text-anchor="middle" class="msg">¿cuenta activa?</text>
+  <path class="arrowr" d="M230,310 L728,310"/>
+  <text x="480" y="302" text-anchor="middle" class="msg">0xAAA… (igual) → todo bien</text>
+  <path class="arrowb" d="M230,358 L728,358"/>
+  <text x="480" y="350" text-anchor="middle" class="msg" style="fill:#fb7185">0xBBB… ≠ sesión → ¡alerta!</text>
+
+  <!-- nota de bloqueo -->
+  <rect class="note" x="220" y="405" width="520" height="80" rx="10"/>
+  <text x="480" y="430" text-anchor="middle" class="notet">aviso «Wallet distinta a tu sesión»</text>
+  <text x="480" y="452" text-anchor="middle" class="notet">se pide <tspan fill="#a78bfa" font-weight="600">revalidar en /entrar</tspan> · hasta entonces no se opera</text>
+  <text x="480" y="474" text-anchor="middle" class="mut">protección: nadie usa tu sesión con otra cuenta</text>
+
+  <text x="480" y="530" text-anchor="middle" class="mut">si la sesión es de admin y abres /suite → /admin · sin sesión → /entrar</text>
+  <text x="480" y="550" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/validacion-wallet.svg · actualizado 2026-11-17</text>
+</svg>

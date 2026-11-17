@@ -1,30 +1,97 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8">
-<title>Manual del Administrador — Superfluid Brlt v2</title><style>
-  @page { margin: 0 }
-  body{font-family:'Segoe UI',system-ui,Arial;color:#0f172a;margin:0}
-  header{background:#4f46e5;color:#fff;padding:48px 40px}
-  header h1{margin:0;font-size:28px}
-  header p{margin:6px 0 0;color:#e0e7ff;font-size:14px}
-  section.tema{padding:28px 40px;border-top:1px solid #e2e8f0;page-break-before:always}
-  .ruta{font-size:11px;color:#94a3b8;margin:0 0 12px}
-  h1,h2{color:#312e81}h3,h4{color:#1e293b}
-  img{max-width:100%;border:1px solid #e2e8f0;border-radius:8px}
-  table{border-collapse:collapse;width:100%;font-size:12px}
-  th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
-  th{background:#f8fafc}
-  pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto;font-size:11px}
-  code{background:#f1f5f9;padding:1px 4px;border-radius:4px;font-size:12px}
-  pre code{background:transparent;padding:0}
-  blockquote{border-left:4px solid #6366f1;margin:0;padding:4px 12px;color:#475569;background:#f8fafc}
-  footer{padding:16px 40px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0}
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Manual del Administrador — Panel /admin</title>
+<style>
+  @page { size: A4; margin: 24mm 16mm 20mm 16mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: system-ui, 'Segoe UI', Arial, sans-serif; color: #17203a; font-size: 10.5pt; line-height: 1.55; }
+  h2 { font-size: 14pt; color: #241a4f; margin: 7mm 0 2.5mm; }
+  h3 { font-size: 11.5pt; color: #17203a; margin: 5mm 0 2mm; }
+  h3::before { content: '›'; color: #34d399; font-weight: 700; margin-right: 2mm; }
+  p { margin: 0 0 3mm; }
+  strong { color: #101a33; }
+  a { color: #059669; text-decoration: none; }
+  ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1.2mm; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 0 0 4mm; page-break-inside: avoid; }
+  th, td { border: 1px solid #e2e8f0; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f1edfb; color: #241a4f; border-bottom: 2px solid #34d399; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  pre { background: #101a33; color: #dbe4f5; padding: 10px 12px; border-radius: 8px; overflow: auto;
+        font-size: 8.5pt; line-height: 1.45; page-break-inside: avoid; border-left: 3px solid #34d399; }
+  code { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+  p code, li code, td code { background: #f1f5f9; color: #0f2e46; padding: 1px 4px; border-radius: 4px; font-size: 9pt; }
+  pre code { background: transparent; padding: 0; color: inherit; }
+  blockquote { border-left: 4px solid #34d399; background: #f2fbf7; margin: 0 0 4mm; padding: 8px 12px;
+               color: #27513f; border-radius: 0 8px 8px 0; page-break-inside: avoid; }
+  blockquote p { margin: 0; }
+  figure.grafico { margin: 4mm 0 5mm; text-align: center; page-break-inside: avoid; }
+  figure.grafico img { max-width: 100%; max-height: 110mm; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
+  figure.grafico figcaption { margin-top: 2mm; font-size: 8.5pt; color: #5b6478; }
+  figure.grafico .fig-n { color: #059669; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-right: 3mm; }
+  figure.pantalla { margin: 4mm 0 5mm; page-break-inside: avoid; }
+  figure.pantalla img { max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; }
+  figure.pantalla figcaption { margin-top: 2mm; font-size: 8.5pt; color: #5b6478; font-style: italic; }
+  .captura { border: 1px dashed #34d399; background: #f2fbf7; border-radius: 8px; padding: 6px 10px;
+             font-size: 8.5pt; color: #27513f; margin: 3mm 0 4mm; page-break-inside: avoid; }
+  .captura .cam { margin-right: 2mm; }
+  .pgmark { color: #ffffff; font-size: 6px; }
+
+  @page { size: A4; margin: 0; }
+  .cover { height: 100vh; background: linear-gradient(160deg, #1b1140 0%, #17133c 45%, #101a33 100%);
+           color: #fff; padding: 34mm 22mm 24mm; display: flex; flex-direction: column; }
+  .cover .badge { display: inline-block; align-self: flex-start; border: 1px solid rgba(52,211,153,.55); color: #34d399;
+                  border-radius: 999px; padding: 4px 14px; font-size: 8.5pt; letter-spacing: .08em; text-transform: uppercase; }
+  .cover .linea { width: 64mm; height: 3px; background: linear-gradient(90deg, #34d399, rgba(52,211,153,0)); margin: 10mm 0 8mm; border-radius: 2px; }
+  .cover h1 { margin: 0; font-size: 30pt; line-height: 1.2; font-weight: 700; }
+  .cover h1 small { display: block; margin-top: 6mm; font-size: 12.5pt; font-weight: 400; color: #c7d2ea; line-height: 1.5; }
+  .cover .resumen { margin-top: 12mm; max-width: 125mm; color: #dfe6f5; font-size: 10pt; line-height: 1.7; }
+  .cover .resumen ul { padding-left: 5mm; margin: 0; }
+  .cover .resumen li { margin-bottom: 2.5mm; }
+  .cover .pie { margin-top: auto; border-top: 1px solid rgba(255,255,255,.18); padding-top: 5mm;
+                display: flex; justify-content: space-between; font-size: 8.5pt; color: #aeb9d6; }
+  .cover .pie b { color: #34d399; font-weight: 600; }
+.cover { page-break-after: always; }
+  .toc h2 { font-size: 17pt; color: #1b1140; margin: 0 0 3mm; }
+  .toc .linea { width: 30mm; height: 3px; background: #34d399; border-radius: 2px; margin-bottom: 8mm; }
+  .toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+  .toc li { counter-increment: toc; display: flex; align-items: baseline; gap: 4mm;
+            padding: 3.2mm 0; border-bottom: 1px solid #e7ebf3; }
+  .toc li::before { content: counter(toc, decimal-leading-zero); font-size: 9pt; font-weight: 700; color: #34d399; min-width: 9mm; }
+  .toc .t { font-weight: 600; color: #1b1140; }
+  .toc .s { color: #5b6478; font-size: 9pt; flex: 1; }
+  .toc .p { font-size: 9pt; color: #6b7280; font-variant-numeric: tabular-nums; }
+  .toc .nota { margin-top: 8mm; font-size: 8.5pt; color: #8b93a7; }
+  section.tema { page-break-before: always; }
+  .ruta { font-size: 8.5pt; color: #94a3b8; margin: 0 0 2mm; font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+  section.tema h1 { font-size: 20pt; color: #1b1140; margin: 0 0 3mm; line-height: 1.25; }
+  section.tema h1::after { content: ''; display: block; width: 26mm; height: 3px; background: #34d399; border-radius: 2px; margin-top: 2.5mm; }
 </style></head><body>
-<header><h1>Manual del Administrador — Superfluid Brlt v2</h1><p>Nómina en streaming sobre Besu 81234 · generado 2026-11-04</p></header>
-<section class="tema"><p class="ruta">07-Manual-del-Admin\manual-admin.md</p>
-<p>﻿# Manual del Admin (guía operativa)</p>
+<div class="cover">
+  <span class="badge">Administradores</span>
+  <div class="linea"></div>
+  <h1>Manual del Administrador<small>Operativa diaria del panel: empleados, flujos, tesorería y auditoría</small></h1>
+  <div class="resumen"><ul><li>Manual del Admin (guía operativa)</li></ul></div>
+  <div class="pie">
+    <span>Superfluid Brlt Streaming v2 · <b>documentación literal</b></span>
+    <span>Actualizado <b>2026-11-17</b> · 1 fuente(s) .md</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <h2>Índice de contenidos</h2>
+  <div class="linea"></div>
+  <ol>
+<li><span class="t">Manual del Admin (guía operativa)</span><span class="s">Empezar en 5 minutos · Novedad: Portal del Empleado nuevo y tope del 80% · Flujos día a día · Programados y lotes · …</span><span class="p">p. 2</span></li>
+  </ol>
+  <p class="nota">Los números de página corresponden a la numeración impresa en el pie de página.</p>
+</nav>
+<section class="tema"><p class="ruta">07-Manual-del-Admin/manual-admin.md</p>
+<h1><span class="pgmark">⟦§1⟧</span>Manual del Admin (guía operativa)</h1>
 <h2>Empezar en 5 minutos</h2>
 <h3>Tu primer flujo</h3>
 <ol>
-<li>Entra con tu wallet admin en <strong>/login</strong>.</li>
+<li>Entra con tu wallet admin en <strong><code>/entrar</code></strong>: la app consulta tu rol y te lleva
+directamente al <strong>panel <code>/admin</code></strong> (ya no necesitas adivinar la URL del panel).</li>
 <li><strong>Sistema</strong> → guarda las direcciones de BRLT/BrltX y el bloque de despliegue.</li>
 <li><strong>Proyectos</strong> → crea un proyecto.</li>
 <li><strong>Empleados</strong> → «Nuevo empleado» (nombre + wallet + importe + periodo).</li>
@@ -33,6 +100,41 @@
 </ol>
 <p><img src="../../imagenes/capturas/04-admin-resumen.png" alt="Panel admin">
 <em>(Vista general del panel: tarjetas de resumen y menú lateral con todas las secciones.)</em></p>
+<h2>Novedad: Portal del Empleado nuevo y tope del 80%</h2>
+<h3>Qué cambió para tus empleados (2026-11-17)</h3>
+<ul>
+<li>El empleado entra por la <strong>puerta única <code>/entrar</code></strong>: conecta la wallet y la
+app le decide el portal. Tú entras igual y acabas en <code>/admin</code>.</li>
+<li>El empleado tiene ahora un <strong>portal con identidad visual propia</strong> (azul noche
+y violeta), con secciones: resumen, <strong>Downgrade de flujos</strong>, cobro autónomo,
+Mis flujos, Mi ficha y Mi perfil.</li>
+<li>El empleado también <strong>valida su wallet de forma continua</strong>: si cambia de
+cuenta en MetaMask, su sesión se bloquea hasta revalidar en <code>/entrar</code>.</li>
+</ul>
+<h3>El tope del 80% (regla de producto)</h3>
+<ul>
+<li>Tu empleado solo puede convertir en BRLT, <strong>acumulativamente</strong>, el <strong>80% de
+todo lo asignado</strong> a su cuenta (la suma de los depósitos de <strong>todos</strong> sus
+flujos, vivos o terminados).</li>
+<li>Lo ya cobrado se reconstruye de la <strong>auditoría</strong> de cobros verificados contra
+la cadena.</li>
+<li>Se aplica a <strong>todos</strong> los cobros del empleado (downgrade por flujo y cobro
+autónomo) y los comparten como un mismo contador.</li>
+<li>Si un intento supera el tope, el servidor lo rechaza con el código
+<strong>«tope_80_superado»</strong> y <strong>no lo registra ni lo cobra</strong>. En la pantalla de
+<strong>Auditoría</strong> verás los cobros que <strong>sí</strong> pasaron el tope (quién, cuánto,
+cuándo y la transacción); los intentos rechazados no dejan huella allí — si
+el empleado te consulta por un cobro fallido, pregúntale por el aviso
+«tope_80_superado» que vio en su portal.</li>
+</ul>
+<figure class="grafico"><img src="../../imagenes/tope-80-admin.png" alt="Cálculo del tope del 80% y su auditoría"><figcaption><span class="fig-n">Figura</span>Cálculo del tope del 80% y su auditoría</figcaption></figure>
+<h3>Qué NO cambia en tu operativa</h3>
+<ul>
+<li>Crear, pausar, reanudar, terminar y liquidar flujos se hace igual que siempre
+(el tope solo limita el <strong>cobro</strong> del empleado, no tu gestión).</li>
+<li>La verdad del dinero sigue siendo el <strong>contrato</strong>: la app solo aplica la regla
+al registrar cobros.</li>
+</ul>
 <h2>Flujos día a día</h2>
 <h3>Operar un flujo</h3>
 <ul>
@@ -80,13 +182,15 @@ antes de añadir otro (sin sustituir pagos por accidente).</li>
 <h3>Buenas prácticas</h3>
 <ul>
 <li>La wallet admin <strong>nunca</strong> se guarda en la web: solo firmas en tu navegador.</li>
-<li>Las sesiones duran <strong>2 horas</strong>; revisa <strong>Auditoría</strong> para ver quién hizo qué.</li>
+<li>Las sesiones duran <strong>2 horas</strong>; revisa <strong>Auditoría</strong> para ver quién hizo qué
+(incluidos los cobros de empleados que pasaron el tope del 80%).</li>
 <li>Si cambias la wallet de un empleado, la app te lista sus flujos para
 <strong>migrarlos</strong> con el cambio de receptor en una sola transacción.</li>
+<li>Cada uno a lo suyo: si una sesión de admin abre <code>/suite</code>, la app la devuelve a
+<code>/admin</code>; y un empleado que intente entrar a <code>/admin</code> no tiene acceso.</li>
 </ul>
 <p><img src="../../imagenes/capturas/09-admin-auditoria.png" alt="Auditoría">
-<em>(Historial de acciones: login, altas, cambios de wallet, operaciones de flujo y jobs.)</em></p>
+<em>(Historial de acciones: login, altas, cambios de wallet, operaciones de flujo, jobs
+y cobros de empleados verificados.)</em></p>
 
 </section>
-<footer>Superfluid Brlt Streaming v2 · documentación v1 · 1 sección(es)</footer>
-</body></html>

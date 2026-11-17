@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Despliegue en Google Cloud Run">
+  <defs>
+    <marker id="dp" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#338fff"/>
+    </marker>
+  </defs>
+  <style>
+    .bg{fill:#ffffff}
+    .card{fill:#f7faff;stroke:#c9dcf7;stroke-width:1.5}
+    .hi{fill:#eaf3ff;stroke:#338fff;stroke-width:2}
+    .h1{font-size:22px;font-weight:700;fill:#0f172a}
+    .h2{font-size:13px;fill:#64748b}
+    .lbl{font-size:15px;font-weight:700;fill:#0f172a}
+    .mut{font-size:12.5px;fill:#475569}
+    .tag{font-size:11px;fill:#94a3b8}
+    .arr{stroke:#338fff;stroke-width:2.2;fill:none;marker-end:url(#dp)}
+    .alt{fill:#338fff;font-weight:700}
+    .cy{fill:#fff9ec;stroke:#f59e0b;stroke-width:1.5}
+  </style>
+  <rect class="bg" width="960" height="480"/>
+  <text x="480" y="40" text-anchor="middle" class="h1">Dónde vive la aplicación — Cloud Run + Anvil + MongoDB</text>
+  <text x="480" y="63" text-anchor="middle" class="h2">Revisión vigente 17/11/2026 · sin instalación: entra con MetaMask y listo</text>
+
+  <!-- navegador -->
+  <rect class="card" x="40" y="130" width="215" height="130" rx="12"/>
+  <text x="147" y="160" text-anchor="middle" class="lbl">Tu navegador</text>
+  <text x="147" y="184" text-anchor="middle" class="mut">MetaMask instalado</text>
+  <text x="147" y="204" text-anchor="middle" class="mut">sin nodo · sin claves</text>
+  <text x="147" y="234" text-anchor="middle" class="tag">solo firma en tu equipo</text>
+
+  <!-- cloud run -->
+  <rect class="hi" x="330" y="110" width="300" height="170" rx="14"/>
+  <text x="480" y="140" text-anchor="middle" class="lbl">Google Cloud Run</text>
+  <text x="480" y="162" text-anchor="middle" class="mut">revisión brltv2-00033-dmn</text>
+  <text x="480" y="182" text-anchor="middle" class="mut">compilación 66b59218 · commit aab670e</text>
+  <text x="480" y="212" text-anchor="middle" class="alt">/entrar · /admin · /suite</text>
+  <text x="480" y="240" text-anchor="middle" class="mut">brltv2-szrmcf2hja-ew.a.run.app</text>
+  <text x="480" y="262" text-anchor="middle" class="tag">Next.js standalone · jobs de reconciliación</text>
+
+  <!-- health -->
+  <rect class="cy" x="690" y="90" width="235" height="100" rx="12"/>
+  <text x="807" y="118" text-anchor="middle" class="lbl">/api/health</text>
+  <text x="807" y="142" text-anchor="middle" class="mut">db ok · rpc ok · chainId 31337</text>
+  <text x="807" y="164" text-anchor="middle" class="mut">200 ok · 503 degradado</text>
+
+  <!-- mongo -->
+  <rect class="card" x="380" y="330" width="200" height="100" rx="12"/>
+  <text x="480" y="360" text-anchor="middle" class="lbl">MongoDB</text>
+  <text x="480" y="382" text-anchor="middle" class="mut">empleados · flujos · auditoría</text>
+  <text x="480" y="402" text-anchor="middle" class="mut">jobs · límites del tope</text>
+
+  <!-- anvil -->
+  <rect class="card" x="690" y="330" width="235" height="100" rx="12"/>
+  <text x="807" y="360" text-anchor="middle" class="lbl">Red de práctica</text>
+  <text x="807" y="382" text-anchor="middle" class="mut">tipo Anvil (chainId 31337)</text>
+  <text x="807" y="402" text-anchor="middle" class="mut">vía proxy RPC · Besu 81234 admitido</text>
+
+  <!-- flechas -->
+  <path class="arr" d="M255,195 L328,195"/>
+  <path class="arr" d="M630,140 L688,140"/>
+  <path class="arr" d="M480,280 L480,328"/>
+  <path class="arr" d="M650,230 C700,270 720,290 800,328"/>
+  <text x="730" y="292" text-anchor="middle" class="tag">RPC proxy</text>
+
+  <!-- footer -->
+  <text x="480" y="456" text-anchor="middle" class="tag">docs/imagenes/despliegue-cloudrun.svg · diagrama de despliegue (equipo técnico y DevOps)</text>
+</svg>

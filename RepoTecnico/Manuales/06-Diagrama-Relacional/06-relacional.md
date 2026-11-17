@@ -14,6 +14,9 @@
 - `flows` 1:n → `flows_history` (por `flowId`, extraído de los eventos del tx).
 - `sessions` ↔ `employees` (por `employeeId`) y ↔ `admin_allowlist` (por wallet).
 - `audit_events` → actor (`actorWallet`) y `empleadoId` opcional; `txHash` al recibo.
+  Además de historia, cumple función de **acumulador** del tope de downgrade: los eventos
+  con `meta.operacion="cobro"` y `meta.amount` suman el gasto acumulado de un receptor
+  (`web/src/lib/downgrade-limit.ts:39-63`).
 - `job_runs` es independiente (telemetría de operación).
 
 ```mermaid
@@ -46,3 +49,12 @@ erDiagram
   derivas y el espejo `flows_history` se re-lee desde `deployBlock` si se pierde.
 - Un `changeReceiver` on-chain cierra un `flowId` y abre otro: ambos quedan en `flows`
   ligados al mismo empleado (el histórico conserva ambos `flowId`).
+- El tope de downgrade del 80% se calcula **cruzando** `flows` (suma de `deposited`
+  reconciliada del contrato) con `audit_events` (gasto acumulado): si el espejo de
+  auditoría se pierde, `downgradeUsado` caería a 0 hasta re-sincronizar — el tope vuelve
+  a ampliarse con lo no registrado; úsese con esa salvedad en mente (pendiente de
+  confirmar si el reconciliador reconstruye cobros históricos).
+
+---
+
+*Actualizado 2026-11-17 · commit aab670e*

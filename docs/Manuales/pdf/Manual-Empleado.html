@@ -1,48 +1,240 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8">
-<title>Manual del Empleado — Suite del Empleado v2</title><style>
-  @page { margin: 0 }
-  body{font-family:'Segoe UI',system-ui,Arial;color:#0f172a;margin:0}
-  header{background:#4f46e5;color:#fff;padding:48px 40px}
-  header h1{margin:0;font-size:28px}
-  header p{margin:6px 0 0;color:#e0e7ff;font-size:14px}
-  section.tema{padding:28px 40px;border-top:1px solid #e2e8f0;page-break-before:always}
-  .ruta{font-size:11px;color:#94a3b8;margin:0 0 12px}
-  h1,h2{color:#312e81}h3,h4{color:#1e293b}
-  img{max-width:100%;border:1px solid #e2e8f0;border-radius:8px}
-  table{border-collapse:collapse;width:100%;font-size:12px}
-  th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
-  th{background:#f8fafc}
-  pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto;font-size:11px}
-  code{background:#f1f5f9;padding:1px 4px;border-radius:4px;font-size:12px}
-  pre code{background:transparent;padding:0}
-  blockquote{border-left:4px solid #6366f1;margin:0;padding:4px 12px;color:#475569;background:#f8fafc}
-  footer{padding:16px 40px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0}
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Manual del Empleado — Portal /suite</title>
+<style>
+  @page { size: A4; margin: 24mm 16mm 20mm 16mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: system-ui, 'Segoe UI', Arial, sans-serif; color: #17203a; font-size: 10.5pt; line-height: 1.55; }
+  h2 { font-size: 14pt; color: #241a4f; margin: 7mm 0 2.5mm; }
+  h3 { font-size: 11.5pt; color: #17203a; margin: 5mm 0 2mm; }
+  h3::before { content: '›'; color: #34d399; font-weight: 700; margin-right: 2mm; }
+  p { margin: 0 0 3mm; }
+  strong { color: #101a33; }
+  a { color: #059669; text-decoration: none; }
+  ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1.2mm; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 0 0 4mm; page-break-inside: avoid; }
+  th, td { border: 1px solid #e2e8f0; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f1edfb; color: #241a4f; border-bottom: 2px solid #34d399; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  pre { background: #101a33; color: #dbe4f5; padding: 10px 12px; border-radius: 8px; overflow: auto;
+        font-size: 8.5pt; line-height: 1.45; page-break-inside: avoid; border-left: 3px solid #34d399; }
+  code { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+  p code, li code, td code { background: #f1f5f9; color: #0f2e46; padding: 1px 4px; border-radius: 4px; font-size: 9pt; }
+  pre code { background: transparent; padding: 0; color: inherit; }
+  blockquote { border-left: 4px solid #34d399; background: #f2fbf7; margin: 0 0 4mm; padding: 8px 12px;
+               color: #27513f; border-radius: 0 8px 8px 0; page-break-inside: avoid; }
+  blockquote p { margin: 0; }
+  figure.grafico { margin: 4mm 0 5mm; text-align: center; page-break-inside: avoid; }
+  figure.grafico img { max-width: 100%; max-height: 110mm; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
+  figure.grafico figcaption { margin-top: 2mm; font-size: 8.5pt; color: #5b6478; }
+  figure.grafico .fig-n { color: #059669; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-right: 3mm; }
+  figure.pantalla { margin: 4mm 0 5mm; page-break-inside: avoid; }
+  figure.pantalla img { max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; }
+  figure.pantalla figcaption { margin-top: 2mm; font-size: 8.5pt; color: #5b6478; font-style: italic; }
+  .captura { border: 1px dashed #34d399; background: #f2fbf7; border-radius: 8px; padding: 6px 10px;
+             font-size: 8.5pt; color: #27513f; margin: 3mm 0 4mm; page-break-inside: avoid; }
+  .captura .cam { margin-right: 2mm; }
+  .pgmark { color: #ffffff; font-size: 6px; }
+
+  @page { size: A4; margin: 0; }
+  .cover { height: 100vh; background: linear-gradient(160deg, #1b1140 0%, #17133c 45%, #101a33 100%);
+           color: #fff; padding: 34mm 22mm 24mm; display: flex; flex-direction: column; }
+  .cover .badge { display: inline-block; align-self: flex-start; border: 1px solid rgba(52,211,153,.55); color: #34d399;
+                  border-radius: 999px; padding: 4px 14px; font-size: 8.5pt; letter-spacing: .08em; text-transform: uppercase; }
+  .cover .linea { width: 64mm; height: 3px; background: linear-gradient(90deg, #34d399, rgba(52,211,153,0)); margin: 10mm 0 8mm; border-radius: 2px; }
+  .cover h1 { margin: 0; font-size: 30pt; line-height: 1.2; font-weight: 700; }
+  .cover h1 small { display: block; margin-top: 6mm; font-size: 12.5pt; font-weight: 400; color: #c7d2ea; line-height: 1.5; }
+  .cover .resumen { margin-top: 12mm; max-width: 125mm; color: #dfe6f5; font-size: 10pt; line-height: 1.7; }
+  .cover .resumen ul { padding-left: 5mm; margin: 0; }
+  .cover .resumen li { margin-bottom: 2.5mm; }
+  .cover .pie { margin-top: auto; border-top: 1px solid rgba(255,255,255,.18); padding-top: 5mm;
+                display: flex; justify-content: space-between; font-size: 8.5pt; color: #aeb9d6; }
+  .cover .pie b { color: #34d399; font-weight: 600; }
+.cover { page-break-after: always; }
+  .toc h2 { font-size: 17pt; color: #1b1140; margin: 0 0 3mm; }
+  .toc .linea { width: 30mm; height: 3px; background: #34d399; border-radius: 2px; margin-bottom: 8mm; }
+  .toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+  .toc li { counter-increment: toc; display: flex; align-items: baseline; gap: 4mm;
+            padding: 3.2mm 0; border-bottom: 1px solid #e7ebf3; }
+  .toc li::before { content: counter(toc, decimal-leading-zero); font-size: 9pt; font-weight: 700; color: #34d399; min-width: 9mm; }
+  .toc .t { font-weight: 600; color: #1b1140; }
+  .toc .s { color: #5b6478; font-size: 9pt; flex: 1; }
+  .toc .p { font-size: 9pt; color: #6b7280; font-variant-numeric: tabular-nums; }
+  .toc .nota { margin-top: 8mm; font-size: 8.5pt; color: #8b93a7; }
+  section.tema { page-break-before: always; }
+  .ruta { font-size: 8.5pt; color: #94a3b8; margin: 0 0 2mm; font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+  section.tema h1 { font-size: 20pt; color: #1b1140; margin: 0 0 3mm; line-height: 1.25; }
+  section.tema h1::after { content: ''; display: block; width: 26mm; height: 3px; background: #34d399; border-radius: 2px; margin-top: 2.5mm; }
 </style></head><body>
-<header><h1>Manual del Empleado — Suite del Empleado v2</h1><p>Nómina en streaming sobre Besu 81234 · generado 2026-11-04</p></header>
-<section class="tema"><p class="ruta">07-Manual-del-Admin\manual-empleado.md</p>
-<p>﻿# Manual del Empleado (guía operativa)</p>
+<div class="cover">
+  <span class="badge">Empleados</span>
+  <div class="linea"></div>
+  <h1>Manual del Empleado<small>Guía del Portal del Empleado: resumen, downgrade de flujos y perfil</small></h1>
+  <div class="resumen"><ul><li>Manual del Empleado (guía del Portal /suite)</li></ul></div>
+  <div class="pie">
+    <span>Superfluid Brlt Streaming v2 · <b>documentación literal</b></span>
+    <span>Actualizado <b>2026-11-17</b> · 1 fuente(s) .md</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <h2>Índice de contenidos</h2>
+  <div class="linea"></div>
+  <ol>
+<li><span class="t">Manual del Empleado (guía del Portal /suite)</span><span class="s">Empezar en 5 minutos · Tu portal por dentro · Entrar y tu wallet (importante) · Downgrade de flujos (el cobro con tope del 80%) · …</span><span class="p">p. 2</span></li>
+  </ol>
+  <p class="nota">Los números de página corresponden a la numeración impresa en el pie de página.</p>
+</nav>
+<section class="tema"><p class="ruta">07-Manual-del-Admin/manual-empleado.md</p>
+<h1><span class="pgmark">⟦§1⟧</span>Manual del Empleado (guía del Portal /suite)</h1>
 <h2>Empezar en 5 minutos</h2>
-<h3>Mi nómina</h3>
+<h3>De cero a ver tu nómina</h3>
 <ol>
-<li>Entra en la <strong>Suite</strong>: <code>/suite/login</code> y conecta MetaMask.</li>
-<li>Verás tres números: <strong>Cobrable ahora</strong>, <strong>BRLT en cartera</strong> y <strong>Salario por periodo</strong>.</li>
-<li>En <strong>Mis flujos</strong> verás el “grifo” activo, cuánto llevas acumulado y cuándo termina.</li>
-</ol>
-<p><img src="../../imagenes/capturas/03-login-suite.png" alt="Suite">
-<em>(Pantalla de acceso de la Suite del Empleado, sin registros de datos personales.)</em></p>
-<h2>Cobrar</h2>
-<h3>Cómo se cobra</h3>
-<ol>
-<li>Escribe el importe <strong>o</strong> pulsa «Todo (… BRLT)» si quieres el total.</li>
-<li>Pulsa <strong>«Cobrar»</strong>: MetaMask te pedirá una firma.</li>
-<li>En segundos tu wallet recibe <strong>BRLT real</strong>: verás «Cobrable» bajar lo mismo que
-sube «BRLT en cartera».</li>
+<li>Abre la web y ve a <strong><code>/entrar</code></strong> (la puerta única).</li>
+<li>Pulsa <strong>conectar wallet</strong> (MetaMask). Si te pide elegir cuenta y red, acepta.</li>
+<li>La app pregunta al servidor qué eres. Si tienes ficha de empleado, te lleva a
+tu <strong>Portal del Empleado</strong> (<code>/suite</code>); verás una pantalla oscura con cabecera
+violeta (es normal, tu portal tiene su propia identidad).</li>
+<li>Firma un mensaje con tu wallet para abrir la sesión (no gasta dinero).</li>
+<li>Ya dentro, mira el <strong>Resumen</strong>: <strong>BRLT en saldo</strong>, <strong>Cobrable en BrltX</strong> y tu
+<strong>salario por periodo</strong>.</li>
+<li>Para cobrar: baja a <strong>«Downgrade de flujos»</strong>, elige un flujo, escribe el
+importe (o pulsa <strong>«Máximo»</strong>) y pulsa <strong>«Descargar»</strong>. Firma en MetaMask y
+los BRLT llegan a tu wallet.</li>
 </ol>
 <blockquote>
-<p><strong>Bueno saber:</strong> puedes cobrar aunque el contrato esté “en pausa” y aunque tu ficha
-esté dada de baja (ventana de retiro de 90 días).</p>
+<p>¿Sin alta? La app te dirá «pide alta al administrador»: pídesela y vuelve a
+<code>/entrar</code>.</p>
 </blockquote>
-<h2>Mi flujo</h2>
+<figure class="grafico"><img src="../../imagenes/onboarding-empleado.png" alt="Onboarding del empleado, paso a paso"><figcaption><span class="fig-n">Figura</span>Onboarding del empleado, paso a paso</figcaption></figure>
+<h2>Tu portal por dentro</h2>
+<h3>Secciones (de arriba abajo)</h3>
+<table>
+<thead>
+<tr>
+<th>Sección</th>
+<th>Qué encuentras</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Resumen</strong></td>
+<td>BRLT que ya tienes en la wallet, BrltX cobrable con devengo y tu salario por periodo.</td>
+</tr>
+<tr>
+<td><strong>Downgrade de flujos</strong></td>
+<td>El cobro «con nómina»: eliges el flujo y respetas el tope del 80%.</td>
+</tr>
+<tr>
+<td><strong>Cobro autónomo</strong></td>
+<td>El cobro libre de siempre: conviertes BrltX de tu cartera sin elegir flujo.</td>
+</tr>
+<tr>
+<td><strong>Mis flujos</strong></td>
+<td>Tabla de tus “grifos”: estado, acumulado y botón <strong>«Descargar»</strong> por fila.</td>
+</tr>
+<tr>
+<td><strong>Mi ficha</strong></td>
+<td>Tu ficha laboral (proyecto, concepto, importe y periodo).</td>
+</tr>
+<tr>
+<td><strong>Mi perfil</strong></td>
+<td>Datos personales, consentimiento y borrado de datos.</td>
+</tr>
+</tbody></table>
+<p>La pantalla se refresca sola cada <strong>5 segundos</strong>. La cara visual es propia:
+fondo azul noche, tarjetas oscuras y cabecera violeta — nada que ver con el
+panel del admin.</p>
+<figure class="grafico"><img src="../../imagenes/portal-empleado-secciones.png" alt="Secciones del Portal del Empleado"><figcaption><span class="fig-n">Figura</span>Secciones del Portal del Empleado</figcaption></figure>
+<h2>Entrar y tu wallet (importante)</h2>
+<h3>La app comprueba que sigues siendo tú</h3>
+<ul>
+<li>Tu sesión está <strong>ligada a tu wallet</strong>. Mientras navegas por <code>/suite</code>, la app
+la compara con la cuenta activa de MetaMask: al vuelo (si cambias de cuenta)
+y además cada <strong>10 segundos</strong>.</li>
+<li>Si cambias de cuenta en MetaMask, aparece el aviso <strong>«Wallet distinta a tu
+sesión»</strong> con un botón para <strong>revalidar en <code>/entrar</code></strong>. Hasta que no revalides
+no podrás seguir operando. Es una protección: nadie puede usar tu sesión
+abierta con otra cuenta.</li>
+<li>Si abres <code>/suite</code> con una sesión de <strong>admin</strong>, te manda directamente a
+<code>/admin</code>. Y si no tienes sesión, vuelves a <code>/entrar</code>.</li>
+<li>Antes de cualquier firma, la app vuelve a comparar la cuenta conectada con la
+de tu sesión: si no coinciden, se cancela el envío.</li>
+</ul>
+<h2>Downgrade de flujos (el cobro con tope del 80%)</h2>
+<h3>¿Qué significa el tope?</h3>
+<p><strong>Regla de la casa:</strong> en total solo puedes convertir en BRLT el <strong>80% de todo
+lo que te asignaron</strong> (la suma de todos tus flujos, vivos o terminados). Lo ya
+convertido se va restando. Es una regla de la aplicación, no del contrato, y
+aplica igual al «Cobro autónomo»: los dos comparten el mismo contador.</p>
+<h3>Las 4 fichas que verás</h3>
+<table>
+<thead>
+<tr>
+<th>Ficha</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Asignado a tu cuenta</strong></td>
+<td>Todo lo depositado en tus flujos.</td>
+</tr>
+<tr>
+<td><strong>Tope 80%</strong></td>
+<td>Lo máximo que podrás convertir en total (80% de lo asignado).</td>
+</tr>
+<tr>
+<td><strong>Ya descargado</strong></td>
+<td>Lo que ya has convertido en BRLT hasta hoy.</td>
+</tr>
+<tr>
+<td><strong>Disponible</strong></td>
+<td>Tope − ya descargado. Es tu margen actual.</td>
+</tr>
+</tbody></table>
+<p>Ejemplo: asignado <strong>10.000</strong> → tope <strong>8.000</strong> → ya descargado <strong>1.500</strong> →
+disponible <strong>6.500</strong>. Si ya hubieras descargado 8.000, el tope está agotado y no
+podrás descargar más por esta vía.</p>
+<h3>Cómo descargar, paso a paso</h3>
+<ol>
+<li>Elige el <strong>flujo</strong> en el selector (puedes elegir cualquiera de los tuyos,
+activos, pausados o terminados).</li>
+<li>Escribe el importe, o pulsa el botón <strong>«Máximo»</strong>: te propone lo menor entre
+tu BrltX en cartera y lo disponible del tope. Ese es el tope real de hoy.</li>
+<li>Pulsa <strong>«Descargar»</strong>. MetaMask te pedirá la firma (no gasta nada,
+convierte tu BrltX en BRLT).</li>
+<li>En segundos verás <strong>«Ya descargado»</strong> subir lo mismo que baja tu BrltX y
+sube tu BRLT en saldo.</li>
+</ol>
+<blockquote>
+<p><strong>Truco:</strong> en la tabla de <strong>«Mis flujos»</strong> cada fila tiene su botón
+<strong>«Descargar»</strong>: te preselecciona ese flujo y te lleva directo al panel.</p>
+</blockquote>
+<h3>¿Por qué «Máximo» me da menos de lo que espero?</h3>
+<p>Dos razones posibles, y el botón ya te calcula el mínimo:</p>
+<ul>
+<li><strong>El tope</strong>: no puedes pasar del 80% acumulado.</li>
+<li><strong>La cadena</strong>: el devengo pendiente de un flujo <strong>activo</strong> solo se convierte
+en BrltX cobrable cuando el flujo se <strong>liquida on-chain</strong> (y liquidar exige
+que haya vencido). Hasta entonces, ese devengo no está en tu cartera.</li>
+<li>Si «Máximo» te da <strong>0</strong>, o el tope está agotado o tu BrltX en cartera es 0.</li>
+</ul>
+<figure class="grafico"><img src="../../imagenes/flujo-downgrade-80.png" alt="Downgrade con verificación del tope del 80%"><figcaption><span class="fig-n">Figura</span>Downgrade con verificación del tope del 80%</figcaption></figure>
+<h2>Cobro autónomo (el cobro libre, que se conserva)</h2>
+<h3>Sin elegir flujo</h3>
+<ol>
+<li>Escribe el importe de BrltX de tu cartera que quieres convertir (o pulsa
+«Todo» si el panel lo ofrece).</li>
+<li>Pulsa el botón de <strong>cobro</strong>: MetaMask firma y recibes <strong>BRLT real</strong> en tu
+wallet.</li>
+<li>Recuerda: también <strong>cuenta para el tope del 80%</strong>. Si lo intentas con un
+importe mayor al disponible, verás el aviso «tope_80_superado» y no se
+registra nada.</li>
+</ol>
+<blockquote>
+<p><strong>Bueno saber:</strong> puedes cobrar aunque el contrato esté “en pausa” y aunque tu
+ficha esté dada de baja (ventana de retiro de 90 días).</p>
+</blockquote>
+<h2>Mis flujos</h2>
 <h3>Estados y qué significan</h3>
 <table>
 <thead>
@@ -55,7 +247,7 @@ esté dada de baja (ventana de retiro de 90 días).</p>
 <tbody><tr>
 <td>activo</td>
 <td>El grifo corre</td>
-<td>nada, o cobrar cuando quieras</td>
+<td>nada, o descargar cuando quieras</td>
 </tr>
 <tr>
 <td>pausado</td>
@@ -65,7 +257,7 @@ esté dada de baja (ventana de retiro de 90 días).</p>
 <tr>
 <td>vencido</td>
 <td>Terminó su plazo</td>
-<td>pulsa <strong>«Liquidar»</strong> (lo acumulado pasa a cobrable)</td>
+<td>espera la liquidación on-chain (o pídela al admin); lo acumulado pasa a cobrable</td>
 </tr>
 <tr>
 <td>terminado</td>
@@ -73,8 +265,12 @@ esté dada de baja (ventana de retiro de 90 días).</p>
 <td>puedes cobrar lo restante</td>
 </tr>
 </tbody></table>
-<h2>Mi perfil y mis datos</h2>
-<h3>Tú decides</h3>
+<p>Cada fila muestra el estado, el acumulado y su botón <strong>«Descargar»</strong>. La tabla
+se refresca cada 5 segundos: si te crean un flujo nuevo, aparece al momento.</p>
+<h2>Mi ficha y mi perfil</h2>
+<h3>Mi ficha</h3>
+<p>Tu información laboral: proyecto, concepto, importe y periodo. Solo lectura.</p>
+<h3>Mi perfil (tú decides)</h3>
 <ul>
 <li><strong>Guardar perfil</strong>: tu email/teléfono.</li>
 <li><strong>Dar/Retirar consentimiento</strong>: siempre visible con fecha.</li>
@@ -84,13 +280,21 @@ anonimiza el nombre; tu wallet queda para retirar hasta 90 días tras la baja.</
 <h2>Preguntas frecuentes</h2>
 <h3>¿Y si no veo ningún flujo?</h3>
 <p>Aún no te crearon el “grifo”: pídeselo al administrador. Cuando lo haga, aparecerá
-aquí en el momento (la pantalla se refresca cada 5 segundos).</p>
+aquí al momento (la pantalla se refresca cada 5 segundos).</p>
 <h3>¿Y si la app está caída?</h3>
 <p>Los flujos viven en la cadena: tu BrltX y tus pagos <strong>no desaparecen</strong>. Cuando la
 app vuelva, todo se acumula como si nada.</p>
-<p><img src="../../imagenes/capturas/10-admin-sistema.png" alt="Sistema">
-<em>(Referencia del panel de configuración; los empleados no acceden a esta pantalla.)</em></p>
+<h3>¿Y si cambio de cuenta en MetaMask?</h3>
+<p>Verás el aviso «Wallet distinta a tu sesión». Vuelve a entrar con tu cuenta de
+siempre en <code>/entrar</code> y seguirás donde estabas.</p>
+<h3>¿Y si el tope está agotado?</h3>
+<p>Ya convierte del 80% de todo lo asignado. Si te queda BrltX pendiente de
+liquidar, tendrás que esperar a que el flujo se liquide on-chain — pero recuerda
+que el tope global no se reabre con lo nuevo: es acumulado de por cuenta.</p>
+<blockquote>
+<p><strong>Nota de pantallazos:</strong> las capturas de la Suite se regenerarán tras el
+rediseño (<code>npm run capturas</code>); la descripción de este manual refleja el portal
+vigente de 2026-11-17.</p>
+</blockquote>
 
 </section>
-<footer>Superfluid Brlt Streaming v2 · documentación v1 · 1 sección(es)</footer>
-</body></html>

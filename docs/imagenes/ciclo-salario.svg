@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 560" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Ciclo de vida de un salario en el tiempo">
+  <defs>
+    <marker id="cs" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+    </marker>
+    <linearGradient id="csb" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .dot{fill:#8b5cf6}
+    .dotG{fill:#34d399}
+    .day{font-size:13px;font-weight:700;fill:#a78bfa}
+    .lbl{font-size:13px;font-weight:600;fill:#e2e8f0}
+    .mut{font-size:11.5px;fill:#94a3b8}
+    .em{fill:#34d399}
+    .tl{stroke:url(#csb);stroke-width:5;fill:none;stroke-linecap:round}
+    .arrow{stroke:#8b5cf6;stroke-width:2;fill:none;marker-end:url(#cs)}
+  </style>
+  <rect class="bg" width="980" height="560"/>
+  <text x="490" y="42" text-anchor="middle" class="h1">Nómina de 6 días (10 BRLT): de grifo nuevo a BRLT en tu wallet</text>
+  <text x="490" y="65" text-anchor="middle" class="h2">Ciclo de vida de un salario en el portal del empleado</text>
+
+  <!-- línea de tiempo -->
+  <line class="tl" x1="80" y1="150" x2="900" y2="150"/>
+  <circle class="dot" cx="130" cy="150" r="10"/>
+  <circle class="dot" cx="330" cy="150" r="10"/>
+  <circle class="dot" cx="520" cy="150" r="10"/>
+  <circle class="dot" cx="710" cy="150" r="10"/>
+  <circle class="dotG" cx="880" cy="150" r="11"/>
+
+  <text x="130" y="130" text-anchor="middle" class="day">Día 0</text>
+  <text x="330" y="130" text-anchor="middle" class="day">Día 1</text>
+  <text x="520" y="130" text-anchor="middle" class="day">Día 3</text>
+  <text x="710" y="130" text-anchor="middle" class="day">Día 6</text>
+  <text x="880" y="130" text-anchor="middle" class="day" style="fill:#34d399">Siempre</text>
+
+  <!-- tarjeta día 0 -->
+  <rect class="card" x="45" y="185" width="175" height="130" rx="12"/>
+  <text x="132" y="212" text-anchor="middle" class="lbl">Flujo creado</text>
+  <text x="132" y="236" text-anchor="middle" class="mut">depositado: 10 BRLT</text>
+  <text x="132" y="256" text-anchor="middle" class="mut">tasa = importe ÷ días</text>
+  <text x="132" y="276" text-anchor="middle" class="mut">6, 15, 30 o 90 días</text>
+  <text x="132" y="300" text-anchor="middle" class="mut" style="fill:#a78bfa">el grifo empieza a correr</text>
+
+  <!-- tarjeta día 1 -->
+  <rect class="card" x="245" y="185" width="170" height="130" rx="12"/>
+  <text x="330" y="212" text-anchor="middle" class="lbl">Devengo vivo</text>
+  <text x="330" y="236" text-anchor="middle" class="mut">≈ 1,67 BRLT acumulado</text>
+  <text x="330" y="256" text-anchor="middle" class="mut">segundo a segundo</text>
+  <text x="330" y="276" text-anchor="middle" class="mut">lo ves subir en /suite</text>
+  <text x="330" y="300" text-anchor="middle" class="mut" style="fill:#a78bfa">aún no es cobrable</text>
+
+  <!-- tarjeta día 3 -->
+  <rect class="card" x="440" y="185" width="160" height="130" rx="12"/>
+  <text x="520" y="212" text-anchor="middle" class="lbl">Pausa y vuelta</text>
+  <text x="520" y="236" text-anchor="middle" class="mut">pausa → liquida tramo</text>
+  <text x="520" y="256" text-anchor="middle" class="mut">tasas congeladas</text>
+  <text x="520" y="276" text-anchor="middle" class="mut">reanudar → fin aplazado</text>
+  <text x="520" y="300" text-anchor="middle" class="mut" style="fill:#34d399">no pierdes devengo</text>
+
+  <!-- tarjeta día 6 -->
+  <rect class="card" x="625" y="185" width="170" height="130" rx="12"/>
+  <text x="710" y="212" text-anchor="middle" class="lbl">Vencido y liquidado</text>
+  <text x="710" y="236" text-anchor="middle" class="mut">flujo vencido</text>
+  <text x="710" y="256" text-anchor="middle" class="mut">liquidación (pública)</text>
+  <text x="710" y="276" text-anchor="middle" class="mut">acumulado → cobrable</text>
+  <text x="710" y="300" text-anchor="middle" class="mut">remanente → admin</text>
+
+  <!-- tarjeta siempre -->
+  <rect x="825" y="185" width="140" height="130" rx="12" fill="#0f2a24" stroke="#34d399" stroke-width="1.6"/>
+  <text x="895" y="212" text-anchor="middle" class="lbl" style="fill:#34d399">«Descargar»</text>
+  <text x="895" y="236" text-anchor="middle" class="mut">BrltX → BRLT real</text>
+  <text x="895" y="256" text-anchor="middle" class="mut">a tu wallet</text>
+  <text x="895" y="280" text-anchor="middle" class="mut" style="fill:#a78bfa">respetando el</text>
+  <text x="895" y="296" text-anchor="middle" class="mut" style="fill:#a78bfa">tope del 80%</text>
+
+  <!-- tope 80 -->
+  <rect class="card" x="130" y="360" width="720" height="130" rx="14" stroke="#8b5cf6" stroke-width="1.6"/>
+  <text x="490" y="390" text-anchor="middle" class="lbl">El tope del 80% acompaña todo el ciclo</text>
+  <text x="360" y="418" text-anchor="middle" class="mut">asignado total: <tspan class="lbl">10.000 BRLT</tspan></text>
+  <text x="360" y="440" text-anchor="middle" class="mut">tope 80%: <tspan class="lbl">8.000</tspan></text>
+  <text x="360" y="462" text-anchor="middle" class="mut">ya descargado: <tspan class="lbl">1.500</tspan></text>
+  <text x="660" y="418" text-anchor="middle" class="mut">disponible: <tspan class="lbl" style="fill:#34d399">6.500 BRLT</tspan></text>
+  <text x="660" y="440" text-anchor="middle" class="mut">«Máximo» = menor entre cartera BrltX</text>
+  <text x="660" y="462" text-anchor="middle" class="mut">y lo disponible del tope</text>
+
+  <!-- barra visual del tope -->
+  <rect x="160" y="410" width="80" height="60" fill="#8b5cf6" rx="4"/>
+  <rect x="160" y="410" width="12" height="60" fill="#34d399" rx="4"/>
+  <text x="200" y="486" text-anchor="middle" class="mut">descargado 15%</text>
+
+  <path class="arrow" d="M760,330 C790,350 830,360 860,372"/>
+  <text x="480" y="530" text-anchor="middle" class="mut">El devengo de un flujo activo solo pasa a cobrable cuando el flujo se liquida on-chain (al vencer).</text>
+  <text x="480" y="550" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/ciclo-salario.svg · actualizado 2026-11-17</text>
+</svg>

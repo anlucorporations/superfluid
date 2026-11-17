@@ -2,10 +2,33 @@
 
 ## ¿Dónde vive la aplicación?
 
-### Hoy (red de práctica)
-- **Contratos**: desplegados en la red de práctica Besu (chainId 81234), bloque
-  6.412.104. Nada que instalar: la app ya está conectada.
-- **App**: se puede correr en cualquier ordenador con Node 20+.
+### Hoy (revisión vigente, 17/11/2026)
+- **App**: servida desde **Google Cloud Run**, revisión `brltv2-00033-dmn`
+  (compilación `66b59218`, commit `aab670e`).
+  URL: **https://brltv2-szrmcf2hja-ew.a.run.app**
+- **Contratos**: en la red de práctica; el entorno desplegado habla con una red
+  de práctica tipo **Anvil (chainId 31337)** a través de un proxy RPC. El código
+  admite también Besu (chainId 81234) si se configura.
+- Nada que instalar para usarla: entra con MetaMask y listo.
+
+<!-- GENERAR_IMAGEN: despliegue-cloudrun.svg|png -->
+
+```mermaid
+flowchart LR
+    U["Tu navegador + MetaMask"] --> APP["Cloud Run<br/>brltv2-00033-dmn<br/>/entrar · /admin · /suite"]
+    APP -->|"/api/health"| H["db ok · rpc ok · chainId 31337"]
+    APP --> DB[("MongoDB")]
+    APP -->|"RPC proxy"| N["Red de práctica (Anvil 31337)"]
+```
+
+## ¿Qué trae esta revisión?
+
+### Novedades de la versión de 2026-11-17
+- **Portal del Empleado rediseñado** (`/suite`): cara visual propia (azul noche y
+  violeta) y secciones nuevas.
+- **Tope acumulado del 80%** al descargar (downgrade de flujos).
+- **Entrada única** `/entrar`: la wallet decide a qué portal ir, y la app
+  comprueba sin parar que sigues usando la misma cuenta.
 
 ## Cómo poner la aplicación en marcha
 
@@ -35,10 +58,17 @@ gcp/deploy.sh                 # sube a Google Cloud Run (requiere acceso)
 - `SIWE_DOMAIN` — **debe coincidir exactamente** con la dirección web usada.
 - `NEXT_PUBLIC_BRLT_ADDRESS` / `NEXT_PUBLIC_BRLTX_ADDRESS` — las direcciones de los contratos.
 - `ADMIN_BOOTSTRAP_WALLET` — la wallet que puede entrar como admin.
+- `NEXT_PUBLIC_CHAIN_ID` — la red a usar (31337 en el despliegue actual;
+  81234 para Besu).
 
 ## Healthcheck
 
 ### ¿Está vivo el sistema?
 Una visita a **`/api/health`** responde:
-- `200 ok` — base de datos y red funcionando.
-- `503 degradado` — algo no responde (la app no está muerta solo degradada).
+- `200 ok` — base de datos y red funcionando (la revisión vigente informa
+  chainId **31337**).
+- `503 degradado` — algo no responde (la app no está muerta, solo degradada).
+
+---
+
+*Actualizado 2026-11-17*
