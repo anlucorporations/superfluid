@@ -18,7 +18,7 @@ const NAV: { href: string; label: string; seccion: Seccion | null }[] = [
   { href: "/admin/sistema", label: "Sistema", seccion: "sistema" },
   { href: "/admin/jobs", label: "Jobs", seccion: "jobs" },
   { href: "/admin/auditoria", label: "Auditoría", seccion: "auditoria" },
-  { href: "/ayuda/", label: "Ayuda ↗", seccion: null },
+  { href: "/ayuda/index.html", label: "Ayuda ↗", seccion: null },
 ];
 
 function seccionDePathname(pathname: string): Seccion | null {

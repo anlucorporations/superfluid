@@ -478,7 +478,7 @@ export default function HomePage() {
                 </Link>
               </li>
               <li>
-                <a href="/ayuda/" className="hover:text-white">
+                <a href="/ayuda/index.html" className="hover:text-white">
                   Ayuda
                 </a>
               </li>
