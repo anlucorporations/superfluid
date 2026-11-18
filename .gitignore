@@ -39,3 +39,4 @@ web/gcp/env.yaml
 
 # Documento confidencial local: claves del Anvil dev
 RepoTecnico/ANVIL_CUENTAS_CLAVES.md
+__pycache__/
