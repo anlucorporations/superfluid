@@ -5,6 +5,7 @@ import type { TypedDataDomain, TypedDataField } from "ethers";
 import { apiFetch, errorMessage } from "@/lib/client/api";
 import { changeFlowReceiver } from "@/lib/client/contracts";
 import { connectWallet, ensureChain, shortAddress, signTypedData } from "@/lib/client/wallet";
+import { FirmaResumen } from "@/components/firma-resumen";
 import { formatBrlt, parseBrlt, toDecimalString } from "@/lib/rates";
 import {
   CONCEPTOS,
@@ -482,6 +483,10 @@ function WalletChangeForm({
   const [updated, setUpdated] = useState<EmployeeDto | null>(null);
   const [flows, setFlows] = useState<FlowDto[]>([]);
   const [migrated, setMigrated] = useState<string[]>([]);
+  const [authPreview, setAuthPreview] = useState<{
+    quien: "empleado" | "admin";
+    auth: WalletAuthorization;
+  } | null>(null);
 
   async function prepare() {
     setError(null);
@@ -514,6 +519,7 @@ function WalletChangeForm({
       if (account.toLowerCase() !== newWallet.toLowerCase()) {
         throw new Error("Selecciona en la wallet la dirección nueva del empleado.");
       }
+      setAuthPreview({ quien: "empleado", auth });
       setPhase("Firma la autorización como empleado…");
       const signature = await signTypedData(
         account,
@@ -541,6 +547,7 @@ function WalletChangeForm({
       if (account.toLowerCase() !== adminWallet.toLowerCase()) {
         throw new Error("Selecciona en la wallet la misma cuenta administradora de la sesión.");
       }
+      setAuthPreview({ quien: "admin", auth });
       setPhase("Firma el step-up como administrador…");
       const signature = await signTypedData(
         account,
@@ -680,6 +687,25 @@ function WalletChangeForm({
           </Button>
         </div>
 
+        {authPreview ? (
+          <FirmaResumen
+            titulo={
+              authPreview.quien === "empleado"
+                ? "Vas a firmar la autorización de tu wallet nueva"
+                : "Vas a firmar el paso doble como administrador"
+            }
+            filas={[
+              { label: "Wallet actual", value: shortAddress(String(authPreview.auth.employeeValue.oldWallet)) },
+              { label: "Wallet nueva", value: shortAddress(String(authPreview.auth.employeeValue.newWallet)) },
+              { label: "Código de operación", value: String(authPreview.auth.employeeValue.nonce) },
+            ]}
+            nota={
+              authPreview.quien === "empleado"
+                ? "Autorizas el cambio de wallet del empleado. La firma es gratuita y caduca."
+                : "Apruebas el cambio de wallet como segundo firmante. La firma es gratuita y caduca."
+            }
+          />
+        ) : null}
         {phase ? <Alert tone="info">{phase}</Alert> : null}
         {error ? <Alert tone="error">{error}</Alert> : null}
         <p className="text-xs text-slate-500">

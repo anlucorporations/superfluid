@@ -17,6 +17,7 @@ import {
 } from "@/lib/client/wallet";
 import { publicEnv } from "@/lib/env";
 import type { Role } from "@/lib/types";
+import { FirmaResumen } from "./firma-resumen";
 import { Alert, Button, Card, CardBody, CardHeader, Mono } from "./adminlte";
 
 interface NonceResponse {
@@ -40,6 +41,7 @@ export function AdminLoginFlow({
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [address, setAddress] = useState<string | null>(null);
+  const [nonceData, setNonceData] = useState<NonceResponse | null>(null);
   const [walletAvailable, setWalletAvailable] = useState(true);
   const [checking, setChecking] = useState(true);
 
@@ -75,7 +77,9 @@ export function AdminLoginFlow({
         method: "POST",
         body: JSON.stringify({ wallet: account, purpose: "admin" }),
       });
+      setNonceData(nonce);
       const signature = await signMessage(account, nonce.message);
+      setNonceData(null);
 
       setPhase("verificando");
       await apiFetch("/api/auth/verify", {
@@ -117,6 +121,17 @@ export function AdminLoginFlow({
             <p className="text-sm text-adminlte-muted">
               Wallet conectada: <Mono>{shortAddress(address)}</Mono>
             </p>
+          ) : null}
+
+          {nonceData ? (
+            <FirmaResumen
+              titulo="Vas a firmar tu acceso al panel de administración"
+              filas={[
+                { label: "Wallet", value: address ?? "" },
+                { label: "Red", value: String(publicEnv.chainId) },
+                { label: "Válido hasta", value: new Date(nonceData.expiresAt).toLocaleTimeString("es-ES") },
+              ]}
+            />
           ) : null}
 
           {error ? <Alert tone="error">{error}</Alert> : null}

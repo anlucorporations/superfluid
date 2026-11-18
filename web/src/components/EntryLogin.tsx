@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { apiFetch, errorMessage } from "@/lib/client/api";
 import { connectWallet, ensureChain, hasWallet, shortAddress, signMessage } from "@/lib/client/wallet";
 import { publicEnv } from "@/lib/env";
+import { FirmaResumen } from "./firma-resumen";
 import { Alert, Button, Card, CardBody, CardHeader, Mono } from "./adminlte";
 
 type Phase = "idle" | "conectando" | "consultando" | "firmando" | "verificando" | "redirigiendo";
@@ -38,6 +39,8 @@ export function EntryLogin() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [address, setAddress] = useState<string | null>(null);
+  const [nonceData, setNonceData] = useState<NonceResponse | null>(null);
+  const [rolResumen, setRolResumen] = useState<"admin" | "suite">("suite");
 
   async function entrar() {
     setError(null);
@@ -60,13 +63,16 @@ export function EntryLogin() {
       }
 
       // 2) Una firma SIWE con el propósito de la suite destino.
+      setRolResumen(role === "admin" ? "admin" : "suite");
       const purpose = role === "admin" ? "admin" : "suite";
       setPhase("firmando");
       const nonce = await apiFetch<NonceResponse>("/api/auth/nonce", {
         method: "POST",
         body: JSON.stringify({ wallet: account, purpose }),
       });
+      setNonceData(nonce);
       const signature = await signMessage(account, nonce.message);
+      setNonceData(null);
 
       setPhase("verificando");
       await apiFetch("/api/auth/verify", {
@@ -111,6 +117,21 @@ export function EntryLogin() {
             <p className="text-sm text-adminlte-muted">
               Wallet: <Mono>{shortAddress(address)}</Mono>
             </p>
+          ) : null}
+
+          {nonceData ? (
+            <FirmaResumen
+              titulo={
+                rolResumen === "admin"
+                  ? "Vas a firmar tu acceso al panel de administración"
+                  : "Vas a firmar tu acceso a tu Portal del Empleado"
+              }
+              filas={[
+                { label: "Wallet", value: address ?? "" },
+                { label: "Red", value: String(publicEnv.chainId) },
+                { label: "Válido hasta", value: new Date(nonceData.expiresAt).toLocaleTimeString("es-ES") },
+              ]}
+            />
           ) : null}
 
           {error ? <Alert tone="error">{error}</Alert> : null}

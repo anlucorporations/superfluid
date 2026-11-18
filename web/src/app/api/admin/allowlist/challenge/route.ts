@@ -19,7 +19,9 @@ export const POST = handle(async (req) => {
     address: body.wallet,
     nonce,
     statement:
-      "Confirmo esta wallet como administradora de Superfluid Brlt Streaming v2",
+      // Clear signing: la wallet candidata entiende que solo confirma su rol,
+      // sin mover fondos ni autorizar gastos (la firma es gratuita).
+      "Confirmar esta wallet como administradora de Superfluid Brlt. Esta firma no mueve fondos ni autoriza gastos.",
   });
 
   return ok({ message, nonce, expiresAt: expiresAt.toISOString() });

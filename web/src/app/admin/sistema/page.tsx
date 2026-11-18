@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch, errorMessage } from "@/lib/client/api";
 import { connectWallet, shortAddress, signMessage } from "@/lib/client/wallet";
+import { FirmaResumen } from "@/components/firma-resumen";
 import type { AllowlistDto } from "@/lib/repositories/allowlist";
 import type { SystemConfigDto } from "@/lib/repositories/system";
 import {
@@ -225,6 +226,8 @@ function AllowlistCard({
   const [rol, setRol] = useState<"super_admin" | "admin" | "operador">("admin");
   const [phase, setPhase] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [challenge, setChallenge] = useState<{ message: string } | null>(null);
+  const [challengeWallet, setChallengeWallet] = useState("");
 
   async function add(event: React.FormEvent) {
     event.preventDefault();
@@ -237,6 +240,8 @@ function AllowlistCard({
         body: JSON.stringify({ wallet }),
       });
 
+      setChallenge(challenge);
+      setChallengeWallet(wallet);
       setPhase("Firma el mensaje con la wallet nueva…");
       const account = await connectWallet();
       if (account.toLowerCase() !== wallet.toLowerCase()) {
@@ -251,14 +256,17 @@ function AllowlistCard({
       });
 
       setWallet("");
+      setChallenge(null);
       setPhase(null);
       await onReload();
       onNotice("Wallet añadida a la allowlist.");
     } catch (err) {
       onError(errorMessage(err));
+      setChallenge(null);
       setPhase(null);
     } finally {
       setBusy(false);
+      setChallenge(null);
     }
   }
 
@@ -363,6 +371,16 @@ function AllowlistCard({
           </div>
         </form>
 
+        {challenge && challengeWallet ? (
+          <FirmaResumen
+            titulo="Vas a firmar el alta de una wallet como administradora"
+            filas={[
+              { label: "Wallet nueva", value: shortAddress(challengeWallet) },
+              { label: "Rol", value: rol },
+              { label: "Mensaje", value: challenge.message.split("\n")[2] ?? "" },
+            ]}
+          />
+        ) : null}
         {phase ? <Alert tone="info">{phase}</Alert> : null}
       </CardBody>
     </Card>

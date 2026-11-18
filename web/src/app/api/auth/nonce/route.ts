@@ -6,8 +6,11 @@ import { nonceRequestSchema } from "@/lib/validation";
 
 const STATEMENTS = {
   // EIP-4361 exige ASCII imprimible en `statement` (sin acentos).
-  admin: "Acceso al panel de administracion de Superfluid Brlt Streaming v2",
-  suite: "Acceso a la Suite del Empleado de Superfluid Brlt Streaming v2",
+  // Clear signing (regla del proyecto): que hace, para que, y que NO hace la firma.
+  admin:
+    "Acceder al panel de administracion de Superfluid Brlt. Esta firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza gastos.",
+  suite:
+    "Acceder a tu Portal del Empleado de Superfluid Brlt. Esta firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza gastos.",
 } as const;
 
 /**
