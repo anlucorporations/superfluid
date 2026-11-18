@@ -14,16 +14,17 @@ La plataforma consta de tres piezas:
   (`/suite/*`, identidad visual propia), con APIs REST en `web/src/app/api/**`.
 - **Infraestructura**: red EVM (Besu 81234 por defecto; el despliegue actual opera contra
   Anvil 31337 vía proxy, ver `04-despliegue.md`), MongoDB (estado administrativo
-  y reconciliación) y Cloud Run como destino de despliegue (H7).
+  y reconciliación) y Cloud Run como destino de despliegue (revisión vigente
+  `brltv2-00041-87c`, 2026-11-18).
 
 ```text
-Navegador (MetaMask) ──firma──► Besu 81234 (Brlt/BrltX)
-      │  HTTP (cookies SIWE)
+Navegador (MetaMask) ──firma──► Anvil/Besu (Brlt/BrltX, chainId 31337 en el entorno actual)
+      │  HTTP (cookies SIWE) + mensajes SIWE/EIP-712 explicados (clear signing)
       ▼
-Next.js (Cloud Run) ──eth_call──► Besu (lectura/reconciliación)
+Next.js (Cloud Run) ──eth_call──► Red EVM (lectura/reconciliación)
       │  MongoDB
       ▼
-Estado administrativo (empleados, flujos, jobs, auditoría)
+Estado administrativo (empleados, flujos, jobs, auditoría) + scripts operativos (scripts/*.py)
 ```
 
 #### Decisiones de plataforma
@@ -38,7 +39,10 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
 - El **tope de downgrade del 80%** es una regla de producto aplicada por el backend
   (`web/src/lib/downgrade-limit.ts`), no por el contrato: el acumulado cobrado no puede
   superar el 80% del total asignado a la cuenta; se exige en `/api/suite/actions` antes
-  de auditar (`422 tope_80_superado`).
+  de auditar (`422 tope_80_superado`). El acumulado compara `actorWallet` **sin
+  distinción de mayúsculas/minúsculas** (regex case-insensitive,
+  `downgrade-limit.ts:43-49`) — bug corregido el 2026-11-18 tras la simulación
+  operativa, que lo destapó (cobros registrados con wallet checksummed no contaban).
 - La **entrada es única por wallet**: `/entrar` conecta la wallet, consulta
   `POST /api/auth/role` y redirige admin → `/admin`, empleado → `/suite`, sin alta →
   error (`web/src/components/EntryLogin.tsx`). En `/suite` la cuenta activa de la wallet
@@ -48,9 +52,15 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
 ### Stack Web3
 #### Red y contratos
 
-- Red Besu con chainId **81234** (`web/src/lib/rpc.ts:3`), RPC de práctica
+- Código base: red Besu con chainId **81234** (`web/src/lib/rpc.ts:3`), RPC de práctica
   `https://besu.alumnos.codecrypto.academy`; gas price 1.000 wei.
-- Despliegue real en el bloque **6.412.104** (ver `sc/deployments/81234.json`).
+- Despliegue real de los contratos en Anvil compartido (chainId **31337**, bloque 56395,
+  ver `RepoTecnico/INFORME_ENTREGA_FINAL.md` §1.3); el despliegue Besu del bloque
+  6.412.104 es el histórico de práctica (`sc/deployments/81234.json`).
+- **Pendiente de decisión (no cambiar por ahora):** SIWE firma con `chainId 81234`
+  (`web/src/lib/siwe.ts:6`) mientras la app/red opera con 31337; ambos lados validan
+  81234 y funciona, pero la alineación queda como decisión del usuario (recomendación
+  nº 2 de `INFORME_ENTREGA_FINAL.md`). No se propone cambio inmediato.
 - ABIs mínimas compartidas cliente/servidor en `web/src/lib/contracts.ts`
   (funciones + eventos de BrltX para extraer `flowId` y verificar recibos).
 
@@ -66,6 +76,30 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
   (`web/src/lib/client/wallet.ts`).
 - Todas las escrituras envían `gasLimit` fijo por operación (hardening H6: Besu
   subestima `eth_estimateGas` con accesos en frío).
+- **Clear signing** (commit `7da4a76`): todo punto de firma muestra un resumen en
+  lenguaje humano ANTES de firmar — sub-sección «Clear signing» más abajo.
+
+### Clear signing (mensajes personalizados de la billetera)
+#### Componente y plantillas
+
+Inventario completo de los 13 puntos de firma: `RepoTecnico/CLEAR_SIGNING.md`
+(4 SIWE `[AUTH]`, 3 EIP-712 `[PERM]`, 6 llamadas on-chain `[PERM]/[XFER]/[DEFI]/[GOV]`;
+sin `eth_sign` en ningún flujo).
+
+- **SIWE con statements de propósito** (`web/src/app/api/auth/nonce/route.ts:8-13`):
+  cada propósito lleva su texto, p. ej. «Acceder a tu Portal del Empleado de Superfluid
+  Brlt. Esta firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza
+  gastos.» (ASCII sin acentos por requisito EIP-4361). El alta de admin en la allowlist
+  usa su propio statement en `/api/admin/allowlist/challenge` («Confirmar esta wallet
+  como administradora…»).
+- **Componente `FirmaResumen`** (`web/src/components/firma-resumen.tsx:9-36`): ficha
+  reutilizable (título + filas qué/quién/vigencia + nota por defecto «La firma es
+  gratuita: no mueve fondos ni autoriza gastos.») usada en los 4 flujos de firma:
+  entrada única (`EntryLogin.tsx:123`), login admin (`AdminLoginFlow.tsx`), login
+  empleado (`LoginFlow.tsx`) y páginas admin de empleados/sistema (EIP-712 de cambio de
+  wallet y alta en allowlist, `web/src/app/admin/empleados/page.tsx`).
+- Las transacciones on-chain (approve, flujos, cobros) acompañan la petición con
+  lenguaje humano en `/admin` y `/suite` (tabla de textos en `CLEAR_SIGNING.md` §2.4).
 
 ## Tecnología del backend (App Router)
 
@@ -120,6 +154,36 @@ Estado administrativo (empleados, flujos, jobs, auditoría)
   + poll de 10 s (`web/src/app/suite/page.tsx:117-141`); si la cuenta activa diverge de
   la sesión, se exige revalidar en `/entrar`.
 
+## Tecnología operativa (datos y pruebas)
+
+### Scripts operativos (Python + cast)
+#### Inyección y simulación
+
+- `scripts/inyectar_datos_operativos.py`: inyección base aprobada (allowlist #0/#1,
+  proyecto `Nomina ANLU`, empleados #2..#4, mint con la cuenta owner). Seguridad:
+  `MONGODB_URI` solo por entorno, mnemónico por `ANVIL_MNEMONIC` o secreto
+  `--leer-secreto` (nunca se imprime), confirmación interactiva, `--dry-run` sin
+  escritura y log sin secretos en `RepoTecnico/BaseOperaciones/inyeccion_datos.log`.
+- `scripts/simular_actividades.py` (commit `83f54e4`): reinicio controlado de la BD con
+  respaldo JSON previo (`RepoTecnico/BaseOperaciones/respaldo_*/`) + reinyección base
+  (fase `reset`) + actividades operativas (fase `actividades`): altas de empleados de
+  reserva #5/#6, proyecto, flujos on-chain con pausa/cobro/reanudación, terminación y
+  flujos programados. Respeta la regla de no reiniciar el Anvil ni redesplegar
+  contratos; registro vivo en `RepoTecnico/BaseOperaciones/estado_inyeccion.md`.
+
+### Batería de pruebas (RepoPrueba/)
+#### Arquitectura de la batería
+
+- Commit `fb59f40` + `1d5aeb6`: 41 REQ EARS (`REQ-WALLET-01..41`), 8 features Gherkin
+  con 125 escenarios, matriz de trazabilidad bidireccional, runner Playwright con
+  **aprobación bloqueante** del usuario antes de ejecutar y wallet-mock EIP-1193 para
+  el modo simulado (sin extensiones reales).
+- Primera ejecución (2026-11-18): 3 PASS · 0 FAIL · 54 BLOCKED · 43 NOT_RUN · 25 N/A —
+  informe en `RepoPrueba/05_informe_anomalias.md` (0 anomalías de la app; faltas de
+  material de wallets reales y de intérprete de pasos) y estado vivo en
+  `RepoPrueba/06_estado_ejecucion.md`.
+
 ---
 
-*Actualizado 2026-11-17 · commit aab670e*
+*Actualizado 2026-11-18 · análisis completo v2 (clear signing, batería de pruebas,
+simulación operativa y fix del tope 80%; commit `83f54e4` · despliegue `brltv2-00041-87c`)*

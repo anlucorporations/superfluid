@@ -33,13 +33,21 @@ Solo un navegador (Chrome/Edge/Firefox) y **MetaMask** instalado en el navegador
 ## ¿Qué cambió con el Portal del Empleado nuevo?
 
 ### Sin instalar nada nuevo
-- El rediseño del Portal (`/suite`), el tope del 80% y la validación continua de
-  la wallet usan lo que ya había: **BigInt nativo** y la API de MetaMask.
+- El rediseño del Portal (`/suite`), el tope del 80%, la validación continua de
+  la wallet, la **firma clara** (mensajes SIWE + ficha «FirmaResumen») y el
+  reinicio de datos usan lo que ya había: **BigInt nativo** y la API de MetaMask.
 - La nueva cara visual (azul noche `#0d1425`, tarjeta `#131c30`, cabecera violeta
   `#1b1140`) son **colores de configuración** de Tailwind (tokens `empleado.*`),
   no un paquete nuevo.
 - Resultado: **no se añadió ninguna dependencia nueva** de producción ni de
   desarrollo (ver [manual técnico de dependencias](../../../RepoTecnico/Manuales/02-Dependencias/02-dependencias.md)).
+
+### Herramientas del equipo de datos y pruebas (solo técnica)
+| Herramienta | Para qué |
+|---|---|
+| Python 3 + `pymongo` | Los guiones de inyección y simulación de datos (`scripts/*.py`); sin librerías pip extra. |
+| `cast` (viene con Foundry) | Firma y envía las transacciones de mint y flujos de esos guiones. |
+| Playwright | También es el motor de la **batería de pruebas Web3** (`RepoPrueba/`): wallets simuladas EIP-1193 y ejecución con aprobación previa. |
 
 ## Cómo revisar que todo está en orden
 
@@ -54,4 +62,4 @@ Si todos acaban con “**TODO OK**”, el sistema está sano.
 
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18*

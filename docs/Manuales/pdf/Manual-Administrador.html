@@ -73,7 +73,7 @@
   <div class="resumen"><ul><li>Manual del Admin (guía operativa)</li></ul></div>
   <div class="pie">
     <span>Superfluid Brlt Streaming v2 · <b>documentación literal</b></span>
-    <span>Actualizado <b>2026-11-17</b> · 1 fuente(s) .md</span>
+    <span>Actualizado <b>2026-11-18</b> · 1 fuente(s) .md</span>
   </div>
 </div>
 
@@ -81,7 +81,7 @@
   <h2>Índice de contenidos</h2>
   <div class="linea"></div>
   <ol>
-<li><span class="t">Manual del Admin (guía operativa)</span><span class="s">Empezar en 5 minutos · Novedad: Portal del Empleado nuevo y tope del 80% · Flujos día a día · Programados y lotes · …</span><span class="p">p. 2</span></li>
+<li><span class="t">Manual del Admin (guía operativa)</span><span class="s">Empezar en 5 minutos · Novedad: Portal del Empleado nuevo y tope del 80% · Nota: reinicio de datos y plantilla actual (2026-11-18) · Flujos día a día · …</span><span class="p">p. 2</span></li>
   </ol>
   <p class="nota">Los números de página corresponden a la numeración impresa en el pie de página.</p>
 </nav>
@@ -135,6 +135,76 @@ el empleado te consulta por un cobro fallido, pregúntale por el aviso
 <li>La verdad del dinero sigue siendo el <strong>contrato</strong>: la app solo aplica la regla
 al registrar cobros.</li>
 </ul>
+<h3>El contador «ya descargado», corregido (2026-11-18)</h3>
+<ul>
+<li>El acumulado que ve el empleado se reconstruye de la <strong>Auditoría</strong>. La wallet
+del actor queda a veces escrita con distinta capitalización (formato
+«checksum»); la comparación ahora <strong>ignora mayúsculas/minúsculas</strong>, así que
+ningún cobro verificado se pierde del recuento.</li>
+<li>El bug lo destapó la simulación operativa de ese día y la corrección ya está
+<strong>desplegada</strong> en la revisión <code>brltv2-00041-87c</code>. No tienes que hacer nada:
+los cuatro números del panel del empleado ya son fiables.</li>
+<li>En la <strong>vista admin</strong> no cambia nada: sigues viendo en Auditoría los cobros
+verificados (quién, cuánto, cuándo y la transacción); la suma de ellos es lo
+que alimenta «Ya descargado».</li>
+</ul>
+<h2>Nota: reinicio de datos y plantilla actual (2026-11-18)</h2>
+<h3>Qué pasó</h3>
+<p>El 2026-11-18 se ejecutó el guion operativo <code>scripts/simular_actividades.py</code>,
+aprobado por el responsable:</p>
+<ol>
+<li><strong>Respaldo previo</strong> de toda la base (11 colecciones) en JSON:
+<code>RepoTecnico/BaseOperaciones/respaldo_20261118T173426Z/</code>.</li>
+<li><strong>Reinicio de la base</strong> (los contratos y el Anvil quedaron intactos, como
+manda la regla) y <strong>reinyección base</strong> (2 admins, proyecto <code>Nomina ANLU</code>,
+empleados #2..#4).</li>
+<li><strong>Simulación de uso real</strong>: altas de empleados nuevos, proyecto de
+mantenimiento, flujos on-chain, pausas → cobros → reanudaciones, terminación
+y flujos programados.</li>
+<li><strong>Corrección registrada</strong>: los flujos «fantasma» <strong>#3..#11</strong> de eras previas
+quedaron <strong>terminados</strong> con <code>deleteFlow</code> (9 terminaciones en auditoría con la
+marca <code>via: correccion-simulacion</code>). El BRLT que ya habían acreditado sigue
+en el BrltX de sus wallets.</li>
+</ol>
+<h3>Cómo está la plataforma hoy</h3>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Empleados activos</strong></td>
+<td><strong>5</strong>: Uno, Dos y Tres (100 BRLT/30 d) · Cuatro (mantenimiento, 50/15 d) · Cinco (proyecto_mvp, 80/6 d).</td>
+</tr>
+<tr>
+<td><strong>Proyectos</strong></td>
+<td><strong>2</strong>: <code>Nomina ANLU</code> y <code>Mantenimiento Infraestructura</code>.</td>
+</tr>
+<tr>
+<td><strong>Flujos vivos</strong></td>
+<td><strong>#12</strong> (300/30 d) y <strong>#13</strong> (600/6 d) de nómina + <strong>#15</strong> (360/6 d) de mantenimiento, activos; <strong>#14</strong> terminado.</td>
+</tr>
+<tr>
+<td><strong>Programados</strong></td>
+<td><strong>2</strong> en estado «próximo» (los ejecutas cuando toque).</td>
+</tr>
+<tr>
+<td><strong>Ejemplo auditado</strong></td>
+<td>Flujo #13: pausa acredita 0,125 BRLT → cobro del empleado Dos → reanudación, todo dentro del tope 80%.</td>
+</tr>
+<tr>
+<td><strong>Registro vivo</strong></td>
+<td><code>RepoTecnico/BaseOperaciones/estado_inyeccion.md</code> (y respaldos en <code>respaldo_*/</code>).</td>
+</tr>
+</tbody></table>
+<figure class="grafico"><img src="../../imagenes/estado-datos-actual.png" alt="estado-datos-actual"><figcaption><span class="fig-n">Figura</span>estado-datos-actual</figcaption></figure>
+<blockquote>
+<p><strong>Ojo con los programados</strong>: hay 2 nóminas «próximas» esperando. Cuando llegue
+su día, revísalas en <strong>Flujos → Programados</strong> y decide: <strong>«Ejecutar»</strong> (firmas
+la creación) o <strong>«Cancelar»</strong>.</p>
+</blockquote>
 <h2>Flujos día a día</h2>
 <h3>Operar un flujo</h3>
 <ul>
@@ -182,6 +252,11 @@ antes de añadir otro (sin sustituir pagos por accidente).</li>
 <h3>Buenas prácticas</h3>
 <ul>
 <li>La wallet admin <strong>nunca</strong> se guarda en la web: solo firmas en tu navegador.</li>
+<li>Desde 2026-11-18, <strong>toda firma llega explicada</strong>: el mensaje de sesión (SIWE)
+dice su propósito («Acceder al panel de administracion… No mueve fondos ni
+autoriza gastos») y la pantalla muestra la ficha «FirmaResumen» antes de pedir
+tu firma. En el alta de admins la wallet candidata firma otro mensaje propio:
+«Confirmar esta wallet como administradora…».</li>
 <li>Las sesiones duran <strong>2 horas</strong>; revisa <strong>Auditoría</strong> para ver quién hizo qué
 (incluidos los cobros de empleados que pasaron el tope del 80%).</li>
 <li>Si cambias la wallet de un empleado, la app te lista sus flujos para

@@ -37,7 +37,9 @@
 <main>
   <nav>
     <a class="seccion" href="#empezar">Empezar en 5 minutos</a>
+    <a href="#novedades">Novedades (2026-11-18)</a>
     <a href="#empleado">Empleado: tu portal</a>
+    <a href="#firma">Firma clara: qué verás antes de firmar</a>
     <a href="#tope">Cobro: tope del 80%</a>
     <a href="#admin">Admin: crear flujos</a>
     <a href="#estados">Estados de un flujo</a>
@@ -57,11 +59,33 @@
          <b>Portal del Empleado</b> (<code>/suite</code>). Si no, verás «pide alta
          al administrador».
          <b>Admin:</b> entra igual por <code>/entrar</code> y acabarás en el panel
-         <code>/admin</code>.</p>
+         <code>/admin</code>. En cualquier entrada verás primero una <b>ficha de
+         firma explicada</b>: <a href="#firma">la firma es clara, nunca a ciegas</a>.</p>
       <img src="01-portada-app.png" alt="Portada de la aplicación">
       <figcaption>Portada pública de la aplicación.</figcaption>
       <img src="onboarding-empleado.png" alt="Del alta a tu primera descarga">
       <figcaption>De la puerta <code>/entrar</code> a tu primera descarga en el portal.</figcaption>
+    </section>
+
+    <section id="novedades">
+      <h2>Novedades (2026-11-18)</h2>
+      <ul style="color:#334155;font-size:14px;line-height:1.6">
+        <li><b>Firma clara</b> en los 13 puntos de firma: mensaje explicado en la
+            wallet y ficha <b>«FirmaResumen»</b> en pantalla —
+            <a href="#firma">ver detalle</a>.</li>
+        <li><b>Tope del 80% corregido</b>: el contador «ya descargado» compara la
+            wallet <b>sin mayúsculas/minúsculas</b>, así ningún cobro verificado
+            se pierde del recuento — <a href="#tope">ver detalle</a>.</li>
+        <li><b>Datos reiniciados y simulados</b>: hoy hay <b>5 empleados activos</b>
+            en <b>2 proyectos</b>, con los flujos #12, #13 y #15 activos (el #14
+            terminado) — <a href="#admin">cómo está la plataforma</a>.</li>
+        <li><b>Batería de pruebas Web3</b>: 41 requisitos EARS, 8 features y
+            125 escenarios; la primera ejecución terminó con <b>0 fallos de la
+            app</b>.</li>
+        <li><b>Despliegue vigente</b>: revisión Cloud Run
+            <code>brltv2-00041-87c</code> (commit <code>83f54e4</code>). No tienes
+            que hacer nada para disfrutar de todo esto.</li>
+      </ul>
     </section>
 
     <section id="empleado">
@@ -97,6 +121,33 @@
       <figcaption>Validación continua: cuenta de MetaMask ≠ sesión → aviso y revalidación en <code>/entrar</code>.</figcaption>
     </section>
 
+    <section id="firma">
+      <h2>Firma clara: qué verás antes de firmar</h2>
+      <p>Desde el 2026-11-18 <b>ninguna firma es a ciegas</b>. Antes de que la
+         wallet te pida firmar, la pantalla muestra una ficha de firma
+         (<b>«FirmaResumen»</b>) con el título de la operación, qué haces, con qué
+         wallet y la nota por defecto:</p>
+      <p style="text-align:center;color:#312e81;font-size:15px">
+         <b>«La firma es gratuita: no mueve fondos ni autoriza gastos»</b></p>
+      <p>Y en la wallet el mensaje dice para qué es (p. ej. en tu entrada al
+         portal): <i>«Acceder a tu Portal del Empleado de Superfluid Brlt. Esta
+         firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza
+         gastos»</i>. La petición <b>caduca a los 5 minutos</b>: si pasa, vuelve a
+         pedirla y se genera una nueva.</p>
+      <img src="firma-clara-empleado.png" alt="La firma clara en el Portal del Empleado">
+      <figcaption>Firma clara en el portal: ficha en pantalla + mensaje explicado en la wallet.</figcaption>
+      <h3>Las firmas que sí tocan dinero</h3>
+      <p>Cuando la operación mueve fondos (crear flujos, cobrar, pausar…), la
+         pantalla te dice el <b>impacto real</b> antes de firmar: «Quemas X BrltX
+         y recibes X BRLT», «Descargas X BRLT del flujo #N. Tope del 80%:
+         disponible Y BRLT». La app ni siquiera usa el tipo de firma ciego
+         (<code>eth_sign</code>) que las wallets marcan como peligroso; las
+         transacciones on-chain van acompañadas de lenguaje humano.</p>
+      <img src="firma-clara.png" alt="Los 4 flujos de firma con ficha explicada">
+      <figcaption>Los 4 flujos de firma (entrada única, login admin, login empleado y
+      páginas admin) con ficha <b>«FirmaResumen»</b> antes de pedir la firma.</figcaption>
+    </section>
+
     <section id="tope">
       <h2>Cobro: downgrade de flujos con tope del 80%</h2>
       <p><b>Regla de la casa:</b> en total solo puedes convertir en BRLT el
@@ -114,6 +165,13 @@
       </table>
       <p>Ejemplo: asignado <b>10.000</b> → tope <b>8.000</b> → ya descargado
          <b>1.500</b> → disponible <b>6.500</b>.</p>
+      <h3>El contador «Ya descargado», corregido (2026-11-18)</h3>
+      <p>Lo que ya has descargado se reconstruye de la <b>auditoría</b> de cobros
+         verificados contra la cadena. Hasta hoy, los cobros registrados con la
+         wallet escrita en otro formato (mayúsculas/minúsculas distintas) no
+         contaban; la comparación ahora <b>ignora mayúsculas/minúsculas</b>, así
+         que los cuatro números del panel son fiables. Ya está desplegado en la
+         revisión <code>brltv2-00041-87c</code>: no tienes que hacer nada.</p>
       <h3>Cómo descargar, paso a paso</h3>
       <p>1) Elige el <b>flujo</b> en el selector (activos, pausados o terminados) ·
          2) Escribe el importe o pulsa <b>«Máximo»</b> (te propone lo menor entre tu
@@ -145,7 +203,9 @@
         <li>Tu empleado puede convertir en BRLT, <b>acumulativamente</b>, el
             <b>80% de todo lo asignado</b> a su cuenta (todos sus flujos, vivos o
             terminados); lo ya cobrado se reconstruye de la <b>auditoría</b> de
-            cobros verificados contra la cadena.</li>
+            cobros verificados contra la cadena. La comparación de la wallet del
+            actor es <b>sin mayúsculas/minúsculas</b> desde el 2026-11-18: ningún
+            cobro verificado se pierde del recuento.</li>
         <li>Si un intento supera el tope, el servidor lo rechaza con el código
             <code>tope_80_superado</code> y <b>no lo registra ni lo cobra</b>.</li>
         <li>En <b>Auditoría</b> verás los cobros que <b>sí</b> pasaron el tope
@@ -154,6 +214,19 @@
       </ul>
       <img src="tope-80-admin.png" alt="Tope del 80% desde el admin">
       <figcaption>Disponible del empleado = tope (80% de lo asignado) − ya descargado (según auditoría).</figcaption>
+      <h3>La plataforma hoy (tras la simulación del 2026-11-18)</h3>
+      <p>La base se reinició (con respaldo previo y contratos intactos) y se volvió
+         a llenar con uso real simulado. Estado vigente:</p>
+      <table>
+        <tr><th>Dato</th><th>Valor</th></tr>
+        <tr><td>Empleados activos</td><td><b>5</b>: Uno, Dos y Tres (100 BRLT/30 d) · Cuatro (mantenimiento, 50/15 d) · Cinco (proyecto_mvp, 80/6 d)</td></tr>
+        <tr><td>Proyectos</td><td><b>2</b>: <code>Nomina ANLU</code> y <code>Mantenimiento Infraestructura</code></td></tr>
+        <tr><td>Flujos vivos</td><td><b>#12</b> (300/30 d) y <b>#13</b> (600/6 d) de nómina + <b>#15</b> (360/6 d) de mantenimiento, activos · <b>#14</b> terminado</td></tr>
+        <tr><td>Programados</td><td><b>2</b> en estado «próximo» (los ejecutas cuando toque)</td></tr>
+        <tr><td>Ejemplo auditado</td><td>Flujo #13: pausa acredita 0,125 BRLT → cobro del empleado Dos → reanudación, todo dentro del tope 80%</td></tr>
+      </table>
+      <img src="estado-datos-actual.png" alt="Estado actual de la plataforma tras la simulación">
+      <figcaption>Reinicio de datos y plantilla vigente (5 empleados · 2 proyectos) tras la simulación del 2026-11-18.</figcaption>
     </section>
 
     <section id="estados">
@@ -168,6 +241,15 @@
       <p>Al pausar, el tramo devengado se liquida y el tiempo restante se aplaza:
       <b>el empleado no pierde devengo</b>. Con la pausa activa, el cobro sigue
       disponible (el contrato lo permite incluso pausado).</p>
+      <h3>Ejemplo real, paso a paso</h3>
+      <p>Del 2026-11-18, el flujo <b>#13</b> del empleado Dos (600 BRLT a 6 días):
+         pausa → el contrato acredita el tramo devengado (0,125 BRLT) →
+         <b>cobro</b> del empleado, auditado y dentro del tope 80% →
+         <b>reanudación</b> con la tasa intacta y el tiempo restante aplazado, sin
+         perder devengo. El mismo día se pausó/cobró/reanudó el #12 y se terminó
+         el #14 (pagó lo devengado; el resto volvió al admin).</p>
+      <img src="historial-simulacion.png" alt="Ejemplo real del flujo #13: pausa, cobro y reanudación">
+      <figcaption>El flujo #13 de la simulación operativa: creación → pausa → cobro auditado (dentro del tope 80%) → reanudación.</figcaption>
     </section>
 
     <section id="cambios">
@@ -212,7 +294,7 @@
   </div>
 </main>
 <p style="text-align:center;color:#94a3b8;font-size:12px;padding:12px">
-  Generado por el equipo de manuales (Fase 5) · <a href="/">volver a la aplicación</a>
+  Generado por el equipo de manuales (Fase 5) · revisión vigente <code>brltv2-00041-87c</code> (2026-11-18) · <a href="/">volver a la aplicación</a>
 </p>
 </body>
 </html>

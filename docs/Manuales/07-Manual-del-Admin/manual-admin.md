@@ -57,6 +57,71 @@ flowchart LR
 - La verdad del dinero sigue siendo el **contrato**: la app solo aplica la regla
   al registrar cobros.
 
+### El contador «ya descargado», corregido (2026-11-18)
+- El acumulado que ve el empleado se reconstruye de la **Auditoría**. La wallet
+  del actor queda a veces escrita con distinta capitalización (formato
+  «checksum»); la comparación ahora **ignora mayúsculas/minúsculas**, así que
+  ningún cobro verificado se pierde del recuento.
+- El bug lo destapó la simulación operativa de ese día y la corrección ya está
+  **desplegada** en la revisión `brltv2-00041-87c`. No tienes que hacer nada:
+  los cuatro números del panel del empleado ya son fiables.
+- En la **vista admin** no cambia nada: sigues viendo en Auditoría los cobros
+  verificados (quién, cuánto, cuándo y la transacción); la suma de ellos es lo
+  que alimenta «Ya descargado».
+
+## Nota: reinicio de datos y plantilla actual (2026-11-18)
+
+### Qué pasó
+El 2026-11-18 se ejecutó el guion operativo `scripts/simular_actividades.py`,
+aprobado por el responsable:
+
+1. **Respaldo previo** de toda la base (11 colecciones) en JSON:
+   `RepoTecnico/BaseOperaciones/respaldo_20261118T173426Z/`.
+2. **Reinicio de la base** (los contratos y el Anvil quedaron intactos, como
+   manda la regla) y **reinyección base** (2 admins, proyecto `Nomina ANLU`,
+   empleados #2..#4).
+3. **Simulación de uso real**: altas de empleados nuevos, proyecto de
+   mantenimiento, flujos on-chain, pausas → cobros → reanudaciones, terminación
+   y flujos programados.
+4. **Corrección registrada**: los flujos «fantasma» **#3..#11** de eras previas
+   quedaron **terminados** con `deleteFlow` (9 terminaciones en auditoría con la
+   marca `via: correccion-simulacion`). El BRLT que ya habían acreditado sigue
+   en el BrltX de sus wallets.
+
+### Cómo está la plataforma hoy
+| Dato | Valor |
+|---|---|
+| **Empleados activos** | **5**: Uno, Dos y Tres (100 BRLT/30 d) · Cuatro (mantenimiento, 50/15 d) · Cinco (proyecto_mvp, 80/6 d). |
+| **Proyectos** | **2**: `Nomina ANLU` y `Mantenimiento Infraestructura`. |
+| **Flujos vivos** | **#12** (300/30 d) y **#13** (600/6 d) de nómina + **#15** (360/6 d) de mantenimiento, activos; **#14** terminado. |
+| **Programados** | **2** en estado «próximo» (los ejecutas cuando toque). |
+| **Ejemplo auditado** | Flujo #13: pausa acredita 0,125 BRLT → cobro del empleado Dos → reanudación, todo dentro del tope 80%. |
+| **Registro vivo** | `RepoTecnico/BaseOperaciones/estado_inyeccion.md` (y respaldos en `respaldo_*/`). |
+
+<!-- GENERAR_IMAGEN: estado-datos-actual.svg|png -->
+
+```mermaid
+flowchart LR
+    subgraph Plantilla["Plantilla: 5 empleados · 2 proyectos"]
+        P1["Nomina ANLU<br/>Uno · Dos · Tres"]
+        P2["Mantenimiento Infraestructura<br/>Cuatro · Cinco"]
+    end
+    subgraph Flujos["Flujos on-chain"]
+        F12["#12 · 300/30 d · activo"]
+        F13["#13 · 600/6 d · activo<br/>pausa → 0,125 BRLT → cobro → reanudación"]
+        F15["#15 · 360/6 d · activo"]
+        F14["#14 · terminado"]
+        FX["#3..#11 · fantasma<br/>terminados (corrección)"]
+    end
+    SCH["2 programados<br/>estado «próximo»"]
+    P1 --> F12 & F13 & F14
+    P2 --> F15
+```
+
+> **Ojo con los programados**: hay 2 nóminas «próximas» esperando. Cuando llegue
+> su día, revísalas en **Flujos → Programados** y decide: **«Ejecutar»** (firmas
+> la creación) o **«Cancelar»**.
+
 ## Flujos día a día
 
 ### Operar un flujo
@@ -108,6 +173,11 @@ con el contrato. Las acciones cambian según el estado.)*
 
 ### Buenas prácticas
 - La wallet admin **nunca** se guarda en la web: solo firmas en tu navegador.
+- Desde 2026-11-18, **toda firma llega explicada**: el mensaje de sesión (SIWE)
+  dice su propósito («Acceder al panel de administracion… No mueve fondos ni
+  autoriza gastos») y la pantalla muestra la ficha «FirmaResumen» antes de pedir
+  tu firma. En el alta de admins la wallet candidata firma otro mensaje propio:
+  «Confirmar esta wallet como administradora…».
 - Las sesiones duran **2 horas**; revisa **Auditoría** para ver quién hizo qué
   (incluidos los cobros de empleados que pasaron el tope del 80%).
 - Si cambias la wallet de un empleado, la app te lista sus flujos para
@@ -121,4 +191,5 @@ y cobros de empleados verificados.)*
 
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · añade reinicio de datos, plantilla vigente
+(5 empleados/2 proyectos) y el fix del tope 80% case-insensitive*

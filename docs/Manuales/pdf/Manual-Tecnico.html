@@ -73,7 +73,7 @@
   <div class="resumen"><ul><li>Tecnología (versión sencilla)</li><li>Dependencias (versión sencilla)</li><li>Implementación (versión sencilla)</li><li>Despliegue (versión sencilla)</li><li>Diccionario de datos (versión sencilla)</li><li>y 1 sección(es) más…</li></ul></div>
   <div class="pie">
     <span>Superfluid Brlt Streaming v2 · <b>documentación literal</b></span>
-    <span>Actualizado <b>2026-11-17</b> · 6 fuente(s) .md</span>
+    <span>Actualizado <b>2026-11-18</b> · 6 fuente(s) .md</span>
   </div>
 </div>
 
@@ -83,10 +83,10 @@
   <ol>
 <li><span class="t">Tecnología (versión sencilla)</span><span class="s">¿Qué es la plataforma? · ¿Cómo entra cada uno? · ¿Cómo sabe la app el estado real? · ¿Qué pasa cuando se pausa? · …</span><span class="p">p. 2</span></li>
 <li><span class="t">Dependencias (versión sencilla)</span><span class="s">¿Qué programa necesita mi ordenador? · Programas que usa el proyecto · ¿Qué cambió con el Portal del Empleado nuevo? · Cómo revisar que todo está en orden</span><span class="p">p. 5</span></li>
-<li><span class="t">Implementación (versión sencilla)</span><span class="s">El ciclo de vida de un salario · El tope del 80% (novedad) · ¿Y si cambio de wallet? · ¿Qué pasa si la web se apaga? · …</span><span class="p">p. 6</span></li>
-<li><span class="t">Despliegue (versión sencilla)</span><span class="s">¿Dónde vive la aplicación? · ¿Qué trae esta revisión? · Cómo poner la aplicación en marcha · ¿Qué pide la app para conectarse? · …</span><span class="p">p. 8</span></li>
-<li><span class="t">Diccionario de datos (versión sencilla)</span><span class="s">¿Dónde vive cada cosa? · Cosas que la base guarda · Los 4 números del tope del 80% · Datos personales (y tus derechos) · …</span><span class="p">p. 10</span></li>
-<li><span class="t">Diagrama relacional (versión sencilla)</span><span class="s">El mapa de la base de datos · La doble contabilidad</span><span class="p">p. 12</span></li>
+<li><span class="t">Implementación (versión sencilla)</span><span class="s">El ciclo de vida de un salario · El tope del 80% (novedad) · ¿Y si cambio de wallet? · ¿Qué pasa si la web se apaga? · …</span><span class="p">p. 7</span></li>
+<li><span class="t">Despliegue (versión sencilla)</span><span class="s">¿Dónde vive la aplicación? · ¿Qué trae esta revisión? · Cómo poner la aplicación en marcha · ¿Qué pide la app para conectarse? · …</span><span class="p">p. 10</span></li>
+<li><span class="t">Diccionario de datos (versión sencilla)</span><span class="s">¿Dónde vive cada cosa? · Cosas que la base guarda · Los 4 números del tope del 80% · Cómo está la base hoy (tras el reinicio de 2026-11-18) · …</span><span class="p">p. 12</span></li>
+<li><span class="t">Diagrama relacional (versión sencilla)</span><span class="s">El mapa de la base de datos · La doble contabilidad</span><span class="p">p. 14</span></li>
   </ol>
   <p class="nota">Los números de página corresponden a la numeración impresa en el pie de página.</p>
 </nav>
@@ -112,6 +112,10 @@ propia</strong> y oscura: fondo azul noche (<code>#0d1425</code>), tarjetas azul
 </li>
 <li><strong>La red</strong> (Besu por defecto, chainId 81234; el despliegue actual opera contra
 Anvil 31337): donde viven los contratos.</li>
+<li>⚠ <strong>Dato pendiente de decisión (no se toca por ahora):</strong> el mensaje de acceso
+(SIWE) firma con la red 81234 mientras la app y la red real usan 31337.
+Funciona porque ambos lados validan el mismo número, pero la alineación queda
+como <strong>decisión del usuario</strong>: no se propone ningún cambio inmediato.</li>
 </ul>
 <figure class="grafico"><img src="../../imagenes/arquitectura.png" alt="Arquitectura: navegador, app web, cadena y base de datos"><figcaption><span class="fig-n">Figura</span>Arquitectura: navegador, app web, cadena y base de datos</figcaption></figure>
 <p>⚠ <em>(nota del manual: el bloque “BR LTX” se dibujó por el archivo; es “BrltX”).
@@ -126,6 +130,25 @@ empleado o nadie.</li>
 <strong>Nadie</strong> → mensaje: «pide alta al administrador».</li>
 <li>Ya dentro de tu portal, firmas un mensaje (SIWE) para abrir la sesión.</li>
 </ol>
+<h3>Firmas que se explican solas (firma clara)</h3>
+<p><strong>Ninguna firma a ciegas.</strong> Desde la versión de 2026-11-18, en los <strong>4 flujos de
+firma</strong> (entrada única, login admin, login empleado y páginas admin de
+empleados/sistema) pasan dos cosas antes de que la wallet pida tu firma:</p>
+<ol>
+<li><strong>La pantalla muestra una ficha de firma</strong> (componente «FirmaResumen»): título
+de la operación, qué haces, con qué wallet y la nota por defecto
+<strong>«La firma es gratuita: no mueve fondos ni autoriza gastos»</strong>.</li>
+<li><strong>La wallet muestra un mensaje personalizado</strong> (SIWE) que dice para qué es la
+firma, por ejemplo: <em>«Acceder a tu Portal del Empleado de Superfluid Brlt.
+Esta firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza
+gastos»</em>.</li>
+</ol>
+<p>Y en las transacciones on-chain (crear flujo, cobrar, pausar…), la interfaz
+acompaña cada petición con lenguaje humano: «Envías X BRLT al contrato…»,
+«Quemas X BrltX y recibes X BRLT…», «Descargas X BRLT del flujo #N…».
+El inventario completo de los 13 puntos de firma está en
+<code>RepoTecnico/CLEAR_SIGNING.md</code>.</p>
+<figure class="grafico"><img src="../../imagenes/firma-clara.png" alt="firma-clara"><figcaption><span class="fig-n">Figura</span>firma-clara</figcaption></figure>
 <h3>Y después, la app te vigila la wallet (para protegerte)</h3>
 <ul>
 <li>Mientras estás en <code>/suite</code>, la app comprueba de forma <strong>continua</strong> (cada 10
@@ -165,6 +188,24 @@ lo confirma, y solo si <strong>no supera el tope del 80%</strong> (ver
 <a href="03-implementacion.md">Implementación</a>, sección «El tope del 80%»).</li>
 <li>La <strong>wallet se valida sin parar</strong> en el Portal del Empleado: si la cuenta activa
 de MetaMask deja de coincidir con la sesión, se pide revalidar.</li>
+</ul>
+<h2>Datos y pruebas en palabras simples</h2>
+<h3>La base se puede reiniciar con respaldo</h3>
+<ul>
+<li>Existe un guion operativo (<code>scripts/simular_actividades.py</code>) que <strong>guarda una
+copia de seguridad en JSON</strong> de toda la base, la reinicia y luego <strong>simula uso
+real</strong> (empleados, flujos, pausas, cobros y reanudaciones).</li>
+<li>Así se hizo el 2026-11-18: hoy la plataforma tiene <strong>5 empleados activos,
+2 proyectos</strong> y los flujos #12/#13/#15 vivos (#14 terminado). Todo quedó
+registrado en <code>RepoTecnico/BaseOperaciones/estado_inyeccion.md</code>.</li>
+</ul>
+<h3>Pruebas con cartera falsa antes que con dinero real</h3>
+<ul>
+<li>La <strong>batería de pruebas</strong> (<code>RepoPrueba/</code>) son 125 escenarios que prueban la app
+con wallets simuladas (y reales cuando hay material), antes de tocar nada real.</li>
+<li>Primera pasada (2026-11-18): <strong>0 fallos de la aplicación</strong> — 3 escenarios
+completos, 54 a la espera de material de wallets reales y 43 pendientes del
+robot de pruebas. El robot <strong>nunca corre sin tu aprobación</strong>.</li>
 </ul>
 
 </section>
@@ -238,14 +279,36 @@ que se borra al cerrar (útil en Windows).</li>
 <h2>¿Qué cambió con el Portal del Empleado nuevo?</h2>
 <h3>Sin instalar nada nuevo</h3>
 <ul>
-<li>El rediseño del Portal (<code>/suite</code>), el tope del 80% y la validación continua de
-la wallet usan lo que ya había: <strong>BigInt nativo</strong> y la API de MetaMask.</li>
+<li>El rediseño del Portal (<code>/suite</code>), el tope del 80%, la validación continua de
+la wallet, la <strong>firma clara</strong> (mensajes SIWE + ficha «FirmaResumen») y el
+reinicio de datos usan lo que ya había: <strong>BigInt nativo</strong> y la API de MetaMask.</li>
 <li>La nueva cara visual (azul noche <code>#0d1425</code>, tarjeta <code>#131c30</code>, cabecera violeta
 <code>#1b1140</code>) son <strong>colores de configuración</strong> de Tailwind (tokens <code>empleado.*</code>),
 no un paquete nuevo.</li>
 <li>Resultado: <strong>no se añadió ninguna dependencia nueva</strong> de producción ni de
 desarrollo (ver <a href="../../../RepoTecnico/Manuales/02-Dependencias/02-dependencias.md">manual técnico de dependencias</a>).</li>
 </ul>
+<h3>Herramientas del equipo de datos y pruebas (solo técnica)</h3>
+<table>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Python 3 + <code>pymongo</code></td>
+<td>Los guiones de inyección y simulación de datos (<code>scripts/*.py</code>); sin librerías pip extra.</td>
+</tr>
+<tr>
+<td><code>cast</code> (viene con Foundry)</td>
+<td>Firma y envía las transacciones de mint y flujos de esos guiones.</td>
+</tr>
+<tr>
+<td>Playwright</td>
+<td>También es el motor de la <strong>batería de pruebas Web3</strong> (<code>RepoPrueba/</code>): wallets simuladas EIP-1193 y ejecución con aprobación previa.</td>
+</tr>
+</tbody></table>
 <h2>Cómo revisar que todo está en orden</h2>
 <h3>Comandos de control</h3>
 <pre><code class="language-bash">cd web
@@ -292,6 +355,12 @@ podrías descargar más (aunque aún te quede BrltX en cartera).</li>
 flujos» y el «Cobro autónomo»), y comparten el mismo contador.</li>
 <li>Si un cobro rompería el tope, el servidor responde con el aviso
 <strong>«tope_80_superado»</strong> y <strong>no lo registra</strong>. Nada se cobra de más.</li>
+<li><strong>Detalle técnico (2026-11-18):</strong> el contador de «ya descargado» se reconstruye
+de la auditoría, donde la wallet a veces queda escrita con distinta
+capitalización (formato «checksum»). La comparación ahora <strong>ignora
+mayúsculas/minúsculas</strong>, así que ningún cobro se pierde del recuento. La
+simulación operativa de ese día destapó el bug y la corrección ya está
+desplegada.</li>
 </ul>
 <h3>¿De dónde salen los cuatro números que ves?</h3>
 <ol>
@@ -345,15 +414,45 @@ redirige (admin → <code>/admin</code>, empleado → <code>/suite</code>, sin a
 cambia de cuenta) que la wallet activa sigue siendo la de la sesión; si no,
 avisa y manda a revalidar a <code>/entrar</code>.</li>
 </ul>
+<h2>La firma clara (cómo se explica cada firma)</h2>
+<h3>Antes de firmar, se te explica</h3>
+<ul>
+<li>Las <strong>4 firmas de sesión/permiso</strong> (entrada única, login admin, login empleado y
+páginas admin de empleados/sistema) muestran primero una ficha
+<strong>«FirmaResumen»</strong>: título, qué haces, con qué wallet y la nota
+<strong>«La firma es gratuita: no mueve fondos ni autoriza gastos»</strong>.</li>
+<li>El mensaje que la wallet muestra (SIWE) lleva su <strong>propósito escrito</strong>, por
+ejemplo «Acceder a tu Portal del Empleado… No mueve fondos ni autoriza gastos».
+Para el alta de administrador hay otro texto propio: «Confirmar esta wallet
+como administradora…».</li>
+<li>Las <strong>transacciones on-chain</strong> van acompañadas en pantalla de una frase de
+impacto real: «Envías X BRLT…», «Quemas X BrltX y recibes X BRLT…», «Pausas el
+flujo #N…». Ninguna operación firma a ciegas (la app ni siquiera usa el tipo de
+firma ciego <code>eth_sign</code>).</li>
+<li>Inventario completo: <code>RepoTecnico/CLEAR_SIGNING.md</code> (13 puntos de firma).</li>
+</ul>
+<h2>¿Cómo se comprueba que todo funciona?</h2>
+<h3>La batería de pruebas Web3</h3>
+<ul>
+<li><code>RepoPrueba/</code> reúne <strong>125 escenarios</strong> que prueban la app con wallets
+simuladas (o reales cuando se aporta el material). El robot <strong>pide aprobación
+del usuario antes de correr</strong>: nada se ejecuta a escondidas.</li>
+<li>Primera pasada (2026-11-18): <strong>0 fallos de la app</strong>; el resto queda a la espera
+de material de wallets reales o del intérprete de pasos. Detalle:
+<code>RepoPrueba/05_informe_anomalias.md</code> y estado vivo <code>06_estado_ejecucion.md</code>.</li>
+<li>El resumen de todo el proyecto (despliegue, cuentas, casos de uso, pruebas y
+recomendaciones) está en el <strong>informe final</strong>:
+<code>RepoTecnico/INFORME_ENTREGA_FINAL.md</code>.</li>
+</ul>
 
 </section>
 <section class="tema"><p class="ruta">04-Despliegue/04-despliegue.md</p>
 <h1><span class="pgmark">⟦§4⟧</span>Despliegue (versión sencilla)</h1>
 <h2>¿Dónde vive la aplicación?</h2>
-<h3>Hoy (revisión vigente, 17/11/2026)</h3>
+<h3>Hoy (revisión vigente, 18/11/2026)</h3>
 <ul>
-<li><strong>App</strong>: servida desde <strong>Google Cloud Run</strong>, revisión <code>brltv2-00033-dmn</code>
-(compilación <code>66b59218</code>, commit <code>aab670e</code>).
+<li><strong>App</strong>: servida desde <strong>Google Cloud Run</strong>, revisión <code>brltv2-00041-87c</code>
+(compilación con el commit <code>83f54e4</code>).
 URL: <strong><a href="https://brltv2-szrmcf2hja-ew.a.run.app">https://brltv2-szrmcf2hja-ew.a.run.app</a></strong></li>
 <li><strong>Contratos</strong>: en la red de práctica; el entorno desplegado habla con una red
 de práctica tipo <strong>Anvil (chainId 31337)</strong> a través de un proxy RPC. El código
@@ -362,13 +461,26 @@ admite también Besu (chainId 81234) si se configura.</li>
 </ul>
 <figure class="grafico"><img src="../../imagenes/despliegue-cloudrun.png" alt="Despliegue vigente en Google Cloud Run"><figcaption><span class="fig-n">Figura</span>Despliegue vigente en Google Cloud Run</figcaption></figure>
 <h2>¿Qué trae esta revisión?</h2>
-<h3>Novedades de la versión de 2026-11-17</h3>
+<h3>Novedades de la versión de 2026-11-18</h3>
 <ul>
-<li><strong>Portal del Empleado rediseñado</strong> (<code>/suite</code>): cara visual propia (azul noche y
-violeta) y secciones nuevas.</li>
-<li><strong>Tope acumulado del 80%</strong> al descargar (downgrade de flujos).</li>
-<li><strong>Entrada única</strong> <code>/entrar</code>: la wallet decide a qué portal ir, y la app
-comprueba sin parar que sigues usando la misma cuenta.</li>
+<li><strong>Firma clara</strong>: mensajes SIWE con propósito y ficha «FirmaResumen» en los 4
+flujos de firma; lenguaje humano antes de cada transacción.</li>
+<li><strong>Batería de pruebas Web3</strong> (<code>RepoPrueba/</code>): 125 escenarios con wallets
+simuladas; primera ejecución con <strong>0 fallos de la app</strong>.</li>
+<li><strong>Informe final de entrega</strong> (<code>RepoTecnico/INFORME_ENTREGA_FINAL.md</code>): las 8
+secciones —despliegue, estructura, BD/contratos, cuentas, inyección, casos de
+uso, pruebas y recomendaciones—.</li>
+<li><strong>Reinicio de datos + simulación operativa</strong> (2026-11-18): respaldo JSON de la
+base, reinyección y uso real simulado. Hoy: <strong>5 empleados activos, 2
+proyectos</strong>, flujos #12/#13/#15 activos, #14 terminado y 2 programados
+«próximo».</li>
+<li><strong>Fix del tope 80%</strong>: el recuento de «ya descargado» compara la wallet sin
+distinguir mayúsculas/minúsculas (bug destapado por la simulación, ya
+corregido y desplegado).</li>
+<li><strong>Salud verificada en vivo</strong> el 2026-11-18: <code>/api/health</code> responde
+<code>ok / db / rpc / chainId 31337</code>.</li>
+<li><strong>Integridad de ramas</strong>: <code>gh-integra</code> = <code>main</code> = <code>superfluidv2</code>, todas en el
+commit <code>83f54e4</code> y sincronizadas en los 3 repositorios remotos.</li>
 </ul>
 <h2>Cómo poner la aplicación en marcha</h2>
 <h3>Modo rápido (5 comandos)</h3>
@@ -489,6 +601,46 @@ chainId <strong>31337</strong>).</li>
 <p>Ejemplo: asignado 10.000 BRLT → tope 8.000 → ya descargado 1.500 → <strong>disponible
 6.500 BRLT</strong>. Si un cobro supera el disponible, se rechaza con el aviso
 «tope_80_superado» y no se registra.</p>
+<h2>Cómo está la base hoy (tras el reinicio de 2026-11-18)</h2>
+<h3>Datos vivos tras la simulación</h3>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Empleados activos</td>
+<td><strong>5</strong>: Uno, Dos y Tres (100 BRLT/30 días) · Cuatro (mantenimiento, 50/15 días) · Cinco (proyecto_mvp, 80/6 días).</td>
+</tr>
+<tr>
+<td>Proyectos</td>
+<td><strong>2</strong>: <code>Nomina ANLU</code> y <code>Mantenimiento Infraestructura</code>.</td>
+</tr>
+<tr>
+<td>Flujos vivos</td>
+<td><strong>#12</strong> (300/30 d), <strong>#13</strong> (600/6 d) y <strong>#15</strong> (360/6 d) activos; <strong>#14</strong> terminado.</td>
+</tr>
+<tr>
+<td>Flujos del pasado</td>
+<td>11 terminados (entre ellos los «fantasma» #3..#11, cerrados por el admin tras la simulación).</td>
+</tr>
+<tr>
+<td>Programados</td>
+<td><strong>2</strong> apuntados en estado «próximo» (aún sin ejecutar).</td>
+</tr>
+<tr>
+<td>Cobros auditados</td>
+<td>Las pausas → cobros → reanudaciones del #12 y el #13 quedaron registradas, <strong>dentro del tope 80%</strong>.</td>
+</tr>
+</tbody></table>
+<h3>El respaldo que lo protege</h3>
+<p>Antes de reiniciar, la base completa (11 colecciones) se guardó en JSON en
+<code>RepoTecnico/BaseOperaciones/respaldo_20261118T173426Z/</code>. Ese respaldo <strong>no
+forma parte del modelo vivo</strong>: es la foto de la anterior para restaurar o
+auditar. El registro del día a día de la operación está en
+<code>RepoTecnico/BaseOperaciones/estado_inyeccion.md</code>.</p>
 <h2>Datos personales (y tus derechos)</h2>
 <h3>Reglas del juego</h3>
 <ul>
@@ -515,8 +667,17 @@ retirar lo que te debían; después la cuenta queda sellada.</li>
 <li>Los <strong>Trabajos (jobs)</strong> anotan las veces que la app se revisa a sí misma.</li>
 <li>La <strong>Auditoría</strong> no solo guarda historia: es el <strong>contador</strong> del tope del 80%.
 Cada cobro confirmado por la cadena suma ahí, y así la app sabe cuánto has
-descargado ya.</li>
+descargado ya. La comparación de la wallet <strong>ignora mayúsculas/minúsculas</strong>
+(corrección del 2026-11-18): da igual que quede escrita con el formato
+«checksum» o en minúsculas, ningún cobro se escapa del recuento.</li>
+<li>Los <strong>respaldos</strong> (<code>RepoTecnico/BaseOperaciones/respaldo_*/</code>) son fotos JSON de
+la base hechas antes del reinicio del 2026-11-18: no forman parte del mapa
+vivo, sirven para restaurar o auditar.</li>
 </ul>
+<h3>Cómo está el mapa hoy</h3>
+<p>Tras el reinicio + simulación del 2026-11-18: <strong>5 empleados</strong> en <strong>2 proyectos</strong>,
+flujos #12/#13/#15 activos y #14 terminado, 11 flujos históricos y 2
+programados «próximo». Detalle en <code>RepoTecnico/BaseOperaciones/estado_inyeccion.md</code>.</p>
 <figure class="grafico"><img src="../../imagenes/relacional-map.png" alt="Mapa relacional de la base de datos"><figcaption><span class="fig-n">Figura</span>Mapa relacional de la base de datos</figcaption></figure>
 <h2>La doble contabilidad</h2>
 <h3>Cadena + base (y nunca al revés)</h3>

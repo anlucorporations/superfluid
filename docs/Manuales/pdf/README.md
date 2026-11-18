@@ -5,11 +5,11 @@ generadas con **node + playwright (Chromium, `page.pdf`)**.
 
 | Archivo | Contenido (fuentes .md literales) | Páginas |
 |---|---|---|
-| `Manual-Tecnico.pdf` + `.html` | Tecnología, Dependencias, Implementación, Despliegue, Diccionario de datos y Diagrama relacional (`01…06`) | 13 |
-| `Manual-Administrador.pdf` + `.html` | Manual del Admin — Panel `/admin` (`07-Manual-del-Admin/manual-admin.md`) | 9 |
-| `Manual-Empleado.pdf` + `.html` | Manual del Empleado — Portal `/suite` (`07-Manual-del-Admin/manual-empleado.md`) | 9 |
+| `Manual-Tecnico.pdf` + `.html` | Tecnología, Dependencias, Implementación, Despliegue, Diccionario de datos y Diagrama relacional (`01…06`) | 15 |
+| `Manual-Administrador.pdf` + `.html` | Manual del Admin — Panel `/admin` (`07-Manual-del-Admin/manual-admin.md`) | 10 |
+| `Manual-Empleado.pdf` + `.html` | Manual del Empleado — Portal `/suite` (`07-Manual-del-Admin/manual-empleado.md`) | 11 |
 
-**Última regeneración: 2026-11-17** (a partir de los manuales literales actualizados el
+**Última regeneración: 2026-11-18** (a partir de los manuales literales actualizados el
 mismo día: entrada única `/entrar`, tope del 80% al cobrar y Portal del Empleado
 rediseñado con identidad propia).
 

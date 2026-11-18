@@ -36,6 +36,25 @@ Ejemplo: asignado 10.000 BRLT → tope 8.000 → ya descargado 1.500 → **dispo
 6.500 BRLT**. Si un cobro supera el disponible, se rechaza con el aviso
 «tope_80_superado» y no se registra.
 
+## Cómo está la base hoy (tras el reinicio de 2026-11-18)
+
+### Datos vivos tras la simulación
+| Dato | Valor |
+|---|---|
+| Empleados activos | **5**: Uno, Dos y Tres (100 BRLT/30 días) · Cuatro (mantenimiento, 50/15 días) · Cinco (proyecto_mvp, 80/6 días). |
+| Proyectos | **2**: `Nomina ANLU` y `Mantenimiento Infraestructura`. |
+| Flujos vivos | **#12** (300/30 d), **#13** (600/6 d) y **#15** (360/6 d) activos; **#14** terminado. |
+| Flujos del pasado | 11 terminados (entre ellos los «fantasma» #3..#11, cerrados por el admin tras la simulación). |
+| Programados | **2** apuntados en estado «próximo» (aún sin ejecutar). |
+| Cobros auditados | Las pausas → cobros → reanudaciones del #12 y el #13 quedaron registradas, **dentro del tope 80%**. |
+
+### El respaldo que lo protege
+Antes de reiniciar, la base completa (11 colecciones) se guardó en JSON en
+`RepoTecnico/BaseOperaciones/respaldo_20261118T173426Z/`. Ese respaldo **no
+forma parte del modelo vivo**: es la foto de la anterior para restaurar o
+auditar. El registro del día a día de la operación está en
+`RepoTecnico/BaseOperaciones/estado_inyeccion.md`.
+
 ## Datos personales (y tus derechos)
 
 ### Reglas del juego
@@ -87,4 +106,4 @@ stateDiagram-v2
 
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · incluye el estado de datos tras el reinicio + simulación*

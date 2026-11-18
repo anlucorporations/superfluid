@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Firma clara: la ficha FirmaResumen explica cada firma antes de pedirla">
+  <defs>
+    <marker id="fc" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#34d399"/>
+    </marker>
+    <marker id="fcv" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+    </marker>
+    <linearGradient id="fh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1140"/><stop offset="1" stop-color="#3b2a7a"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .lbl{font-size:15px;font-weight:700;fill:#e2e8f0}
+    .mut{font-size:12.5px;fill:#94a3b8}
+    .msg{font-size:12.5px;fill:#e2e8f0}
+    .life{stroke:#334155;stroke-width:2;stroke-dasharray:6 6}
+    .arrow{stroke:#34d399;stroke-width:2;fill:none;marker-end:url(#fc)}
+    .arrowv{stroke:#8b5cf6;stroke-width:2;fill:none;marker-end:url(#fcv)}
+    .note{fill:#1b1140;stroke:#8b5cf6;stroke-width:1.2}
+    .notet{font-size:12.5px;fill:#e2e8f0}
+    .em{fill:#34d399;font-weight:700}
+  </style>
+  <rect class="bg" width="960" height="600"/>
+  <text x="480" y="40" text-anchor="middle" class="h1">Firma clara — ninguna firma a ciegas</text>
+  <text x="480" y="63" text-anchor="middle" class="h2">los 4 flujos de firma (2026-11-18): entrada única · login admin · login empleado · páginas admin</text>
+
+  <!-- participantes -->
+  <rect class="card" x="60" y="92" width="160" height="56" rx="12"/>
+  <rect x="60" y="92" width="160" height="56" rx="12" fill="url(#fh)"/>
+  <text x="140" y="126" text-anchor="middle" class="lbl">Tú</text>
+  <line x1="140" y1="148" x2="140" y2="470" class="life"/>
+  <rect class="card" x="380" y="92" width="200" height="56" rx="12"/>
+  <rect x="380" y="92" width="200" height="56" rx="12" fill="url(#fh)"/>
+  <text x="480" y="118" text-anchor="middle" class="lbl">Pantalla</text>
+  <text x="480" y="138" text-anchor="middle" class="mut">ficha «FirmaResumen»</text>
+  <line x1="480" y1="148" x2="480" y2="470" class="life"/>
+  <rect class="card" x="740" y="92" width="180" height="56" rx="12"/>
+  <rect x="740" y="92" width="180" height="56" rx="12" fill="url(#fh)"/>
+  <text x="830" y="126" text-anchor="middle" class="lbl">Wallet (MetaMask)</text>
+  <line x1="830" y1="148" x2="830" y2="470" class="life"/>
+
+  <!-- paso 1 -->
+  <path class="arrow" d="M142,182 L478,182"/>
+  <text x="310" y="174" text-anchor="middle" class="msg">pulsa «Conectar / Firmar»</text>
+
+  <!-- ficha explicada -->
+  <rect class="note" x="300" y="205" width="360" height="112" rx="10"/>
+  <text x="480" y="230" text-anchor="middle" class="notet" font-weight="700">la ficha se explica antes de pedir la firma</text>
+  <text x="480" y="252" text-anchor="middle" class="notet">título de la operación · qué haces · con qué wallet</text>
+  <text x="480" y="272" text-anchor="middle" class="notet">caduca en <tspan class="em">5 minutos</tspan></text>
+  <text x="480" y="296" text-anchor="middle" class="notet" style="fill:#a78bfa;font-weight:600">«La firma es gratuita: no mueve fondos ni autoriza gastos»</text>
+
+  <!-- paso 3 -->
+  <path class="arrowv" d="M482,340 L828,340"/>
+  <text x="655" y="332" text-anchor="middle" class="msg">pide la firma (mensaje SIWE explicado)</text>
+
+  <!-- paso 4 -->
+  <path class="arrow" d="M828,372 L142,372"/>
+  <text x="480" y="364" text-anchor="middle" class="msg">texto en la wallet: «Acceder a tu Portal del Empleado…<tspan xml:space="preserve">  </tspan>No mueve fondos ni autoriza gastos»</text>
+
+  <!-- paso 5 -->
+  <path class="arrow" d="M142,408 L828,408"/>
+  <text x="480" y="400" text-anchor="middle" class="msg">acepta — <tspan class="em">sin coste</tspan></text>
+
+  <!-- paso 6 -->
+  <path class="arrowv" d="M828,442 L482,442"/>
+  <text x="655" y="434" text-anchor="middle" class="msg">firma verificada → sesión abierta</text>
+
+  <!-- nota inferior -->
+  <rect class="note" x="110" y="492" width="740" height="66" rx="10"/>
+  <text x="480" y="516" text-anchor="middle" class="notet">en transacciones on-chain (crear flujo, cobrar, pausar…) la app acompaña con lenguaje humano:</text>
+  <text x="480" y="540" text-anchor="middle" class="notet" style="fill:#a78bfa">«Envías X BRLT al contrato…» · «Quemas X BrltX y recibes X BRLT…» · «Descargas X BRLT del flujo #N…»</text>
+
+  <text x="480" y="582" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/firma-clara.svg · inventario completo de los 13 puntos de firma en RepoTecnico/CLEAR_SIGNING.md</text>
+</svg>

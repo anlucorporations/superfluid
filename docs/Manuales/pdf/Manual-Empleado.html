@@ -73,7 +73,7 @@
   <div class="resumen"><ul><li>Manual del Empleado (guía del Portal /suite)</li></ul></div>
   <div class="pie">
     <span>Superfluid Brlt Streaming v2 · <b>documentación literal</b></span>
-    <span>Actualizado <b>2026-11-17</b> · 1 fuente(s) .md</span>
+    <span>Actualizado <b>2026-11-18</b> · 1 fuente(s) .md</span>
   </div>
 </div>
 
@@ -81,7 +81,7 @@
   <h2>Índice de contenidos</h2>
   <div class="linea"></div>
   <ol>
-<li><span class="t">Manual del Empleado (guía del Portal /suite)</span><span class="s">Empezar en 5 minutos · Tu portal por dentro · Entrar y tu wallet (importante) · Downgrade de flujos (el cobro con tope del 80%) · …</span><span class="p">p. 2</span></li>
+<li><span class="t">Manual del Empleado (guía del Portal /suite)</span><span class="s">Empezar en 5 minutos · Tu portal por dentro · Entrar y tu wallet (importante) · La firma clara: lo que verás antes de firmar · …</span><span class="p">p. 2</span></li>
   </ol>
   <p class="nota">Los números de página corresponden a la numeración impresa en el pie de página.</p>
 </nav>
@@ -95,7 +95,9 @@
 <li>La app pregunta al servidor qué eres. Si tienes ficha de empleado, te lleva a
 tu <strong>Portal del Empleado</strong> (<code>/suite</code>); verás una pantalla oscura con cabecera
 violeta (es normal, tu portal tiene su propia identidad).</li>
-<li>Firma un mensaje con tu wallet para abrir la sesión (no gasta dinero).</li>
+<li>Antes de firmar verás una <strong>ficha clara</strong> con lo que haces y la nota «La firma
+es gratuita: no mueve fondos ni autoriza gastos». Firmas con tu wallet para
+abrir la sesión (no gasta dinero).</li>
 <li>Ya dentro, mira el <strong>Resumen</strong>: <strong>BRLT en saldo</strong>, <strong>Cobrable en BrltX</strong> y tu
 <strong>salario por periodo</strong>.</li>
 <li>Para cobrar: baja a <strong>«Downgrade de flujos»</strong>, elige un flujo, escribe el
@@ -160,6 +162,64 @@ abierta con otra cuenta.</li>
 <li>Antes de cualquier firma, la app vuelve a comparar la cuenta conectada con la
 de tu sesión: si no coinciden, se cancela el envío.</li>
 </ul>
+<h2>La firma clara: lo que verás antes de firmar</h2>
+<h3>Primero se te explica, después se firma</h3>
+<p>Desde el 2026-11-18, <strong>todas las firmas llegan explicadas</strong>. En tu entrada al
+portal (y en cualquier firma de sesión o permiso) verás dos cosas:</p>
+<ol>
+<li><strong>En la pantalla, una ficha de firma</strong>: el título de la operación, qué haces,
+con qué wallet y la nota por defecto
+<strong>«La firma es gratuita: no mueve fondos ni autoriza gastos»</strong>.</li>
+<li><strong>En la wallet, un mensaje personalizado</strong> que dice para qué es la firma. En
+tu caso reza: <em>«Acceder a tu Portal del Empleado de Superfluid Brlt. Esta
+firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza
+gastos»</em>. Caduca a los <strong>5 minutos</strong>.</li>
+</ol>
+<p>En las operaciones que <strong>sí</strong> tocan dinero (crear flujos, cobrar, pausar…) la
+pantalla te dice el impacto real antes de firmar: «Quemas X BrltX y recibes X
+BRLT», «Descargas X BRLT del flujo #N. Tope del 80%: disponible Y BRLT». Nada se
+firma a ciegas: la app ni siquiera usa el tipo de firma ciego (<code>eth_sign</code>) que
+las wallets marcan como peligroso.</p>
+<figure class="grafico"><img src="../../imagenes/firma-clara-empleado.png" alt="firma-clara-empleado"><figcaption><span class="fig-n">Figura</span>firma-clara-empleado</figcaption></figure>
+<h2>La plataforma hoy (tras la simulación del 2026-11-18)</h2>
+<h3>Quiénes están dados de alta</h3>
+<p>La base de datos se reinició y se volvió a llenar con uso real simulado. Hoy hay
+<strong>5 empleados activos</strong> en <strong>2 proyectos</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Empleado</th>
+<th>Contrato (ficha)</th>
+<th>Flujo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Uno</strong></td>
+<td>Nómina ANLU: 100 BRLT / 30 días</td>
+<td>#12 activo (300 BRLT)</td>
+</tr>
+<tr>
+<td><strong>Dos</strong></td>
+<td>Nómina ANLU: 100 BRLT / 30 días</td>
+<td>#13 activo (600 BRLT)</td>
+</tr>
+<tr>
+<td><strong>Tres</strong></td>
+<td>Nómina ANLU: 100 BRLT / 30 días</td>
+<td>#14 terminado</td>
+</tr>
+<tr>
+<td><strong>Cuatro</strong></td>
+<td>Mantenimiento: 50 BRLT / 15 días</td>
+<td>#15 activo (360 BRLT)</td>
+</tr>
+<tr>
+<td><strong>Cinco</strong></td>
+<td>Proyecto MVP: 80 BRLT / 6 días</td>
+<td>(sin flujo propio aún)</td>
+</tr>
+</tbody></table>
+<p>Los dos proyectos: <strong><code>Nomina ANLU</code></strong> y <strong><code>Mantenimiento Infraestructura</code></strong>.</p>
 <h2>Downgrade de flujos (el cobro con tope del 80%)</h2>
 <h3>¿Qué significa el tope?</h3>
 <p><strong>Regla de la casa:</strong> en total solo puedes convertir en BRLT el <strong>80% de todo
@@ -194,14 +254,33 @@ aplica igual al «Cobro autónomo»: los dos comparten el mismo contador.</p>
 <p>Ejemplo: asignado <strong>10.000</strong> → tope <strong>8.000</strong> → ya descargado <strong>1.500</strong> →
 disponible <strong>6.500</strong>. Si ya hubieras descargado 8.000, el tope está agotado y no
 podrás descargar más por esta vía.</p>
+<h3>El ejemplo real (flujo #13, de la simulación del 2026-11-18)</h3>
+<p>Así funcionó de verdad el ciclo completo con el flujo <strong>#13</strong> del <strong>empleado Dos</strong>
+(<strong>600 BRLT a 6 días</strong>):</p>
+<ol>
+<li><strong>Creación</strong>: el admin financia 600 BRLT a 6 días → el flujo #13 queda activo
+y empieza a acumular segundo a segundo.</li>
+<li><strong>Pausa</strong>: el admin pausa el flujo. En ese momento el contrato <strong>acredita el
+devengo del tramo</strong> — <strong>0,125 BRLT</strong> — directamente al BrltX del empleado.</li>
+<li><strong>Cobro (downgrade)</strong>: el empleado Dos descarga esos <strong>0,125 BRLT</strong> a su
+cartera. El cobro queda <strong>auditado</strong> y el contador del tope 80% lo resta
+(estaba holgado: dentro del límite sin problema).</li>
+<li><strong>Reanudación</strong>: el admin reanuda el flujo con la misma tasa; el tiempo
+restante se <strong>aplaza</strong>, así que el empleado no pierde devengo.</li>
+</ol>
+<p>El mismo día se hizo lo propio con el flujo #12 del empleado Uno (pausa → cobro
+de 0,009259 BRLT → reanudación) y se terminó el #14 del empleado Tres (pagó lo
+devengado y el resto volvió al admin).</p>
+<figure class="grafico"><img src="../../imagenes/historial-simulacion.png" alt="historial-simulacion"><figcaption><span class="fig-n">Figura</span>historial-simulacion</figcaption></figure>
 <h3>Cómo descargar, paso a paso</h3>
 <ol>
 <li>Elige el <strong>flujo</strong> en el selector (puedes elegir cualquiera de los tuyos,
 activos, pausados o terminados).</li>
 <li>Escribe el importe, o pulsa el botón <strong>«Máximo»</strong>: te propone lo menor entre
 tu BrltX en cartera y lo disponible del tope. Ese es el tope real de hoy.</li>
-<li>Pulsa <strong>«Descargar»</strong>. MetaMask te pedirá la firma (no gasta nada,
-convierte tu BrltX en BRLT).</li>
+<li>Pulsa <strong>«Descargar»</strong>. MetaMask te pedirá la firma; antes la pantalla te
+avisa del impacto real (quema tu BrltX y te paga BRLT). No gasta nada más:
+convierte tu BrltX en BRLT.</li>
 <li>En segundos verás <strong>«Ya descargado»</strong> subir lo mismo que baja tu BrltX y
 sube tu BRLT en saldo.</li>
 </ol>
@@ -294,7 +373,7 @@ que el tope global no se reabre con lo nuevo: es acumulado de por cuenta.</p>
 <blockquote>
 <p><strong>Nota de pantallazos:</strong> las capturas de la Suite se regenerarán tras el
 rediseño (<code>npm run capturas</code>); la descripción de este manual refleja el portal
-vigente de 2026-11-17.</p>
+vigente de 2026-11-18 (firma clara incluida).</p>
 </blockquote>
 
 </section>

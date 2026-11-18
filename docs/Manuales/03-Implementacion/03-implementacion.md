@@ -47,6 +47,12 @@ vivos o terminados. Lo ya convertido se va restando.
   flujos» y el «Cobro autónomo»), y comparten el mismo contador.
 - Si un cobro rompería el tope, el servidor responde con el aviso
   **«tope_80_superado»** y **no lo registra**. Nada se cobra de más.
+- **Detalle técnico (2026-11-18):** el contador de «ya descargado» se reconstruye
+  de la auditoría, donde la wallet a veces queda escrita con distinta
+  capitalización (formato «checksum»). La comparación ahora **ignora
+  mayúsculas/minúsculas**, así que ningún cobro se pierde del recuento. La
+  simulación operativa de ese día destapó el bug y la corrección ya está
+  desplegada.
 
 ### ¿De dónde salen los cuatro números que ves?
 1. **Asignado a tu cuenta**: el contrato (suma del dinero depositado en tus flujos).
@@ -119,6 +125,37 @@ sequenceDiagram
   cambia de cuenta) que la wallet activa sigue siendo la de la sesión; si no,
   avisa y manda a revalidar a `/entrar`.
 
+## La firma clara (cómo se explica cada firma)
+
+### Antes de firmar, se te explica
+- Las **4 firmas de sesión/permiso** (entrada única, login admin, login empleado y
+  páginas admin de empleados/sistema) muestran primero una ficha
+  **«FirmaResumen»**: título, qué haces, con qué wallet y la nota
+  **«La firma es gratuita: no mueve fondos ni autoriza gastos»**.
+- El mensaje que la wallet muestra (SIWE) lleva su **propósito escrito**, por
+  ejemplo «Acceder a tu Portal del Empleado… No mueve fondos ni autoriza gastos».
+  Para el alta de administrador hay otro texto propio: «Confirmar esta wallet
+  como administradora…».
+- Las **transacciones on-chain** van acompañadas en pantalla de una frase de
+  impacto real: «Envías X BRLT…», «Quemas X BrltX y recibes X BRLT…», «Pausas el
+  flujo #N…». Ninguna operación firma a ciegas (la app ni siquiera usa el tipo de
+  firma ciego `eth_sign`).
+- Inventario completo: `RepoTecnico/CLEAR_SIGNING.md` (13 puntos de firma).
+
+## ¿Cómo se comprueba que todo funciona?
+
+### La batería de pruebas Web3
+- `RepoPrueba/` reúne **125 escenarios** que prueban la app con wallets
+  simuladas (o reales cuando se aporta el material). El robot **pide aprobación
+  del usuario antes de correr**: nada se ejecuta a escondidas.
+- Primera pasada (2026-11-18): **0 fallos de la app**; el resto queda a la espera
+  de material de wallets reales o del intérprete de pasos. Detalle:
+  `RepoPrueba/05_informe_anomalias.md` y estado vivo `06_estado_ejecucion.md`.
+- El resumen de todo el proyecto (despliegue, cuentas, casos de uso, pruebas y
+  recomendaciones) está en el **informe final**:
+  `RepoTecnico/INFORME_ENTREGA_FINAL.md`.
+
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · sincronizado con el manual técnico v2 (firma clara,
+fix del tope 80% case-insensitive y batería de pruebas)*

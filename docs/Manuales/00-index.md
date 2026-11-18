@@ -11,18 +11,29 @@
 3. Verás tu resumen: **BRLT en saldo**, **cobrable en BrltX** y tu **salario por
    periodo**. En **«Downgrade de flujos»** eliges un flujo y pulsas **«Descargar»**
    para pasar BrltX a BRLT real.
-4. Si no tienes alta, la app te dirá: «pide alta al administrador».
+4. Antes de firmar verás una **ficha de firma clara**: qué haces, con qué wallet y
+   la nota «La firma es gratuita: no mueve fondos ni autoriza gastos».
+5. Si no tienes alta, la app te dirá: «pide alta al administrador».
 
 ### Administrador
 1. Abre la web y ve a **`/entrar`**. Con la wallet admin la app detecta tu rol
    y te lleva al **panel `/admin`**.
 2. Crea un empleado → crea su flujo → listo: el salario empieza a fluir.
 
-> **Novedad (2026-11-17):** el Portal del Empleado se rediseñó con su propia
-> cara visual (tonos azul noche y violeta, distinta del panel admin) y estrena
-> el **tope acumulado del 80%** al cobrar. Todo el detalle está en
-> [Manual del Empleado](07-Manual-del-Admin/manual-empleado.md) y en
-> [Manual del Admin](07-Manual-del-Admin/manual-admin.md).
+> **Novedades (2026-11-18):**
+> - **Firma clara**: antes de cada firma la wallet muestra un mensaje explicado
+>   (SIWE con propósito) y la interfaz una ficha «FirmaResumen»: *«La firma es
+>   gratuita: no mueve fondos ni autoriza gastos»*.
+> - **Batería de pruebas Web3** (`RepoPrueba/`): 41 requisitos EARS, 8 features y
+>   125 escenarios; primera ejecución con **0 fallos de la app**.
+> - **Despliegue vigente**: revisión Cloud Run `brltv2-00041-87c`
+>   (2026-11-18, commit `83f54e4`).
+> - **Informe final de entrega** con las 8 secciones (despliegue, cuentas,
+>   inyección, casos de uso, pruebas y recomendaciones):
+>   `RepoTecnico/INFORME_ENTREGA_FINAL.md`.
+> - **Datos reiniciados y simulados** (2026-11-18): hoy hay **5 empleados
+>   activos**, **2 proyectos** y los flujos #12/#13/#15 activos (#14 terminado).
+>   Detalle en el [Manual del Admin](07-Manual-del-Admin/manual-admin.md).
 
 <!-- GENERAR_IMAGEN: arquitectura-portales.svg|png -->
 
@@ -72,4 +83,4 @@ La misma documentación navegable con imágenes está en
 
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · revisión vigente `brltv2-00041-87c`*

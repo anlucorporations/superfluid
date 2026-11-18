@@ -37,6 +37,7 @@
 | CU-14 | Consultar movimientos y flujos en la Suite | EMPLEADO |
 | CU-15 | Gestionar perfil y datos personales | EMPLEADO |
 | CU-16 | Retirar saldo BrltX (cobro del empleado) | EMPLEADO |
+| CU-17 | Downgrade de flujo con tope acumulado del 80% | EMPLEADO |
 
 ---
 
@@ -1655,6 +1656,113 @@ verificación de sesión SIWE y tx hash).
 
 ---
 
+### CU-17 — Downgrade de flujo con tope acumulado del 80%
+
+**Actor(es):** EMPLEADO (firma `downgrade` on-chain; el tope del 80% lo exige el backend,
+no el contrato).
+
+**Precondiciones:**
+1. Sesión Suite válida (CU-13) y wallet del empleado conectada en la red del entorno
+   (chainId 31337 en el despliegue actual vía Anvil/proxy; ver `Manuales/04-despliegue.md`).
+2. Al menos un flujo creado hacia la wallet del empleado, **vivo o terminado**: el
+   `asignadoTotal` = suma de `deposited` de **todos** sus flujos
+   (`web/src/lib/downgrade-limit.ts:67-72`).
+3. Saldo BrltX > 0 en la wallet y CC suficiente para el gas.
+
+**Flujo principal:**
+1. En «Downgrade de flujos» de `/suite`, la ficha de límites (`LimitChip`,
+   `web/src/app/suite/page.tsx:388-396`) muestra **asignado a tu cuenta / tope 80% /
+   ya descargado / disponible**, con valores de `GET /api/suite/me#limites`
+   (DTO `DowngradeLimitDto`, `web/src/app/api/suite/me/route.ts:21-28`). [RF-15, RF-21]
+2. EMPLEADO selecciona el flujo (activo, pausado o terminado) e indica el importe; el
+   botón **«Máximo»** propone `min(BrltX en cartera, disponible del tope)`
+   (`descargableWei`, `web/src/app/suite/page.tsx:286-287`).
+3. La UI firma `downgrade(importe)` sobre BrltX en la wallet del empleado
+   (`downgradeFlujo`, `web/src/app/suite/page.tsx:200-224`) y registra
+   `POST /api/suite/actions {operacion:"cobro", flowId, txHash}`. [RF-18]
+4. El backend (`web/src/app/api/suite/actions/route.ts:16-44`) exige CSRF + sesión
+   empleado, **verifica la tx contra la cadena** (misma `from` que la sesión y evento
+   `Downgraded`) y, con la auditoría ya reconstruida, calcula el límite
+   (`getDowngradeLimit`) y llama `assertDowngradeLimit` **antes** de auditar.
+5. Si el tope no se supera, se registra el `audit_event`
+   (`accion="flujo"`, `meta.operacion="cobro"`, `meta.amount`, `meta.via="suite"`) y la
+   Suite refresca saldos y fichas de límites (ciclo de 5 s, RF-08). [RNF-06]
+
+**Flujos alternativos:**
+- A1 Importe ≤ 0 → `422 importe_invalido`; no se audita
+  (`web/src/lib/downgrade-limit.ts:86-89`).
+- A2 `usado + importe > maximo` → `422 tope_80_superado` y **no se registra auditoría**
+  (`web/src/lib/downgrade-limit.ts:90-98`). Nota de producto: el tope es regla del
+  backend, no del contrato; si la tx on-chain ya se firmó, el saldo sí se movió en la
+  cadena — el cobro simplemente queda fuera de la auditoría y la ficha «Ya descargado»
+  no lo suma.
+- A3 Tx no verificable (cartera, evento o estado incorrectos) → `422 tx_no_verificada`
+  y sin auditoría (`web/src/lib/flows-onchain.ts:145`, H5).
+- A4 Wallet activa distinta a la sesión → la UI aborta antes de firmar
+  (`walletAccount()`, `web/src/app/suite/page.tsx:158-170`).
+- A5 Auditoría con `actorWallet` en formato checksum → el acumulado compara
+  **sin distinción de mayúsculas/minúsculas** (regex case-insensitive,
+  `web/src/lib/downgrade-limit.ts:43-49`). Bug destapado por la simulación operativa
+  del 2026-11-18 y corregido ese mismo día (commit `83f54e4`).
+- A6 Cobro autónomo (CU-16) y downgrade de flujo (CU-17) consumen el **mismo**
+  acumulado: ambos quedan como `meta.operacion="cobro"` en `audit_events`
+  (`actions/route.ts:41-44`).
+
+**Criterios de aceptación:**
+
+```gherkin
+Escenario: Cobro dentro del tope
+  Dado un empleado con flujos que suman 1000 BRLT de deposited y 0 cobros previos
+  Cuando firma downgrade(500e18) de un flujo y la tx se verifica en la cadena
+  Entonces /api/suite/actions audita el cobro y «Ya descargado» muestra 500 BRLT
+  Y «Disponible» muestra 300 BRLT (tope 800 − 500).
+
+Escenario: Cobro que superaría el tope (A2)
+  Dado un empleado con asignadoTotal 1000 BRLT y ya descargado 700 BRLT
+  Cuando firma downgrade(200e18)
+  Entonces la API responde 422 con código tope_80_superado
+  Pero no se registra ningún audit_event de cobro.
+
+Escenario: El tope es acumulado entre CU-16 y CU-17 (A6)
+  Dado un empleado con asignadoTotal 500 BRLT
+  Cuando cobra 100 BRLT con downgrade autónomo (CU-16) y luego 150 BRLT desde un flujo (CU-17)
+  Entonces «Ya descargado» suma 250 BRLT y disponible queda en 150 BRLT
+  Pero el máximo del tope sigue siendo 400 BRLT (80% de 500).
+
+Escenario: Los flujos terminados cuentan para el asignado
+  Dado un empleado con un flujo terminado de 400 BRLT deposited y uno activo de 100 BRLT
+  Cuando consulta sus límites
+  Entonces asignadoTotal es 500 BRLT y downgradeMaximo es 400 BRLT.
+
+Escenario: Auditoría con wallet checksummed (A5)
+  Dado audit_events con actorWallet "0xAbC…" (checksum) para cobros previos
+  Cuando se calcula el límite para "0xabc…" (minúsculas)
+  Entonces downgradeUsado incluye esos cobros (comparación case-insensitive).
+```
+
+**Restricciones [EARS]:**
+- El sistema deberá limitar el acumulado cobrado por el empleado al 80% del total
+  asignado a su cuenta, calculado como la suma de `deposited` de todos sus flujos.
+  [RF-21; `web/src/lib/downgrade-limit.ts:19-36`]
+- Cuando el cobro verificado supere el tope, el sistema deberá rechazar la auditoría con
+  `422 tope_80_superado` y no registrar el evento. [`actions/route.ts:41-44`]
+- Mientras se calcule el gasto acumulado, el sistema deberá comparar `actorWallet` sin
+  distinción de mayúsculas/minúsculas. [`downgrade-limit.ts:43-49`]
+- El tope deberá exigirse **antes** de auditar y después de verificar la tx contra la
+  cadena. [`actions/route.ts:24-44`]
+- El contrato BrltX no deberá imponer el tope: es una regla de producto del backend
+  (pendiente de confirmar si se migra a on-chain; recomendación nº 4 de
+  `INFORME_ENTREGA_FINAL.md`).
+
+**Prueba:** API (unitarias Vitest de `downgrade-limit`, `web/tests/*`), E2E UI (batería
+`RepoPrueba/`, escenarios de downgrade NOT_RUN pendientes de intérprete) y verificación
+operativa: la simulación del 2026-11-18 (`scripts/simular_actividades.py`) ejecutó cobros
+reales auditados dentro del tope del 80% (`RepoTecnico/BaseOperaciones/estado_inyeccion.md`).
+
+**Trazabilidad:** RF-12, RF-15, RF-18, RF-21 · RNF-06, RNF-07 · CU-16 (mismo acumulado).
+
+---
+
 ## 6. Matriz de trazabilidad RF ↔ CU
 
 Cobertura por caso de uso; en la última columna, los tipos de prueba canon: **CONTRACT**
@@ -1673,23 +1781,23 @@ Cobertura por caso de uso; en la última columna, los tipos de prueba canon: **C
 | RF-09 proyectos (presupuesto informativo, H-31) | CU-04 | API, E2E UI |
 | RF-10 dashboard financiero (balances 5 s, activos, proyección H-22) | CU-10, CU-11 | E2E UI, API, MANUAL |
 | RF-11 conexión wallet red 81234 | CU-01, CU-13 | E2E UI, MANUAL |
-| RF-12 getFlow / getRealtimeBalance / balanceOf por destinatario | CU-06, CU-07, CU-08, CU-10, CU-14, CU-16 | CONTRACT, E2E UI, API |
+| RF-12 getFlow / getRealtimeBalance / balanceOf por destinatario | CU-06, CU-07, CU-08, CU-10, CU-14, CU-16, CU-17 | CONTRACT, E2E UI, API |
 | RF-13 gestión del sistema (addresses, RPC, refresco) | CU-11, CU-12 | E2E UI, API, MANUAL |
 | RF-14 deployment scriptable (DeployBrlt / DeployAll) | CU-12 | MANUAL |
-| RF-15 Suite del empleado | CU-13, CU-14, CU-15, CU-16 | E2E UI, API |
+| RF-15 Suite del empleado | CU-13, CU-14, CU-15, CU-16, CU-17 | E2E UI, API |
 | RF-16 autenticación por wallet (SIWE, respuesta genérica) | CU-01, CU-13 | E2E UI, API |
 | RF-17 persistencia administrativa (MongoDB) | CU-03, CU-04, CU-05, CU-14, CU-15 | API, E2E UI |
-| RF-18 operación 100 % on-chain (firma desde el navegador) | CU-02, CU-03, CU-06, CU-07, CU-08, CU-09, CU-12, CU-16 | E2E UI, CONTRACT |
+| RF-18 operación 100 % on-chain (firma desde el navegador) | CU-02, CU-03, CU-06, CU-07, CU-08, CU-09, CU-12, CU-16, CU-17 | E2E UI, CONTRACT |
 | RF-19 cambio de wallet del empleado (H-15) | CU-03 | API, E2E UI, CONTRACT |
 | RF-20 baja de empleado (aviso de cierre + saldo residual) | CU-03, CU-13, CU-15, CU-16 | API, E2E UI, CONTRACT |
-| RF-21 retiro del saldo BrltX del empleado (AC-01) | CU-16, CU-14, CU-08 | CONTRACT, E2E UI, API |
+| RF-21 retiro del saldo BrltX del empleado (AC-01) | CU-16, CU-17, CU-14, CU-08 | CONTRACT, E2E UI, API |
 | RNF-01 seguridad de claves (.env + gitignore, prueba) | CU-12 | MANUAL, CI |
 | RNF-02 refresco alineado al block time (H-19) | CU-10, CU-11, CU-14 | E2E UI, MANUAL |
 | RNF-03 compatibilidad (ethers 5.7.2 + React 19, sin SDK H-01) | CU-12, CU-06, CU-10 | MANUAL, CI |
 | RNF-04 usabilidad admin sin conocimiento blockchain | CU-01, CU-06, CU-09 | E2E UI, MANUAL |
 | RNF-05 OZ 5.1 + control de acceso + ReentrancyGuard/CEI/Pausable/shortfall (AC-07) | CU-02, CU-06, CU-08, CU-12 | CONTRACT |
 | RNF-06 trazabilidad on-chain verificable (RPC) | CU-10, CU-12, CU-14 | CONTRACT, API, MANUAL |
-| RNF-07 SIWE (nonce 5 min, ecrecover, sesión admin 2 h/empleado 8 h, rate-limit, CSRF) | CU-01, CU-13, CU-15, CU-16 | E2E UI, API |
+| RNF-07 SIWE (nonce 5 min, ecrecover, sesión admin 2 h/empleado 8 h, rate-limit, CSRF) | CU-01, CU-13, CU-15, CU-16, CU-17 | E2E UI, API |
 | RNF-08 protección de datos (consentimiento, minimización, borrado inmediato, anonimización 30 d, retención 5 a) | CU-15, CU-13, CU-16 | E2E UI, API, MANUAL |
 | RNF-09 custodia de claves (separación, Ownable2Step, backup, sucesión) | CU-12 | MANUAL |
 | RT-01 Solidity 0.8.28 + OZ 5.1.0 | CU-12 | MANUAL |
@@ -1747,8 +1855,12 @@ Cobertura por caso de uso; en la última columna, los tipos de prueba canon: **C
 | CU-14 | E2E UI + API + CONTRACT + MANUAL |
 | CU-15 | E2E UI + API + MANUAL |
 | CU-16 | CONTRACT + E2E UI + API |
+| CU-17 | CONTRACT + E2E UI + API |
 
 ---
 
-*Fin del documento. Los CUs CU-01..CU-16 y la matriz RF↔CU son la referencia canónica para
+*Fin del documento. Los CUs CU-01..CU-17 y la matriz RF↔CU son la referencia canónica para
 la Fase 3 (documentación técnica y desarrollo).*
+
+*Actualizado 2026-11-18 · análisis completo v2 (consolidación de CU-17 desde `RepoTecnico/casos_uso/`
+y el código vigente; despliegue `brltv2-00041-87c`, commit `83f54e4`).*

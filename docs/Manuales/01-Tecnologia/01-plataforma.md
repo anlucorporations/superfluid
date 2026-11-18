@@ -19,6 +19,10 @@ transmite como una gota a gota; tú cobras cuando quieres.**
     (`#131c30`) y una cabecera con degradado violeta (`#1b1140`).
 - **La red** (Besu por defecto, chainId 81234; el despliegue actual opera contra
   Anvil 31337): donde viven los contratos.
+- ⚠ **Dato pendiente de decisión (no se toca por ahora):** el mensaje de acceso
+  (SIWE) firma con la red 81234 mientras la app y la red real usan 31337.
+  Funciona porque ambos lados validan el mismo número, pero la alineación queda
+  como **decisión del usuario**: no se propone ningún cambio inmediato.
 
 <!-- GENERAR_IMAGEN: arquitectura.svg|png -->
 
@@ -60,6 +64,40 @@ Corregido en el gráfico `arquitectura.svg` de `docs/imagenes/`.*
 3. **Admin** → te lleva a `/admin`. **Empleado** → a `/suite`.
    **Nadie** → mensaje: «pide alta al administrador».
 4. Ya dentro de tu portal, firmas un mensaje (SIWE) para abrir la sesión.
+
+### Firmas que se explican solas (firma clara)
+**Ninguna firma a ciegas.** Desde la versión de 2026-11-18, en los **4 flujos de
+firma** (entrada única, login admin, login empleado y páginas admin de
+empleados/sistema) pasan dos cosas antes de que la wallet pida tu firma:
+
+1. **La pantalla muestra una ficha de firma** (componente «FirmaResumen»): título
+   de la operación, qué haces, con qué wallet y la nota por defecto
+   **«La firma es gratuita: no mueve fondos ni autoriza gastos»**.
+2. **La wallet muestra un mensaje personalizado** (SIWE) que dice para qué es la
+   firma, por ejemplo: *«Acceder a tu Portal del Empleado de Superfluid Brlt.
+   Esta firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza
+   gastos»*.
+
+Y en las transacciones on-chain (crear flujo, cobrar, pausar…), la interfaz
+acompaña cada petición con lenguaje humano: «Envías X BRLT al contrato…»,
+«Quemas X BrltX y recibes X BRLT…», «Descargas X BRLT del flujo #N…».
+El inventario completo de los 13 puntos de firma está en
+`RepoTecnico/CLEAR_SIGNING.md`.
+
+<!-- GENERAR_IMAGEN: firma-clara.svg|png -->
+
+```mermaid
+sequenceDiagram
+    participant U as Tú
+    participant P as Pantalla (ficha FirmaResumen)
+    participant W as Wallet (MetaMask)
+    U->>P: pulsa «Conectar / Firmar»
+    P-->>U: ficha: qué haces · wallet · caduca en 5 min<br/>«La firma es gratuita: no mueve fondos ni autoriza gastos»
+    P->>W: pide la firma (mensaje SIWE explicado)
+    W-->>U: texto: «Acceder a tu Portal del Empleado…<br/>No mueve fondos ni autoriza gastos»
+    U->>W: acepta (sin coste)
+    W-->>P: firma verificada → sesión abierta
+```
 
 ### Y después, la app te vigila la wallet (para protegerte)
 - Mientras estás en `/suite`, la app comprueba de forma **continua** (cada 10
@@ -131,6 +169,24 @@ sequenceDiagram
 - La **wallet se valida sin parar** en el Portal del Empleado: si la cuenta activa
   de MetaMask deja de coincidir con la sesión, se pide revalidar.
 
+## Datos y pruebas en palabras simples
+
+### La base se puede reiniciar con respaldo
+- Existe un guion operativo (`scripts/simular_actividades.py`) que **guarda una
+  copia de seguridad en JSON** de toda la base, la reinicia y luego **simula uso
+  real** (empleados, flujos, pausas, cobros y reanudaciones).
+- Así se hizo el 2026-11-18: hoy la plataforma tiene **5 empleados activos,
+  2 proyectos** y los flujos #12/#13/#15 vivos (#14 terminado). Todo quedó
+  registrado en `RepoTecnico/BaseOperaciones/estado_inyeccion.md`.
+
+### Pruebas con cartera falsa antes que con dinero real
+- La **batería de pruebas** (`RepoPrueba/`) son 125 escenarios que prueban la app
+  con wallets simuladas (y reales cuando hay material), antes de tocar nada real.
+- Primera pasada (2026-11-18): **0 fallos de la aplicación** — 3 escenarios
+  completos, 54 a la espera de material de wallets reales y 43 pendientes del
+  robot de pruebas. El robot **nunca corre sin tu aprobación**.
+
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · sincronizado con el manual técnico v2 (firma clara,
+batería de pruebas y simulación operativa; revisión `brltv2-00041-87c`)*

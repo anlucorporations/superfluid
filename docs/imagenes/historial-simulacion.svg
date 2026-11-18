@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 540" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Historial real del flujo #13 durante la simulación del 2026-11-18">
+  <defs>
+    <marker id="hs" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b5cf6"/>
+    </marker>
+    <linearGradient id="hsh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1140"/><stop offset="1" stop-color="#3b2a7a"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg{fill:#0d1425}.card{fill:#131c30;stroke:#2a3a5c;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#e2e8f0}
+    .h2{font-size:13px;fill:#94a3b8}
+    .lbl{font-size:15px;font-weight:700;fill:#e2e8f0}
+    .mut{font-size:12px;fill:#94a3b8}
+    .txt{font-size:12.5px;fill:#cbd5e1}
+    .em{fill:#34d399;font-weight:700}
+    .vio{fill:#a78bfa;font-weight:600}
+    .num{font-size:14px;font-weight:800;fill:#0d1425}
+    .numB{fill:#8b5cf6}
+    .rail{stroke:#2a3a5c;stroke-width:3}
+  </style>
+  <rect class="bg" width="980" height="540"/>
+  <text x="490" y="40" text-anchor="middle" class="h1">El ejemplo real: flujo #13, del empleado Dos</text>
+  <text x="490" y="63" text-anchor="middle" class="h2">600 BRLT a 6 días · simulación operativa del 2026-11-18 · todo quedó auditado</text>
+
+  <!-- riel del tiempo -->
+  <line x1="80" y1="200" x2="940" y2="200" class="rail"/>
+
+  <!-- paso 1: creación -->
+  <rect class="card" x="60" y="110" width="200" height="60" rx="12"/>
+  <rect x="60" y="110" width="200" height="60" rx="12" fill="url(#hsh)"/>
+  <text x="160" y="138" text-anchor="middle" class="lbl">1 · Creación</text>
+  <text x="160" y="158" text-anchor="middle" class="mut">el admin financia 600 BRLT</text>
+
+  <!-- paso 2: pausa -->
+  <rect class="card" x="300" y="110" width="200" height="60" rx="12"/>
+  <rect x="300" y="110" width="200" height="60" rx="12" fill="url(#hsh)"/>
+  <text x="400" y="138" text-anchor="middle" class="lbl">2 · Pausa</text>
+  <text x="400" y="158" text-anchor="middle" class="mut">el admin pausa el flujo</text>
+
+  <!-- paso 3: cobro -->
+  <rect class="card" x="540" y="110" width="200" height="60" rx="12"/>
+  <rect x="540" y="110" width="200" height="60" rx="12" fill="url(#hsh)"/>
+  <text x="640" y="138" text-anchor="middle" class="lbl">3 · Cobro</text>
+  <text x="640" y="158" text-anchor="middle" class="mut">el empleado descarga</text>
+
+  <!-- paso 4: reanudación -->
+  <rect class="card" x="756" y="110" width="184" height="60" rx="12" fill="#0f2a22" stroke="#34d399" stroke-width="1.8"/>
+  <text x="850" y="138" text-anchor="middle" class="lbl" fill="#34d399">4 · Reanudación</text>
+  <text x="850" y="158" text-anchor="middle" class="mut">el flujo vuelve a su tasa</text>
+
+  <!-- nodos sobre el riel -->
+  <circle class="numB" cx="160" cy="200" r="16"/>
+  <text x="160" y="205" text-anchor="middle" class="num">1</text>
+  <circle class="numB" cx="400" cy="200" r="16"/>
+  <text x="400" y="205" text-anchor="middle" class="num">2</text>
+  <circle class="numB" cx="640" cy="200" r="16"/>
+  <text x="640" y="205" text-anchor="middle" class="num">3</text>
+  <circle cx="850" cy="200" r="16" fill="#34d399"/>
+  <text x="850" y="205" text-anchor="middle" class="num">4</text>
+
+  <!-- flechas del riel -->
+  <path stroke="#8b5cf6" stroke-width="2" fill="none" marker-end="url(#hs)" d="M300,200 L382,200"/>
+  <path stroke="#8b5cf6" stroke-width="2" fill="none" marker-end="url(#hs)" d="M540,200 L622,200"/>
+  <path stroke="#8b5cf6" stroke-width="2" fill="none" marker-end="url(#hs)" d="M756,200 L832,200"/>
+
+  <!-- detalle de cada paso -->
+  <rect class="card" x="60" y="250" width="200" height="150" rx="12"/>
+  <text x="160" y="278" text-anchor="middle" class="txt" style="fill:#e2e8f0;font-weight:600">Flujo #13 queda activo</text>
+  <text x="160" y="302" text-anchor="middle" class="txt">y empieza a acumular</text>
+  <text x="160" y="326" text-anchor="middle" class="txt">segundo a segundo.</text>
+  <text x="160" y="354" text-anchor="middle" class="txt vio">600 BRLT · 6 días</text>
+
+  <rect class="card" x="300" y="250" width="200" height="150" rx="12"/>
+  <text x="400" y="278" text-anchor="middle" class="txt" style="fill:#e2e8f0;font-weight:600">En ese momento el</text>
+  <text x="400" y="298" text-anchor="middle" class="txt" style="fill:#e2e8f0;font-weight:600">contrato acredita el tramo:</text>
+  <text x="400" y="326" text-anchor="middle" class="txt em">0,125 BRLT</text>
+  <text x="400" y="348" text-anchor="middle" class="txt">directo al BrltX</text>
+  <text x="400" y="368" text-anchor="middle" class="txt">del empleado Dos.</text>
+
+  <rect class="card" x="540" y="250" width="200" height="150" rx="12"/>
+  <text x="640" y="278" text-anchor="middle" class="txt" style="fill:#e2e8f0;font-weight:600">«Descarga» esos 0,125 BRLT</text>
+  <text x="640" y="298" text-anchor="middle" class="txt" style="fill:#e2e8f0;font-weight:600">a su cartera.</text>
+  <text x="640" y="326" text-anchor="middle" class="txt">Cobro <tspan class="em">auditado</tspan> y restado</text>
+  <text x="640" y="346" text-anchor="middle" class="txt">del contador del tope</text>
+  <text x="640" y="368" text-anchor="middle" class="txt">80% (<tspan class="em">dentro del límite</tspan>).</text>
+
+  <rect x="756" y="250" width="184" height="150" rx="12" fill="#0f2a22" stroke="#34d399" stroke-width="1.8"/>
+  <text x="850" y="278" text-anchor="middle" class="txt" style="fill:#34d399;font-weight:600">La tasa es la</text>
+  <text x="850" y="298" text-anchor="middle" class="txt" style="fill:#34d399;font-weight:600">misma;</text>
+  <text x="850" y="326" text-anchor="middle" class="txt">el tiempo restante</text>
+  <text x="850" y="348" text-anchor="middle" class="txt">se <tspan class="vio">aplaza</tspan> —</text>
+  <text x="850" y="370" text-anchor="middle" class="txt">sin perder devengo.</text>
+
+  <!-- nota inferior -->
+  <rect x="60" y="432" width="860" height="58" rx="10" fill="#1b1140" stroke="#8b5cf6" stroke-width="1.2"/>
+  <text x="490" y="455" text-anchor="middle" class="txt">El mismo día: flujo #12 del empleado Uno (pausa → cobro de 0,009259 BRLT → reanudación) y terminación del #14 de Tres</text>
+  <text x="490" y="476" text-anchor="middle" class="txt">(pagó lo devengado; el resto volvió al admin).</text>
+
+  <text x="490" y="520" text-anchor="middle" font-size="11" fill="#64748b">docs/imagenes/historial-simulacion.svg · simulación del 2026-11-18 · registro vivo en RepoTecnico/BaseOperaciones/estado_inyeccion.md</text>
+</svg>

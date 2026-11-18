@@ -10,7 +10,17 @@
 - Los **Trabajos (jobs)** anotan las veces que la app se revisa a sí misma.
 - La **Auditoría** no solo guarda historia: es el **contador** del tope del 80%.
   Cada cobro confirmado por la cadena suma ahí, y así la app sabe cuánto has
-  descargado ya.
+  descargado ya. La comparación de la wallet **ignora mayúsculas/minúsculas**
+  (corrección del 2026-11-18): da igual que quede escrita con el formato
+  «checksum» o en minúsculas, ningún cobro se escapa del recuento.
+- Los **respaldos** (`RepoTecnico/BaseOperaciones/respaldo_*/`) son fotos JSON de
+  la base hechas antes del reinicio del 2026-11-18: no forman parte del mapa
+  vivo, sirven para restaurar o auditar.
+
+### Cómo está el mapa hoy
+Tras el reinicio + simulación del 2026-11-18: **5 empleados** en **2 proyectos**,
+flujos #12/#13/#15 activos y #14 terminado, 11 flujos históricos y 2
+programados «próximo». Detalle en `RepoTecnico/BaseOperaciones/estado_inyeccion.md`.
 
 <!-- GENERAR_IMAGEN: relacional-map.svg|png -->
 
@@ -44,4 +54,5 @@ flowchart LR
 
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · incluye el estado del mapa tras la simulación y el fix
+del acumulador del tope*

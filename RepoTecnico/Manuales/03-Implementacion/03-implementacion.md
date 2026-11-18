@@ -67,7 +67,7 @@ el constructor) y `_flows[flowId]` (struct `Flow` de 12 campos).
 exige: misma `from` que la sesión + evento `Downgraded`/`FlowSettled` del empleado.
 Sin verificación → `422 tx_no_verificada` y **no** se audita.
 
-### Tope de downgrade del 80% (nuevo, commit aab670e)
+### Tope de downgrade del 80% (commit aab670e, corregido en 83f54e4)
 #### Módulo `downgrade-limit.ts`
 
 `web/src/lib/downgrade-limit.ts` implementa el tope acumulado del 80% (CU-16 ampliado /
@@ -78,9 +78,9 @@ backend antes de auditar.
 |---|---|---|
 | `DOWNGRADE_CAP` / `DOWNGRADE_CAP_DEN` | 19-20 | Fracción 80/100, constante de producto. |
 | `downgradeMaximoDe(asignadoTotal)` | 34 | `floor((asignadoTotal × 80) / 100)` al wei. |
-| `downgradeUsadoDe(wallet)` | 39 | Suma `meta.amount` de `audit_events` con `actorWallet`, `accion="flujo"` y `meta.operacion="cobro"` (límite 1000; importes corruptos se ignoran sin bloquear). |
-| `getDowngradeLimit(wallet)` | 65 | `asignadoTotal` = suma de `deposited` de **todos** los flujos del receptor (vivos o terminados, vía `listFlowsByReceiver`); devuelve `{asignadoTotal, downgradeMaximo, downgradeUsado, downgradeDisponible}` con `disponible = maximo − usado` (nunca negativo). |
-| `assertDowngradeLimit(limite, importe)` | 84 | Lanza `422 importe_invalido` si `importe ≤ 0` y `422 tope_80_superado` si `usado + importe > maximo`. |
+| `downgradeUsadoDe(wallet)` | 39-65 | Suma `meta.amount` de `audit_events` con `actorWallet` comparado **sin distinción de mayúsculas/minúsculas** (regex case-insensitive con escape de regex, líneas 43-49), `accion="flujo"` y `meta.operacion="cobro"` (límite 1000; importes corruptos se ignoran sin bloquear). Corrección del 2026-11-18: la auditoría registra la wallet a veces en formato checksum y la comparación exacta en minúsculas perdía cobros — bug destapado por la simulación operativa (`RepoTecnico/BaseOperaciones/estado_inyeccion.md`). |
+| `getDowngradeLimit(wallet)` | 67-80 | `asignadoTotal` = suma de `deposited` de **todos** los flujos del receptor (vivos o terminados, vía `listFlowsByReceiver`); devuelve `{asignadoTotal, downgradeMaximo, downgradeUsado, downgradeDisponible}` con `disponible = maximo − usado` (nunca negativo). |
+| `assertDowngradeLimit(limite, importe)` | 86-99 | Lanza `422 importe_invalido` si `importe ≤ 0` y `422 tope_80_superado` si `usado + importe > maximo`. |
 
 La verdad del asignado es **el contrato** (Mongo reconciliada en cada lectura de flujos);
 el gasto acumulado se reconstruye de la **auditoría** (solo cobros verificados contra la
@@ -95,6 +95,52 @@ cadena quedan en `audit_events`).
   `audit_event` (46-56). Cobros sobre el tope → `422 tope_80_superado`, sin auditoría.
 - `GET /api/suite/me` (`web/src/app/api/suite/me/route.ts:21-28`): devuelve además
   `limites` (DTO de `DowngradeLimitDto`) junto a `employee`, `config`, `balances` y `flows`.
+
+### Clear signing (commit 7da4a76)
+#### Implementación en la app
+
+Inventario de los 13 puntos de firma y textos por plantilla:
+`RepoTecnico/CLEAR_SIGNING.md` (informe dedicado, con categoría
+`[AUTH]/[PERM]/[XFER]/[DEFI]/[GOV]` e impacto real de cada punto).
+
+- **Statements SIWE por propósito** (`web/src/app/api/auth/nonce/route.ts:8-13`):
+  diccionario `STATEMENTS[purpose]` con textos ASCII sin acentos que explican el acceso
+  («Acceder al panel de administracion…», «Acceder a tu Portal del Empleado…») y la nota
+  «No mueve fondos ni autoriza gastos». El challenge de alta de admin
+  (`web/src/app/api/admin/allowlist/challenge/route.ts:21-24`) lleva su propio statement
+  («Confirmar esta wallet como administradora…»).
+- **Componente `FirmaResumen`** (`web/src/components/firma-resumen.tsx:9-36`): ficha con
+  `titulo` + `filas` + `nota` (por defecto «La firma es gratuita: no mueve fondos ni
+  autoriza gastos.»), renderizada **antes** de pedir la firma en los 4 flujos de firma:
+  `EntryLogin.tsx:123` (entrada única), `AdminLoginFlow.tsx` (login admin),
+  `LoginFlow.tsx` (login empleado) y las páginas admin `empleados/page.tsx` y
+  `sistema/page.tsx` (EIP-712 de cambio de wallet + alta en allowlist).
+- **Transacciones on-chain**: los textos explicativos por operación (approve, flujos,
+  downgrade, settle, changeReceiver) viven en la UI de `/admin` y `/suite` — tabla en
+  `CLEAR_SIGNING.md` §2.4. No cambia ninguna firma: es capa de presentación sobre los
+  mismos `signTypedData_v4` / `personal_sign` / llamadas de
+  `web/src/lib/client/contracts.ts`.
+
+### Scripts operativos de datos (commits de inyección + 83f54e4)
+#### Inyección y simulación
+
+- `scripts/inyectar_datos_operativos.py` (266 líneas): inyección base aprobada
+  2026-11-16 (allowlist #0/#1, proyecto `Nomina ANLU`, empleados #2..#4, mint 10.000 BRLT
+  a #0 y 100 BRLT a #1..#4 con la wallet owner). `--dry-run` sin escritura,
+  confirmación s/n, log sin secretos en `RepoTecnico/BaseOperaciones/inyeccion_datos.log`.
+- `scripts/simular_actividades.py` (543 líneas): dos fases con `--fase reset|actividades`.
+  - **Fase A/reset**: respaldo JSON previo de las 11 colecciones en
+    `RepoTecnico/BaseOperaciones/respaldo_<fecha>/*.json`, drop de las colecciones de
+    `superfluid_anvil`, recreación de `system_config` (chainId 31337, RPC proxy,
+    addresses del despliegue, `deployBlock 56395`) y reinyección base idéntica a la
+    aprobada + mint top-up idempotente. El drop nunca corre en `--dry-run`.
+  - **Fase B/actividades**: 2 empleados nuevos (#5/#6), proyecto extra, mint de
+    financiación + `approve` a BrltX, 4 flujos `wrapAndCreateFlow` espejados, pausa →
+    cobro `downgrade` auditado (dentro del tope 80%) → reanudación, terminación
+    `deleteFlow` y 2 flujos programados «proximo».
+- Registro vivo del resultado real: `RepoTecnico/BaseOperaciones/estado_inyeccion.md`
+  (incluye la corrección de los flujos fantasma #3..#11 terminados por el admin tras la
+  simulación, con `via: correccion-simulacion` en auditoría).
 
 ## Frontend de la app web
 
@@ -175,7 +221,14 @@ sujeto al tope** — el mismo `/api/suite/actions` exige el límite a todo cobro
   `/admin/jobs`.
 - Cambio del tope de downgrade: ajustar `DOWNGRADE_CAP`/`DOWNGRADE_CAP_DEN` en
   `web/src/lib/downgrade-limit.ts` (no hay variable de entorno; es constante de producto).
+- Nuevo mensaje de firma: añadir statement a `STATEMENTS` en
+  `web/src/app/api/auth/nonce/route.ts` (SIWE) o pasar `titulo`/`filas`/`nota` al
+  componente `FirmaResumen`; actualizar el inventario de `RepoTecnico/CLEAR_SIGNING.md`.
+- Nueva fase de simulación de datos: extender `scripts/simular_actividades.py`
+  (fase `actividades`) respetando la seguridad del script (nunca imprimir URI ni
+  mnemónico; dry-run sin escritura).
 
 ---
 
-*Actualizado 2026-11-17 · commit aab670e*
+*Actualizado 2026-11-18 · análisis completo v2 (clear signing, fix case-insensitive del
+tope 80% y scripts operativos; commit `83f54e4`)*

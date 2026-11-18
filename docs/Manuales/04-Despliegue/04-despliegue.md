@@ -2,9 +2,9 @@
 
 ## ¿Dónde vive la aplicación?
 
-### Hoy (revisión vigente, 17/11/2026)
-- **App**: servida desde **Google Cloud Run**, revisión `brltv2-00033-dmn`
-  (compilación `66b59218`, commit `aab670e`).
+### Hoy (revisión vigente, 18/11/2026)
+- **App**: servida desde **Google Cloud Run**, revisión `brltv2-00041-87c`
+  (compilación con el commit `83f54e4`).
   URL: **https://brltv2-szrmcf2hja-ew.a.run.app**
 - **Contratos**: en la red de práctica; el entorno desplegado habla con una red
   de práctica tipo **Anvil (chainId 31337)** a través de un proxy RPC. El código
@@ -15,20 +15,33 @@
 
 ```mermaid
 flowchart LR
-    U["Tu navegador + MetaMask"] --> APP["Cloud Run<br/>brltv2-00033-dmn<br/>/entrar · /admin · /suite"]
+    U["Tu navegador + MetaMask"] --> APP["Cloud Run<br/>brltv2-00041-87c (2026-11-18)<br/>/entrar · /admin · /suite"]
     APP -->|"/api/health"| H["db ok · rpc ok · chainId 31337"]
-    APP --> DB[("MongoDB")]
+    APP --> DB[("MongoDB<br/>superfluid_anvil")]
     APP -->|"RPC proxy"| N["Red de práctica (Anvil 31337)"]
 ```
 
 ## ¿Qué trae esta revisión?
 
-### Novedades de la versión de 2026-11-17
-- **Portal del Empleado rediseñado** (`/suite`): cara visual propia (azul noche y
-  violeta) y secciones nuevas.
-- **Tope acumulado del 80%** al descargar (downgrade de flujos).
-- **Entrada única** `/entrar`: la wallet decide a qué portal ir, y la app
-  comprueba sin parar que sigues usando la misma cuenta.
+### Novedades de la versión de 2026-11-18
+- **Firma clara**: mensajes SIWE con propósito y ficha «FirmaResumen» en los 4
+  flujos de firma; lenguaje humano antes de cada transacción.
+- **Batería de pruebas Web3** (`RepoPrueba/`): 125 escenarios con wallets
+  simuladas; primera ejecución con **0 fallos de la app**.
+- **Informe final de entrega** (`RepoTecnico/INFORME_ENTREGA_FINAL.md`): las 8
+  secciones —despliegue, estructura, BD/contratos, cuentas, inyección, casos de
+  uso, pruebas y recomendaciones—.
+- **Reinicio de datos + simulación operativa** (2026-11-18): respaldo JSON de la
+  base, reinyección y uso real simulado. Hoy: **5 empleados activos, 2
+  proyectos**, flujos #12/#13/#15 activos, #14 terminado y 2 programados
+  «próximo».
+- **Fix del tope 80%**: el recuento de «ya descargado» compara la wallet sin
+  distinguir mayúsculas/minúsculas (bug destapado por la simulación, ya
+  corregido y desplegado).
+- **Salud verificada en vivo** el 2026-11-18: `/api/health` responde
+  `ok / db / rpc / chainId 31337`.
+- **Integridad de ramas**: `gh-integra` = `main` = `superfluidv2`, todas en el
+  commit `83f54e4` y sincronizadas en los 3 repositorios remotos.
 
 ## Cómo poner la aplicación en marcha
 
@@ -71,4 +84,4 @@ Una visita a **`/api/health`** responde:
 
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · revisión vigente `brltv2-00041-87c` (commit `83f54e4`)*

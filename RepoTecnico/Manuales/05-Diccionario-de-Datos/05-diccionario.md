@@ -14,12 +14,18 @@
 | `siwe_nonces` | `nonceHash` única, TTL | Nonce de un uso (5 min) ligado a wallet y propósito. |
 | `sessions` | `tokenHash` única, TTL | Sesiones opacas (2 h admin / 8 h empleado), revocables. |
 | `auth_ratelimits` | `key`, TTL | Ventana fija de rate limit. |
-| `audit_events` | `createdAt`, `(accion, empleadoId)` | Actor, acción, empleado, txHash, `meta`. Para los cobros verificados: `accion="flujo"`, `meta.operacion="cobro"`, `meta.amount` (wei) y `meta.via="suite"`; es la fuente del gasto acumulado del tope de downgrade (ver «DTO de límites» más abajo). |
+| `audit_events` | `createdAt`, `(accion, empleadoId)` | Actor, acción, empleado, txHash, `meta`. Para los cobros verificados: `accion="flujo"`, `meta.operacion="cobro"`, `meta.amount` (wei) y `meta.via="suite"`; es la fuente del gasto acumulado del tope de downgrade (ver «DTO de límites» más abajo). Ojo: `actorWallet` puede quedar en formato checksum (depende del formato de la sesión); el acumulado lo compara case-insensitive (`downgrade-limit.ts:43-49`). |
 | `flows` | `flowId` única, `(receiverLower, estado)` | Copia reconciliada del flujo on-chain. |
 | `scheduled_flows` | `(fechaInicio, estado)` | Programación de nómina (AC-05). |
 | `flow_batches` | `createdAt` | Lote de hasta 10 empleados (CU-09). |
 | `flows_history` | `key` única (`txHash-logIndex`) | Espejo de eventos BrltX (H6). |
 | `job_runs` | `(job, startedAt)` | Ejecuciones de jobs y su resultado. |
+
+Nota de reinicio: `scripts/simular_actividades.py` (fase `reset`) solo dropea las 11
+colecciones que lista en su constante `COLECCIONES`
+(`scripts/simular_actividades.py:81-83`); `sessions`, `siwe_nonces` y
+`auth_ratelimits` quedan fuera del reset (pendiente de confirmar si es intencional —
+preserva sesiones activas tras un reinicio de datos).
 
 ### Flows (copia reconciliada)
 #### Campos
@@ -70,6 +76,28 @@ Fuente: `web/src/lib/downgrade-limit.ts:22-31`; lo expone `GET /api/suite/me` en
 Errores asociados en `POST /api/suite/actions`: `422 importe_invalido` (importe ≤ 0) y
 `422 tope_80_superado` (usado + importe supera el máximo).
 
+## Estado de datos actual (2026-11-18, post-reinicio + simulación)
+
+### Contenido vigente de `superfluid_anvil`
+#### Tras `scripts/simular_actividades.py` (commit 83f54e4)
+
+Fuente viva: `RepoTecnico/BaseOperaciones/estado_inyeccion.md`; respaldo previo al
+reinicio en `RepoTecnico/BaseOperaciones/respaldo_20261118T173426Z/*.json`.
+
+| Dato | Valor actual |
+|---|---|
+| Empleados activos | **5**: Uno/Dos/Tres (#2..#4, 100 BRLT/30 d) · Cuatro (#5, mantenimiento 50 BRLT/15 d) · Cinco (#6, proyecto_mvp 80 BRLT/6 d). |
+| Proyectos | **2**: `Nomina ANLU` y `Mantenimiento Infraestructura`. |
+| Flujos canónicos | **#12** 300/30 d activo · **#13** 600/6 d activo · **#15** 360/6 d activo · **#14** 240/15 d terminado (`deleteFlow`). |
+| Flujos históricos | 11 terminados en total (incluye los fantasma #3..#11 de eras previas, terminados por el admin con `via: correccion-simulacion`). |
+| Flujos programados | 2 en estado «proximo» (CU-05, sin ejecutar). |
+| Allowlist | #0 (super admin/owner) y #1 (admin de sistema). |
+| Cobros auditados | Pausa → cobro → reanudación sobre #12 y #13; acumulado del tope 80% dentro del límite (verificado con la corrección case-insensitive). |
+
+Los datos on-chain (saldos BRLT/BrltX, escrow) son la verdad; esta tabla describe el
+espejo administrativo tras la simulación.
+
 ---
 
-*Actualizado 2026-11-17 · commit aab670e*
+*Actualizado 2026-11-18 · análisis completo v2 (estado post-simulación y fix
+case-insensitive del tope; commit `83f54e4`)*

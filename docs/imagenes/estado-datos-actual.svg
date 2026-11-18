@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 560" font-family="system-ui,'Segoe UI',Arial" role="img" aria-label="Estado actual de los datos tras el reinicio y la simulación del 2026-11-18">
+  <defs>
+    <marker id="ed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#338fff"/>
+    </marker>
+  </defs>
+  <style>
+    .bg{fill:#ffffff}
+    .card{fill:#f7faff;stroke:#c9dcf7;stroke-width:1.5}
+    .hi{fill:#eaf3ff;stroke:#338fff;stroke-width:2}
+    .okB{fill:#eefaf3;stroke:#10b981;stroke-width:2}
+    .mutB{fill:#eef2f7;stroke:#cbd5e1;stroke-width:1.5}
+    .h1{font-size:22px;font-weight:700;fill:#0f172a}
+    .h2{font-size:13px;fill:#64748b}
+    .lbl{font-size:15px;font-weight:700;fill:#0f172a}
+    .sub{font-size:12.5px;fill:#475569}
+    .mut{font-size:12px;fill:#64748b}
+    .rel{font-size:11.5px;font-weight:700;fill:#338fff}
+    .arr{stroke:#338fff;stroke-width:2.2;fill:none;marker-end:url(#ed)}
+    .tag{font-size:11.5px;font-weight:700}
+  </style>
+  <rect class="bg" width="980" height="560"/>
+  <text x="490" y="40" text-anchor="middle" class="h1">La plataforma hoy — reinicio de datos y plantilla vigente (2026-11-18)</text>
+  <text x="490" y="63" text-anchor="middle" class="h2">Guion scripts/simular_actividades.py: respaldo → reinicio → reinyección base → uso real simulado → corrección de flujos fantasma</text>
+
+  <!-- columna izquierda: plantilla -->
+  <rect class="card" x="50" y="100" width="380" height="120" rx="12"/>
+  <text x="240" y="130" text-anchor="middle" class="lbl">Plantilla: 5 empleados · 2 proyectos</text>
+  <text x="240" y="154" text-anchor="middle" class="sub">proyecto «Nomina ANLU»: Uno · Dos · Tres</text>
+  <text x="240" y="176" text-anchor="middle" class="sub">proyecto «Mantenimiento Infraestructura»: Cuatro · Cinco</text>
+  <text x="240" y="200" text-anchor="middle" class="mut">2 admins · contratos y Anvil intactos tras el reinicio</text>
+
+  <!-- ejemplo auditado -->
+  <rect class="okB" x="50" y="250" width="380" height="120" rx="12"/>
+  <text x="240" y="280" text-anchor="middle" class="lbl">Ejemplo auditado: flujo #13</text>
+  <text x="240" y="304" text-anchor="middle" class="sub">pausa acredita 0,125 BRLT → cobro del empleado Dos</text>
+  <text x="240" y="326" text-anchor="middle" class="sub">→ reanudación, todo dentro del tope 80%</text>
+  <text x="240" y="352" text-anchor="middle" class="tag" fill="#10b981">verificado en Auditoría</text>
+
+  <!-- programados -->
+  <rect class="hi" x="50" y="396" width="380" height="84" rx="12"/>
+  <text x="240" y="424" text-anchor="middle" class="lbl">2 flujos programados</text>
+  <text x="240" y="448" text-anchor="middle" class="sub">en estado «próximo»: se ejecutan cuando toque</text>
+  <text x="240" y="468" text-anchor="middle" class="mut">cada uno se lanza manualmente desde el panel</text>
+
+  <!-- columna derecha: flujos -->
+  <rect class="hi" x="510" y="100" width="420" height="90" rx="12"/>
+  <text x="720" y="128" text-anchor="middle" class="lbl">Flujos vivos de nómina</text>
+  <text x="720" y="152" text-anchor="middle" class="sub">#12 · 300 BRLT / 30 días · activo (Uno, Dos, Tres)</text>
+  <text x="720" y="174" text-anchor="middle" class="sub">#13 · 600 BRLT / 6 días · activo (Dos, proyecto MVP)</text>
+
+  <rect class="hi" x="510" y="212" width="420" height="70" rx="12"/>
+  <text x="720" y="240" text-anchor="middle" class="lbl">Flujo vivo de mantenimiento</text>
+  <text x="720" y="264" text-anchor="middle" class="sub">#15 · 360 BRLT / 6 días · activo (Cuatro · Cinco)</text>
+
+  <rect class="mutB" x="510" y="304" width="420" height="60" rx="12"/>
+  <text x="720" y="330" text-anchor="middle" class="lbl" fill="#475569">#14 · terminado</text>
+  <text x="720" y="352" text-anchor="middle" class="sub">pagó lo devengado; el resto volvió al admin</text>
+
+  <rect class="mutB" x="510" y="386" width="420" height="70" rx="12"/>
+  <text x="720" y="412" text-anchor="middle" class="lbl" fill="#475569">#3..#11 · flujos «fantasma» de eras previas</text>
+  <text x="720" y="434" text-anchor="middle" class="sub">terminados con deleteFlow (9 marcas «via: correccion-simulacion»)</text>
+
+  <!-- flechas plantilla → flujos -->
+  <path class="arr" d="M432,140 L508,140"/>
+  <text x="470" y="130" text-anchor="middle" class="rel">empleados</text>
+  <path class="arr" d="M432,300 L508,260"/>
+  <text x="452" y="266" text-anchor="middle" class="rel">contratos</text>
+  <path class="arr" d="M432,438 L506,426"/>
+  <text x="456" y="410" text-anchor="middle" class="rel">programados</text>
+
+  <!-- pie -->
+  <rect x="50" y="498" width="880" height="44" rx="10" fill="#eaf3ff" stroke="#c9dcf7" stroke-width="1.2"/>
+  <text x="490" y="514" text-anchor="middle" class="sub" font-weight="600">Registro vivo de estos datos: RepoTecnico/BaseOperaciones/estado_inyeccion.md · respaldos JSON en respaldo_*/ (11 colecciones)</text>
+  <text x="490" y="530" text-anchor="middle" class="mut">en la vista admin no cambia nada: sigues viendo los cobros verificados en Auditoría</text>
+
+  <text x="490" y="552" text-anchor="middle" font-size="11" fill="#94a3b8">docs/imagenes/estado-datos-actual.svg · estado tras la simulación del 2026-11-18</text>
+</svg>

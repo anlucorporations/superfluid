@@ -21,7 +21,7 @@ const ROOT = '/home/lucci/workspace/superfluid';
 const MAN = path.join(ROOT, 'docs/Manuales');
 const IMG = path.join(ROOT, 'docs/imagenes');
 const OUT = path.join(MAN, 'pdf');
-const FECHA = '2026-11-17';
+const FECHA = '2026-11-18';
 
 /* ------------------------------------------------------------------ *
  * Definición de los 3 documentos (mismo nombre de archivo que ya hay) *

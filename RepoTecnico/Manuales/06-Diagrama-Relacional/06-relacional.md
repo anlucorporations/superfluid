@@ -16,8 +16,12 @@
 - `audit_events` → actor (`actorWallet`) y `empleadoId` opcional; `txHash` al recibo.
   Además de historia, cumple función de **acumulador** del tope de downgrade: los eventos
   con `meta.operacion="cobro"` y `meta.amount` suman el gasto acumulado de un receptor
-  (`web/src/lib/downgrade-limit.ts:39-63`).
+  (`web/src/lib/downgrade-limit.ts:39-65`); la comparación del actor es
+  **case-insensitive** (fix del 2026-11-18: la wallet se registra a veces con checksum).
 - `job_runs` es independiente (telemetría de operación).
+- **Respaldos** (`RepoTecnico/BaseOperaciones/respaldo_*/`): instantáneas JSON de las 11
+  colecciones generadas por `scripts/simular_actividades.py` antes del drop; no forman
+  parte del modelo vivo, sirven de restauración y auditoría del reinicio del 2026-11-18.
 
 ```mermaid
 erDiagram
@@ -54,7 +58,13 @@ erDiagram
   auditoría se pierde, `downgradeUsado` caería a 0 hasta re-sincronizar — el tope vuelve
   a ampliarse con lo no registrado; úsese con esa salvedad en mente (pendiente de
   confirmar si el reconciliador reconstruye cobros históricos).
+- Estado vigente tras el reinicio + simulación del 2026-11-18 (commit `83f54e4`): 5
+  empleados · 2 proyectos · flujos canónicos #12/#13/#15 activos y #14 terminado ·
+  11 flujos históricos · 2 programados «proximo» — detalle en
+  `RepoTecnico/BaseOperaciones/estado_inyeccion.md` y
+  `05-Diccionario-de-Datos/05-diccionario.md`.
 
 ---
 
-*Actualizado 2026-11-17 · commit aab670e*
+*Actualizado 2026-11-18 · análisis completo v2 (estado post-simulación y fix
+case-insensitive del acumulador; commit `83f54e4`)*

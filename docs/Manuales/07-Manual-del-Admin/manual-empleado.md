@@ -8,7 +8,9 @@
 3. La app pregunta al servidor qué eres. Si tienes ficha de empleado, te lleva a
    tu **Portal del Empleado** (`/suite`); verás una pantalla oscura con cabecera
    violeta (es normal, tu portal tiene su propia identidad).
-4. Firma un mensaje con tu wallet para abrir la sesión (no gasta dinero).
+4. Antes de firmar verás una **ficha clara** con lo que haces y la nota «La firma
+   es gratuita: no mueve fondos ni autoriza gastos». Firmas con tu wallet para
+   abrir la sesión (no gasta dinero).
 5. Ya dentro, mira el **Resumen**: **BRLT en saldo**, **Cobrable en BrltX** y tu
    **salario por periodo**.
 6. Para cobrar: baja a **«Downgrade de flujos»**, elige un flujo, escribe el
@@ -88,6 +90,57 @@ mindmap
 - Antes de cualquier firma, la app vuelve a comparar la cuenta conectada con la
   de tu sesión: si no coinciden, se cancela el envío.
 
+## La firma clara: lo que verás antes de firmar
+
+### Primero se te explica, después se firma
+Desde el 2026-11-18, **todas las firmas llegan explicadas**. En tu entrada al
+portal (y en cualquier firma de sesión o permiso) verás dos cosas:
+
+1. **En la pantalla, una ficha de firma**: el título de la operación, qué haces,
+   con qué wallet y la nota por defecto
+   **«La firma es gratuita: no mueve fondos ni autoriza gastos»**.
+2. **En la wallet, un mensaje personalizado** que dice para qué es la firma. En
+   tu caso reza: *«Acceder a tu Portal del Empleado de Superfluid Brlt. Esta
+   firma solo prueba que esta wallet es tuya. No mueve fondos ni autoriza
+   gastos»*. Caduca a los **5 minutos**.
+
+En las operaciones que **sí** tocan dinero (crear flujos, cobrar, pausar…) la
+pantalla te dice el impacto real antes de firmar: «Quemas X BrltX y recibes X
+BRLT», «Descargas X BRLT del flujo #N. Tope del 80%: disponible Y BRLT». Nada se
+firma a ciegas: la app ni siquiera usa el tipo de firma ciego (`eth_sign`) que
+las wallets marcan como peligroso.
+
+<!-- GENERAR_IMAGEN: firma-clara-empleado.svg|png -->
+
+```mermaid
+sequenceDiagram
+    participant E as Empleado
+    participant P as Pantalla /suite
+    participant W as MetaMask
+    E->>P: pulsa «Conectar wallet»
+    P-->>E: ficha de firma: «La firma es gratuita:<br/>no mueve fondos ni autoriza gastos»
+    P->>W: mensaje SIWE explicado
+    W-->>E: «Acceder a tu Portal del Empleado…<br/>No mueve fondos ni autoriza gastos»
+    E->>W: firma (coste 0)
+    W-->>P: sesión abierta
+```
+
+## La plataforma hoy (tras la simulación del 2026-11-18)
+
+### Quiénes están dados de alta
+La base de datos se reinició y se volvió a llenar con uso real simulado. Hoy hay
+**5 empleados activos** en **2 proyectos**:
+
+| Empleado | Contrato (ficha) | Flujo |
+|---|---|---|
+| **Uno** | Nómina ANLU: 100 BRLT / 30 días | #12 activo (300 BRLT) |
+| **Dos** | Nómina ANLU: 100 BRLT / 30 días | #13 activo (600 BRLT) |
+| **Tres** | Nómina ANLU: 100 BRLT / 30 días | #14 terminado |
+| **Cuatro** | Mantenimiento: 50 BRLT / 15 días | #15 activo (360 BRLT) |
+| **Cinco** | Proyecto MVP: 80 BRLT / 6 días | (sin flujo propio aún) |
+
+Los dos proyectos: **`Nomina ANLU`** y **`Mantenimiento Infraestructura`**.
+
 ## Downgrade de flujos (el cobro con tope del 80%)
 
 ### ¿Qué significa el tope?
@@ -108,13 +161,43 @@ Ejemplo: asignado **10.000** → tope **8.000** → ya descargado **1.500** →
 disponible **6.500**. Si ya hubieras descargado 8.000, el tope está agotado y no
 podrás descargar más por esta vía.
 
+### El ejemplo real (flujo #13, de la simulación del 2026-11-18)
+Así funcionó de verdad el ciclo completo con el flujo **#13** del **empleado Dos**
+(**600 BRLT a 6 días**):
+
+1. **Creación**: el admin financia 600 BRLT a 6 días → el flujo #13 queda activo
+   y empieza a acumular segundo a segundo.
+2. **Pausa**: el admin pausa el flujo. En ese momento el contrato **acredita el
+   devengo del tramo** — **0,125 BRLT** — directamente al BrltX del empleado.
+3. **Cobro (downgrade)**: el empleado Dos descarga esos **0,125 BRLT** a su
+   cartera. El cobro queda **auditado** y el contador del tope 80% lo resta
+   (estaba holgado: dentro del límite sin problema).
+4. **Reanudación**: el admin reanuda el flujo con la misma tasa; el tiempo
+   restante se **aplaza**, así que el empleado no pierde devengo.
+
+El mismo día se hizo lo propio con el flujo #12 del empleado Uno (pausa → cobro
+de 0,009259 BRLT → reanudación) y se terminó el #14 del empleado Tres (pagó lo
+devengado y el resto volvió al admin).
+
+<!-- GENERAR_IMAGEN: historial-simulacion.svg|png -->
+
+```mermaid
+timeline
+    title Flujo #13 real: 600 BRLT / 6 días (Empleado Dos)
+    Creación : El admin financia 600 BRLT → flujo #13 activo, acumula por segundo
+    Pausa : El admin pausa el flujo → acredita el tramo devengado: 0,125 BRLT al BrltX del empleado
+    Cobro : El empleado «Descarga» 0,125 BRLT → MetaMask firma, queda auditado (dentro del tope 80%)
+    Reanudación : El flujo vuelve a su tasa y el tiempo restante se aplaza (sin perder devengo)
+```
+
 ### Cómo descargar, paso a paso
 1. Elige el **flujo** en el selector (puedes elegir cualquiera de los tuyos,
    activos, pausados o terminados).
 2. Escribe el importe, o pulsa el botón **«Máximo»**: te propone lo menor entre
    tu BrltX en cartera y lo disponible del tope. Ese es el tope real de hoy.
-3. Pulsa **«Descargar»**. MetaMask te pedirá la firma (no gasta nada,
-   convierte tu BrltX en BRLT).
+3. Pulsa **«Descargar»**. MetaMask te pedirá la firma; antes la pantalla te
+   avisa del impacto real (quema tu BrltX y te paga BRLT). No gasta nada más:
+   convierte tu BrltX en BRLT.
 4. En segundos verás **«Ya descargado»** subir lo mismo que baja tu BrltX y
    sube tu BRLT en saldo.
 
@@ -208,8 +291,9 @@ que el tope global no se reabre con lo nuevo: es acumulado de por cuenta.
 
 > **Nota de pantallazos:** las capturas de la Suite se regenerarán tras el
 > rediseño (`npm run capturas`); la descripción de este manual refleja el portal
-> vigente de 2026-11-17.
+> vigente de 2026-11-18 (firma clara incluida).
 
 ---
 
-*Actualizado 2026-11-17*
+*Actualizado 2026-11-18 · añade firma clara, el ejemplo real del flujo #13 de la
+simulación y la plantilla vigente (5 empleados, 2 proyectos)*
