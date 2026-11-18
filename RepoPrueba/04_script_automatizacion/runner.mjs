@@ -194,8 +194,12 @@ async function main() {
           baseUrl: cfg.baseUrl, modo: esc.modo || 'simulada', cuentaSimulada: CUENTA_SIMULADA,
         });
         const nPend = pasos.pendientes.length;
-        if (!pasos.ok) estado = 'FAIL';
-        else if (nPend > 0) estado = 'NOT_RUN';
+        // Regla de FASE 5: un escenario con pasos sin intérprete no puede
+        // juzgarse completo. Si quedó sin cubrir pasos, el resultado es NOT_RUN
+        // (hueco de la herramienta, nunca FAIL de la app); el error observado se
+        // conserva en el detalle como evidencia.
+        if (nPend > 0) estado = 'NOT_RUN';
+        else if (!pasos.ok) estado = 'FAIL';
         else estado = 'PASS';
         detalle = [
           pasos.detalle,

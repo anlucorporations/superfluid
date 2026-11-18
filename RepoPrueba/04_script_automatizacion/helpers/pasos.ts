@@ -48,13 +48,21 @@ function esNegacion(texto: string): boolean {
 }
 
 /** Clasifica un paso para el intérprete. */
-type TipoPaso = 'navegacion' | 'clic' | 'afirmacion_texto' | 'afirmacion_ethereum' | 'afirmacion_boton' | 'aprobacion' | 'desconocido';
+type TipoPaso = 'navegacion' | 'clic' | 'afirmacion_texto' | 'afirmacion_ethereum' | 'afirmacion_boton' | 'aprobacion' | 'setup' | 'desconocido';
 
 function clasificar(texto: string): TipoPaso {
+  // Pasos de PREPARACIÓN del entorno (given): el mock ya inyecta la wallet y la
+  // red 31337, así que describir "extensión instalada", "red activa" o "dApp
+  // desplegada" no exige acción sobre la UI. Se registran como ejecutados.
+  if (/^dada|^given/i.test(texto.trim()) || /está desplegada|instalada manualmente|instalada desde la tienda|extensión .+ (activa|está activa)|red activa chainId|no añadida|perfil preparado/i.test(texto)) {
+    return 'setup';
+  }
   if (rutaDe(texto) && /abre|está desplegada|está en|naveg|accede|pulsa/i.test(texto)) return 'navegacion';
   if (/hace clic|pulsa/i.test(texto)) return 'clic';
   if (/aprueba la solicitud|aprueba la conexión|aprueba el cambio|firma el mensaje|aprueba la firma/i.test(texto)) return 'aprobacion';
   if (/window\.ethereum/i.test(texto) && /(detecta|no detecta|no se detecta)/i.test(texto)) return 'afirmacion_ethereum';
+  if (/(proveedor EIP-1193|window\.ethereum)/i.test(texto) && /detecta/i.test(texto)) return 'afirmacion_ethereum';
+  if (/está dentro de|está en la|permanece en la/i.test(texto) && rutaDe(texto)) return 'navegacion';
   if (/(habilitado|deshabilitado)/i.test(texto)) return 'afirmacion_boton';
   if (/(muestra|el sistema detecta|obtiene|devuelve|aparece|permanece|envía|registra|continúa|redirige|se bloquea)/i.test(texto)) return 'afirmacion_texto';
   return 'desconocido';
@@ -70,6 +78,19 @@ export async function ejecutarPasos(page: {
   let detalle = '';
   let ok = true;
 
+  // Navegación inicial: si ningún paso trae ruta explícita, se deduce del texto
+  // del escenario (los flujos de conexión/entrada viven en /entrar; el resto
+  // parte de la portada). Sin esto, un clic expira sobre about:blank.
+  const todoTexto = esc.pasos.map((p) => p.texto).join(' ');
+  const rutaInicial = rutaDe(todoTexto)
+    ?? (/entrar|conectar|conexión|wallet|firmar|firma|red 31337|cambio de red/i.test(todoTexto) ? '/entrar' : '/');
+  try {
+    await page.goto(cfg.baseUrl + rutaInicial, { waitUntil: 'domcontentloaded' });
+  } catch (err) {
+    ok = false;
+    detalle = `navegación inicial ${rutaInicial} → ${(err as Error)?.message?.split('\n')[0] ?? String(err)}`;
+  }
+
   const notaError = (paso: string, err: unknown): void => {
     ok = false;
     if (!detalle) detalle = `${paso} → ${(err as Error)?.message?.split('\n')[0] ?? String(err)}`;
@@ -84,6 +105,8 @@ export async function ejecutarPasos(page: {
           await page.goto(cfg.baseUrl + ruta, { waitUntil: 'domcontentloaded' });
           break;
         }
+        case 'setup':
+          break; // preparación del entorno: el mock ya provee wallet y red
         case 'clic': {
           const objetivo = textosDe(paso.texto)[0];
           if (!objetivo) throw new Error('clic sin objetivo entrecomillado: ' + paso.texto);

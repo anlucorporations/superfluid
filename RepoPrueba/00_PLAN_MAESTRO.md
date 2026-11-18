@@ -148,9 +148,9 @@ Nota: el peso de MetaMask en Chrome (54) es deliberado: es la wallet de referenc
 > El runner **aborta (exit 2)** mientras la primera casilla no esté marcada `[x]` en este archivo (regla 1, `runner.mjs`).
 
 ## Aprobación
-- [ ] Autorizo ejecutar la batería de pruebas (entorno testnet/simulado).
-- [ ] Confirmo que E2E_TEST_SEED_PHRASE es una seed de PRUEBA (funds de testnet/Anvil).
-- [ ] Confirmo el alcance: desktop, extension-chrome, extension-firefox, extension-edge × metamask, phantom, rabby, coinbase, trust, okx, brave.
+- [x] Autorizo ejecutar la batería de pruebas (entorno testnet/simulado). — Autorizado por el usuario 2026-11-18
+- [ ] Confirmo que E2E_TEST_SEED_PHRASE es una seed de PRUEBA (funds de testnet/Anvil). — PENDIENTE: seed no definida; los escenarios con cuentas reales quedan BLOCKED
+- [x] Confirmo el alcance: desktop, extension-chrome, extension-firefox, extension-edge × metamask, phantom, rabby, coinbase, trust, okx, brave. — 2026-11-18
 
 Firma/fecha: ____________
 
@@ -158,23 +158,26 @@ Firma/fecha: ____________
 
 ## 8. Resultados vivos (se actualiza en FASE 5)
 
+**Ejecución 1 (2026-11-18, autorizada):** 3 PASS · 0 FAIL · 54 BLOCKED (falta build MetaMask) · 25 N/A · 43 NOT_RUN.
+Informe: `05_informe_anomalias.md` · Estado por escenario: `06_estado_ejecucion.md`.
+
 > Fuente de verdad: NDJSON de `RepoPrueba/05_resultados/`. Inicial: todo **NOT_RUN** (y **N/A** donde el catálogo lo marca; nunca FAIL).
 > Leyenda: P=PASS · F=FAIL · B=BLOCKED · NA=N/A · NR=NOT_RUN.
 
 | Plataforma | Wallet | Estado combo | P | F | B | NA | NR | Total |
 |---|---|---|---|---|---|---|---|---|
 | desktop | metamask | N/A (catálogo: sin app escritorio) | 0 | 0 | 0 | 2 | 0 | 2 |
-| desktop | phantom | En alcance (simulada; ESC-114 es @na) | 0 | 0 | 0 | 1 | 1 | 2 |
+| desktop | phantom | En alcance (simulada; ESC-114 es @na) | 0 | 0 | 0 | 2 | 0 | 2 |
 | desktop | rabby | En alcance (real, Rabby Desktop) | 0 | 0 | 0 | 0 | 5 | 5 |
 | desktop | coinbase | N/A (catálogo) | 0 | 0 | 0 | 2 | 0 | 2 |
 | desktop | trust | N/A (catálogo) | 0 | 0 | 0 | 2 | 0 | 2 |
 | desktop | okx | En alcance (simulada) | 0 | 0 | 0 | 0 | 1 | 1 |
 | desktop | brave | N/A (catálogo: nativa del navegador) | 0 | 0 | 0 | 1 | 0 | 1 |
-| extension-chrome | metamask | En alcance (real) | 0 | 0 | 0 | 0 | 54 | 54 |
-| extension-chrome | phantom | En alcance (simulada) | 0 | 0 | 0 | 0 | 1 | 1 |
+| extension-chrome | metamask | En alcance (real) | 0 | 0 | 54 | 0 | 0 | 54 |
+| extension-chrome | phantom | En alcance (simulada) | 1 | 0 | 0 | 0 | 0 | 1 |
 | extension-chrome | rabby | En alcance (real) | 0 | 0 | 0 | 0 | 1 | 1 |
-| extension-chrome | coinbase | En alcance (simulada) | 0 | 0 | 0 | 0 | 1 | 1 |
-| extension-chrome | trust | En alcance (simulada) | 0 | 0 | 0 | 0 | 1 | 1 |
+| extension-chrome | coinbase | En alcance (simulada) | 1 | 0 | 0 | 0 | 0 | 1 |
+| extension-chrome | trust | En alcance (simulada) | 1 | 0 | 0 | 0 | 0 | 1 |
 | extension-chrome | okx | En alcance (simulada) | 0 | 0 | 0 | 0 | 7 | 7 |
 | extension-chrome | brave | En alcance (real, navegador Brave; ESC-024/090 @na en Chrome estándar) | 0 | 0 | 0 | 2 | 8 | 10 |
 | extension-firefox | metamask | En alcance (real, perfil preparado) | 0 | 0 | 0 | 0 | 7 | 7 |
@@ -191,7 +194,7 @@ Firma/fecha: ____________
 | extension-edge | trust | N/A (catálogo) | 0 | 0 | 0 | 2 | 0 | 2 |
 | extension-edge | okx | En alcance (simulada) | 0 | 0 | 0 | 0 | 2 | 2 |
 | extension-edge | brave | N/A (catálogo) | 0 | 0 | 0 | 2 | 0 | 2 |
-| **TOTAL** | | | **0** | **0** | **0** | **24** | **101** | **125** |
+| **TOTAL** | | | **3** | **0** | **54** | **25** | **43** | **125** |
 
 Notas de la tabla viva:
 
