@@ -1,0 +1,1 @@
+[{"_id": "system", "chainId": 31337, "rpcUrl": "https://hotel-anvil-proxy-szrmcf2hja-ew.a.run.app", "brltAddress": "0x020a699264d9f9caed6f0b65c1c25F000E7d6b56", "brltXAddress": "0x6080788bc70756dD3c73b4AF2936D0eeA135bE71", "deployBlock": 56395, "tasaRefrescoMs": 5000, "faucetUrl": "https://faucet.codecrypto.academy/", "updatedAt": "2026-11-14T13:26:55.108000"}]

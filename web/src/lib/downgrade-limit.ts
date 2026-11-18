@@ -38,10 +38,12 @@ export function downgradeMaximoDe(asignadoTotal: bigint): bigint {
 /** Suma de lo ya cobrado según auditoría (eventos "cobro" verificados). */
 async function downgradeUsadoDe(walletLower: string): Promise<bigint> {
   const db = await ensureIndexes();
+  // actorWallet se registra con el formato de la sesión (a veces checksummed):
+  // el acumulado debe comparar sin distinción de mayúsculas/minúsculas.
   const docs = await db
     .collection("audit_events")
     .find({
-      actorWallet: walletLower,
+      actorWallet: { $regex: `^${walletLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" },
       accion: "flujo",
       "meta.operacion": "cobro",
     })

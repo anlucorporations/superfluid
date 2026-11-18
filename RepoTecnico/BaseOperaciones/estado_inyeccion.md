@@ -85,3 +85,64 @@ Log de cada ejecución: `RepoTecnico/BaseOperaciones/inyeccion_datos.log`
 | Empleado demo | `Empleado Prueba Anvil` (wallet #1) — se borra; el flujo #1 on-chain queda huérfano de ficha |
 | ETH | sin cambios (todas ≈10.000 ETH del despliegue; #0 gastó ~100 en gas) |
 | Anvil compartido | **no se reinicia**; solo transacciones `mint` nuevas |
+
+## Reinicio completo + simulación de actividades operativas (2026-11-18)
+
+> Script: `scripts/simular_actividades.py` (respetando la lógica de
+> `inyectar_datos_operativos.py`). Autorización del usuario registrada en la
+> conversación. Ejecución real 17:34–17:45 UTC.
+
+### Fase A — Reinicio de la BD (Anvil/contratos intactos, regla 8)
+
+1. Respaldo previo de las 11 colecciones → `BaseOperaciones/respaldo_20261118T173426Z/*.json`.
+2. Drop de las 11 colecciones de `superfluid_anvil`.
+3. `system_config` recreada (chainId 31337, RPC proxy, addresses del despliegue, deployBlock 56395).
+4. Reinyección base: allowlist #0/#1 · proyecto "Nomina ANLU" · empleados #2..#4 (100 BRLT/30 d).
+5. Mint top-up idempotente (solo si falta para el monto documentado).
+
+⚠️ Incidencia de depuración registrada: una pasada de `--dry-run` con bug
+ejecutó el drop (ya corregido: el drop nunca corre en dry-run). El respaldo
+previo permitió reconstruir; el estado previo está íntegro en el JSON.
+
+### Fase B — Actividades simuladas (uso real de la plataforma)
+
+| Actividad | Resultado |
+|---|---|
+| 2 empleados nuevos de reserva #5/#6 (Cuatro: mantenimiento 50/15d · Cinco: proyecto_mvp 80/6d) + mint 100 BRLT c/u | ✅ 5 empleados activos |
+| Proyecto "Mantenimiento Infraestructura" (25.000 BRLT) | ✅ |
+| Financiación admin (approve BrltX) | ✅ |
+| 4 flujos on-chain: #12 emp1 300/30d · #13 emp2 600/6d · #14 emp3 240/15d · #15 emp4 360/6d | ✅ espejados |
+| Pausa #13 (acredita devengo on-chain al empleado) → cobro downgrade de emp2 (0,125 BRLT) → reanudación | ✅ CU-16/17 |
+| Pausa #12 → cobro de emp1 (0,009259 BRLT) → reanudación | ✅ |
+| Terminación #14 (deleteFlow: paga 0,0156 y devuelve remanente) | ✅ |
+| 2 flujos programados "proximo" (CU-05, sin ejecutar) | ✅ |
+
+Verificación final: `/api/health` ok · admins=2 · empleados=5 · flujos espejo
+coherentes · supply ≈10.010.600 BRLT · cobros acumulados en auditoría dentro
+del tope 80%.
+
+### Limpieza de flujos fantasma (corrección registrada)
+
+Los flujos on-chain del era pre-reinicio (#3..#11, incluidos dos de 2.000 BRLT
+que seguían activos y devengando — la cadena no se reinició) y los duplicados
+de las corridas de depuración fueron TERMINADOS con `deleteFlow` por el admin
+(#0), dejando el set canónico: #12/#13/#15 activos y #14 terminado. Las 9
+terminaciones quedaron en auditoría con `via: correccion-simulacion`. El BRLT
+devengado que esos flujos acreditaron a los empleados (p. ej. 224 BRLT a emp1/emp2)
+es realidad de la cadena y conserva su valor en BrltX de sus wallets.
+
+### Bug destapado y corregido
+
+El acumulado del tope 80% (`getDowngradeLimit`) buscaba `actorWallet` exacto en
+minúsculas, pero la auditoría lo registra a veces con checksum → se perdían
+cobros. Corregido con comparación case-insensitive (desplegado tras esta
+simulación).
+
+### Cómo repetir
+
+```bash
+export MONGODB_URI=$(gcloud secrets versions access latest --secret=brltv2-mongo-uri --project plataforma-txbarlovento)
+python3 scripts/simular_actividades.py --dry-run --leer-secreto   # simulación
+python3 scripts/simular_actividades.py --si --leer-secreto --fase reset
+python3 scripts/simular_actividades.py --si --leer-secreto --fase actividades --espera 100
+```
