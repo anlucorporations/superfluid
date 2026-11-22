@@ -63,7 +63,7 @@ contract BrltX is ERC20, Ownable2Step, Pausable, ReentrancyGuard {
     /// @notice BRLT depositado en escrow y aún no devengado ni devuelto.
     uint256 public totalEscrow;
 
-    /// @notice Duraciones permitidas para crear flujos (6/15/30/90 días por defecto).
+    /// @notice Duraciones permitidas para crear flujos (1 h / 6 h / 1 d / 6 d / 15 d / 30 d / 90 d por defecto).
     mapping(uint64 duration => bool allowed) public allowedDurations;
 
     mapping(uint256 flowId => Flow) private _flows;
@@ -121,6 +121,11 @@ contract BrltX is ERC20, Ownable2Step, Pausable, ReentrancyGuard {
     constructor(address brlt_, address initialOwner) ERC20("BrltX", "BrltX") Ownable(initialOwner) {
         if (brlt_ == address(0)) revert ZeroAddress();
         brlt = IERC20(brlt_);
+        // Duraciones cortas (reactivadas): 1 h, 6 h, 1 d
+        _setDurationAllowed(1 hours, true);
+        _setDurationAllowed(6 hours, true);
+        _setDurationAllowed(1 days, true);
+        // Duraciones largas
         _setDurationAllowed(6 days, true);
         _setDurationAllowed(15 days, true);
         _setDurationAllowed(30 days, true);
